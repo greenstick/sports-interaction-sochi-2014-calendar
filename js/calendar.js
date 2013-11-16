@@ -42,8 +42,8 @@ Calendar = function (r1, r2, margins, colors, days, sports)
 	var arc = d3.svg.arc()
 		.innerRadius(chart.inner)
 		.outerRadius(chart.outer)
-		.startAngle(chart.segments/360 * (pi/180))
-		.endAngle(45 * (pi/180));
+		.startAngle(360 * (pi/180))
+		.endAngle(0 * (pi/180));
 			svg.append("path")
 				.attr("d", arc)
 				.attr("fill", chart.colors[1])
@@ -69,7 +69,7 @@ Calendar = function (r1, r2, margins, colors, days, sports)
 	// 			.each(stash);
 	// });
 };
-var calendar = new Calendar(400, 200, {top: 40, right: 40, bottom: 40, left: 40}, ['#AA33DD', '#AAEEAA'], 8, 8);
+var calendar = new Calendar(300, 200, {top: 40, right: 40, bottom: 40, left: 40}, ['#AA33DD', '#AAEEAA'], 8, 8);
 
 // Creating SVG element
 // 	chart.svg = function (height, width) {
