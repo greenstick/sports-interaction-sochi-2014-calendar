@@ -2,4 +2,11 @@
 	position: relative;
 	margin: 0 auto;
 	width: 960px;
+	background-color: #000E5C;
+}
+path{
+	cursor: pointer;
+}
+stroke{
+	render: geometricPrecision;
 }
