@@ -20,141 +20,27 @@
 					</div>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" data-bind="foreach: sportsRows">
+				<!-- ko if: ($index() %2 == 1)-->
 				<div class="listSport">
 					<div class="col1">
 						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#0000FF" />
+							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2">BIATHLON</div>
+					<div class="col2"><span data-bind="text: sport, click: function () {$root.calendar.update(sport)}"></span></div>
 				</div>
+				<!-- /ko -->
+				<!-- ko if: ($index() %2 == 0) -->
 				<div class="listSport">
 					<div class="col3">
 						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#490E7C" />
+							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4">SPEED SKATING</div>
+					<div class="col4"><span data-bind="text: sport, click: function () {$root.calendar.update(sport)}"></span></div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#7438A8" />
-						</svg>
-					</div>
-					<div class="col2">BOBSLEIGH</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#AF1BFA" />
-						</svg>
-					</div>
-					<div class="col4">ALPINE SKIING</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#FF0000" />
-						</svg>
-					</div>
-					<div class="col2">SKELETON</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#F47920" />
-						</svg>
-					</div>
-					<div class="col4">CROSS COUNTRY</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#F7B11B" />
-						</svg>
-					</div>
-					<div class="col2">CURLING</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#F9EE50" />
-						</svg>
-					</div>
-					<div class="col4">NORDIC COMBINED</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#D0F923" />
-						</svg>
-					</div>
-					<div class="col2">ICE HOCKEY</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#62E80C" />
-						</svg>
-					</div>
-					<div class="col4">SKI JUMPING</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#32B208" />
-						</svg>
-					</div>
-					<div class="col2">LUGE</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#045910" />
-						</svg>
-					</div>
-					<div class="col4">FREESTYLE</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#20D382" />
-						</svg>
-					</div>
-					<div class="col2">FIGURE SKATING</div>
-				</div>
-				<div class="listSport">
-					<div class="col3">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#05E5D4" />
-						</svg>
-					</div>
-					<div class="col4">SNOWBOARD</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="listSport">
-					<div class="col1">
-						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="8" fill="#09AEDB" />
-						</svg>
-					</div>
-					<div class="col2">SHORT TRACK</div>
-				</div>
+				<!-- /ko -->
 			</div>
 		</div>
 		<div id="dataPane">
@@ -179,12 +65,15 @@
 			Loading...
 		</div>
 	</div>
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="js/lib/JQ-1.10.2.min.js"></script>
+<script src="js/lib/KO-3.0.0.js"></script>
+<script src="js/lib/KO-mapping.js"></script>
+<script src="js/lib/D3.min.js"></script>
 <script src="js/calendar.js"></script>
+<!-- <script src="js/viewmodels.js"></script> -->
 <script>
  	$(document).ready(function () {
- 		$("#loading").delay(0).fadeOut(1000);
+ 		$("#loading").delay(0).fadeOut(1000)
  		$("#wrapper").delay(1000).fadeIn(1000);
  	});
 </script>

@@ -9,6 +9,7 @@
 
 	html {
 		background-color: #07153D;
+		height: auto;
 	}
 	#wrapper {
 		position: relative;
@@ -19,6 +20,7 @@
 		font-family: Knockout-HTF;
 		font-size: 1.2em;
 		color: #9FA1AF;
+		border: 4px solid #FAAF3D;
 	}
 	#loading {
 		position: relative;
@@ -29,8 +31,9 @@
 		background-color: #07153D;
 		font-family: Knockout-HTF;
 		font-size: 2.0em;
-		color: #F47920;
+		color: #9FA1AF;
 		z-index: 10;
+		border: 4px solid #FAAAFF;
 	}
 	#loading .dialogue {
 		position: relative;
@@ -50,14 +53,14 @@
 		left: 0px;
 		top: -650px;
 		width: 314px;
-		height: 325px;
-		margin: 0 0 8px 0;
+		height: 318px;
+		margin: 0 0 17px 0;
 	}
 	#dataPane {
 		position: relative;
 		float: right;
 		right: -314px;
-		top: -317px;
+		top: -325px;
 		width: 314px;
 		height: 318px;
 	}
@@ -161,8 +164,6 @@
 		width: 128px;
 		height: 30px;
 		display: inline-block;
-	}
-	#sportsPane .row .listSport .col2 span, #sportsPane .row .listSport .col4 span {
 		cursor: pointer;
 	}
 /**
