@@ -130,6 +130,7 @@ var seasonID = 1,
 		//Defining variables
 		var pi = Math.PI;
 		var calendar = this;
+			calendar.mapping = asyncResource('data/mapping.json'),
 			calendar.inner = r1,
 			calendar.outer = r2;
 			//Validating correct radius input order
@@ -138,6 +139,7 @@ var seasonID = 1,
 				calendar.inner = calendar.outer,
 				calendar.outer = outer;
 			};
+			console.log(calendar.mapping[0].day[1]);
 			calendar.margins = margins,
 			calendar.height = (calendar.outer * 2) + calendar.margins.top + calendar.margins.bottom,
 			calendar.width = (calendar.outer * 2) + calendar.margins.left + calendar.margins.right,
@@ -155,28 +157,35 @@ var seasonID = 1,
 				.attr("height", calendar.height);
 
 			//Generating Calendar
-			calendar.init = function (outer, inner, strokeColor, strokeWidth, rings, segments, colors, days, sports) {
-				var ringWidth = (outer - inner)/rings;
+			calendar.init = function (outer, inner, strokeColor, strokeWidth, rings, segments, colors, sports, days) {
+				var ringWidth = (outer - inner)/segments;
 				for(var i = 0; i < rings; i++) {
 					for(var j = 0; j < segments; j++) {
-						var arc = d3.svg.arc()
-							.innerRadius(inner + (ringWidth * i))
-							.outerRadius(inner + (ringWidth * (i + 1)))
-							.startAngle(((360/segments) * j) * (pi/180))
-							.endAngle(((360/segments) * (j + 1)) * (pi/180));
+						if (calendar.mapping[i].day[j] == true)
+						{
+							var arc = d3.svg.arc()
+							.innerRadius(inner + (ringWidth * j))
+							.outerRadius(inner + (ringWidth * (j + 1)))
+							.startAngle(((360/rings) * i) * (pi/180))
+							.endAngle(((360/rings) * (i + 1)) * (pi/180));
 								calendar.svg.append("path")
 									.attr("d", arc)
-									.attr("class", ("day" + days[i] + " " + sports[j]))
-									.attr("fill", colors[j])
+									.attr("class", ("sportArc day" + days[j] + " " + sports[i]))
+									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")");
+						}
 					};
 				};
 			};
 			//On Update
 			calendar.update = function (sport) {
-
+				$.each($('.sportArc'), function (e, i) {
+					!$(this).hasClass(sport(), function () {
+						$(this).fadeOut();
+					});
+				});
 			};
 	};
 
@@ -202,7 +211,7 @@ var seasonID = 1,
 			vm.days = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
 			vm.sports = ['BIATHLON', 'BOBSLEIGH', 'SKELETON', 'CURLING', 'ICE-HOCKEY', 'LUGE', 'FIGURE-SKATING', 'SHORT-TRACK', 'SPEED-SKATING', 'ALPINE-SKIING', 'CROSS-COUNTRY', 'NORDIC-COMBINED', 'SKI-JUMPING', 'FREESTYLE', 'SNOWBOARD'],
 			vm.sportsRows = ko.mapping.fromJS(vm.colorData, {}, vm.sportsRows),
-			vm.calendar = new Calendar (305, 42, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 19, 15, vm.days, vm.sports),
+			vm.calendar = new Calendar (305, 22, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18, vm.sports, vm.days),
 			vm.selectedSport = ko.observable(null),
 			vm.init = function () {
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
@@ -221,7 +230,7 @@ var seasonID = 1,
 			console.log("vm.colorData: " + vm.colorData());
 
 	};
-		var viewmodel = new CalendarVM(305, 42, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 19, 15); 
+		var viewmodel = new CalendarVM(305, 22, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
 });
