@@ -1,7 +1,8 @@
 $(function () {
 //Globals Vars
 var seasonID = 1,
-	sportID = 115;
+	sportID = 1, 
+	setDate = "2014-02-09";
 /**
  *	AJAX Request Methods - Retrieve Data From API
  **/
@@ -30,7 +31,7 @@ var seasonID = 1,
 				$.ajax({
 					async: false,
 					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/sports.cfm?seasonID=" + season + '"',
+					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/sports.cfm?seasonID=" + season,
 					crossDomain: true,
 					dataType: "json",
 					success: function (response) {
@@ -46,20 +47,37 @@ var seasonID = 1,
 
 			var getEvent = function (season, sport, date) {
 				var data = null;
-				$.ajax({
-					async: false,
-					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/event_phases.cfm?seasonID=" + season + "&sportID=" + sport+ "&date=" + date + '"',
-					crossDomain: true,
-					dataType: "json",
-					success: function (response) {
-						data = response;
-					},
-					error: function (XMLHttpRequest, textStatus, errorThrown) {
-						console.log("Error");
-						return;
-					}
-				});
+				if (date == null) {
+					$.ajax({
+						async: false,
+						type: "GET",
+						url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/event_phases.cfm?seasonID=" + season + "&sportID=" + sport,
+						crossDomain: true,
+						dataType: "json",
+						success: function (response) {
+							data = response;
+						},
+						error: function (XMLHttpRequest, textStatus, errorThrown) {
+							console.log("Error");
+							return;
+						}
+					});
+				} else {
+					$.ajax({
+						async: false,
+						type: "GET",
+						url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/event_phases.cfm?seasonID=" + season + "&sportID=" + sport+ "&date=" + date,
+						crossDomain: true,
+						dataType: "json",
+						success: function (response) {
+							data = response;
+						},
+						error: function (XMLHttpRequest, textStatus, errorThrown) {
+							console.log("Error");
+							return;
+						}
+					});
+				}
 				return data;
 			};
 
@@ -68,7 +86,7 @@ var seasonID = 1,
 				$.ajax({
 					async: false,
 					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/medals.cfm?seasonID=" + season + '"',
+					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/medals.cfm?seasonID=" + season,
 					crossDomain: true,
 					dataType: "json",
 					success: function (response) {
@@ -105,7 +123,7 @@ var seasonID = 1,
 
 /**
  *	Calendar Class
- *	@params Passed to by CalendarVM
+ *	@params Passed to constructor by CalendarVM
  **/
 
 	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments, days, sports) {
@@ -175,9 +193,11 @@ var seasonID = 1,
 		var vm = this;
 			vm.seasonsData = ko.observable(getSeasons()),
 			vm.sportData = ko.observable(getSports(seasonID)),
+			vm.eventDataSpecific = ko.observable(getEvent(seasonID, sportID)),
+			vm.eventData = ko.observable(getEvent(seasonID, sportID, setDate)),
 			vm.medalData = ko.observable(getMedals(seasonID)),
 			vm.colorData = ko.observable(asyncResource('data/colors.json')),
-			vm.seasonID = 1,
+			vm.seasonID = seasonID,
 			vm.selected = ko.observable(null),
 			vm.days = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
 			vm.sports = ['BIATHLON', 'BOBSLEIGH', 'SKELETON', 'CURLING', 'ICE-HOCKEY', 'LUGE', 'FIGURE-SKATING', 'SHORT-TRACK', 'SPEED-SKATING', 'ALPINE-SKIING', 'CROSS-COUNTRY', 'NORDIC-COMBINED', 'SKI-JUMPING', 'FREESTYLE', 'SNOWBOARD'],
@@ -195,6 +215,8 @@ var seasonID = 1,
 			};
 			console.log("vm.seasonsData: " + vm.seasonsData());
 			console.log("vm.sportData: " + vm.sportData());
+			console.log("vm.eventData: " + vm.eventData());
+			console.log("vm.eventDataSpecific: " + vm.eventDataSpecific());
 			console.log("vm.medalData: " + vm.medalData());
 			console.log("vm.colorData: " + vm.colorData());
 
