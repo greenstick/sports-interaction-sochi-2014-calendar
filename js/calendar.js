@@ -3,6 +3,7 @@ $(function () {
 var seasonID = 1,
 	sportID = 1, 
 	setDate = "2014-02-09";
+
 /**
  *	AJAX Request Methods - Retrieve Data From API
  **/
@@ -123,10 +124,11 @@ var seasonID = 1,
 
 /**
  *	Calendar Class
- *	@params Passed to constructor by CalendarVM
+ *	@params Radius 1 (int), Radius 2 (int), Margins (object), Stroke Width (int), Stroke Color (hex/rgb), Colors (array - hex/rgb), Days (int), Sports (int)
+ *		Params Passed to constructor by CalendarVM
  **/
 
-	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments, days, sports) {
+	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports) {
 		//Defining variables
 		var pi = Math.PI;
 		var calendar = this;
@@ -139,17 +141,16 @@ var seasonID = 1,
 				calendar.inner = calendar.outer,
 				calendar.outer = outer;
 			};
-			console.log(calendar.mapping[0].day[1]);
 			calendar.margins = margins,
 			calendar.height = (calendar.outer * 2) + calendar.margins.top + calendar.margins.bottom,
 			calendar.width = (calendar.outer * 2) + calendar.margins.left + calendar.margins.right,
 			calendar.strokeWidth = strokeWidth,
 			calendar.strokeColor = strokeColor,
 			calendar.colors = colors,
-			calendar.rings = rings,
 			calendar.days = days,
 			calendar.sports = sports,
-			calendar.segments = segments,
+			calendar.rings = days.length,
+			calendar.segments = sports.length + 1,
 			calendar.segmentWidth = calendar.segments/360;
 		//Creating SVG element
 			calendar.svg = d3.select('#calendar').append("svg")
@@ -170,7 +171,7 @@ var seasonID = 1,
 							.endAngle(((360/rings) * (i + 1)) * (pi/180));
 								calendar.svg.append("path")
 									.attr("d", arc)
-									.attr("class", ("sportArc day" + days[j] + " " + sports[i]))
+									.attr("class", ("sportArc day" + days[parseInt(days.length - j)] + " " + sports[i]))
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
@@ -181,6 +182,8 @@ var seasonID = 1,
 			};
 			//On Update
 			calendar.update = function (sport) {
+				var sport = sport().toTitleCase();
+				console.log(sport);
 				$.each($('.sportArc'), function (e, i) {
 					!$(this).hasClass(sport(), function () {
 						$(this).fadeOut();
@@ -208,10 +211,10 @@ var seasonID = 1,
 			vm.colorData = ko.observable(asyncResource('data/colors.json')),
 			vm.seasonID = seasonID,
 			vm.selected = ko.observable(null),
-			vm.days = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
+			vm.days = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18'],
 			vm.sports = ['BIATHLON', 'BOBSLEIGH', 'SKELETON', 'CURLING', 'ICE-HOCKEY', 'LUGE', 'FIGURE-SKATING', 'SHORT-TRACK', 'SPEED-SKATING', 'ALPINE-SKIING', 'CROSS-COUNTRY', 'NORDIC-COMBINED', 'SKI-JUMPING', 'FREESTYLE', 'SNOWBOARD'],
 			vm.sportsRows = ko.mapping.fromJS(vm.colorData, {}, vm.sportsRows),
-			vm.calendar = new Calendar (305, 22, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18, vm.sports, vm.days),
+			vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], vm.sports, vm.days),
 			vm.selectedSport = ko.observable(null),
 			vm.init = function () {
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
@@ -222,15 +225,8 @@ var seasonID = 1,
 					break;
 				}
 			};
-			console.log("vm.seasonsData: " + vm.seasonsData());
-			console.log("vm.sportData: " + vm.sportData());
-			console.log("vm.eventData: " + vm.eventData());
-			console.log("vm.eventDataSpecific: " + vm.eventDataSpecific());
-			console.log("vm.medalData: " + vm.medalData());
-			console.log("vm.colorData: " + vm.colorData());
-
 	};
-		var viewmodel = new CalendarVM(305, 22, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#000E5C', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
+		var viewmodel = new CalendarVM(328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
 });
