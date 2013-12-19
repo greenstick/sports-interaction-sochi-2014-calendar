@@ -19,6 +19,12 @@
 		font-family: Knockout-HTF;
 		font-size: 1em;
 		color: #FFFFFF;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 	}
 	#loading {
 		position: relative;
@@ -37,6 +43,9 @@
 		left: 48%;
 		top: 40%;
 	}
+	.selectable {
+		cursor: pointer;
+	}
 	#calendar {
 		position: relative;
 		left: 0px;
@@ -51,14 +60,29 @@
 		width: 76px;
 		height: 76px;
 	}
-	#calendarCenter .image {
-
+	#centerFlame {
+		position: relative;
+		left: 14px;
+		top: -60px;
+		width: 42px;
+		height: 42px;
+	}
+	#centerDate {
+		position: relative;
+		left: 328px;
+		top: -444px;
+		width: 40px;
+		height: 40px;
+		transform: rotate(-25deg);
+		-ms-transform: rotate(-25deg);
+		-webkit-transform: rotate(-25deg);
+		background-color: transparent;
 	}
 	#sportsPane {
 		position: relative;
 		float: right;
 		left: 0px;
-		top: -772px;
+		top: -810px;
 		width: 268px;
 		height: 325px;
 		margin: 16px 0 8px 0;
@@ -68,7 +92,7 @@
 		position: relative;
 		float: right;
 		right: -268px;
-		top: -421px;
+		top: -459px;
 		width: 268px;
 		height: 321px;
 		margin: 8px 0 16px 0;
@@ -135,6 +159,23 @@
 		height: 28px;
 		display: inline-block;
 	}
+	#sportsExit {
+		position: relative;
+		left: 254px;
+		top: -90px;
+		width: 28px;
+		height: 28px;
+		cursor: pointer;
+		display: none;
+	}
+	#dataExit {
+		position: relative;
+		left: 254px;
+		top: -90px;
+		width: 28px;
+		height: 28px;
+		cursor: pointer;
+	}
 	#dataPane .row, #sportsPane .row {
 		position: relative;
 		top: 0px;
@@ -182,16 +223,13 @@
  *	SVG Styles
  **/
 
-	path {
-		cursor: pointer;
-	}
 	stroke {
 		render: crispEdges;
 	}
-	path {
-		opacity: 1;
+	.sportArc {
+		cursor: pointer;
 	}
-	path:hover {
-		opacity: .5;
+	.sportArc:hover {
+		opacity: 1 !important;
 	}
 

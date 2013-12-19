@@ -5,6 +5,14 @@ var seasonID = 1,
 	setDate = "2014-02-09";
 
 /**
+ *	Utility Functions
+ **/
+
+ 	function stripLetters (string) {
+ 		return string.replace(/\D/g,'');
+ 	}
+
+/**
  *	AJAX Request Methods - Retrieve Data From API
  **/
 
@@ -171,24 +179,48 @@ var seasonID = 1,
 							.endAngle(((360/rings) * (i + 1)) * (pi/180));
 								calendar.svg.append("path")
 									.attr("d", arc)
-									.attr("class", ("sportArc day" + days[parseInt(days.length - j)] + " " + sports[i]))
+									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
+									.attr("data-bind", "click: function () {$root.calendar.selectArc(sport, color)}")
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")");
-						}
+						};
 					};
 				};
 			};
+/**
+ *	Calendar Methods
+ **/
 			//On Update
-			calendar.update = function (sport) {
-				var sport = sport().toTitleCase();
-				console.log(sport);
-				$.each($('.sportArc'), function (e, i) {
-					!$(this).hasClass(sport(), function () {
-						$(this).fadeOut();
-					});
-				});
+			calendar.filter = function (sport, color) {
+				var sport = sport().toUpperCase();
+					$('#sportsExit').fadeIn(600);
+					$('#centerDate').addClass('selectable')
+					d3.select("#centerCircle").transition().duration(600).attr("stroke", color());
+					$('.' + sport).animate({opacity: .70}, 600);
+					$('.sportArc').not('.' + sport).animate({opacity: .15}, 400);
+			};
+			//Resets Calendar to Init State
+			calendar.reset = function () {
+				d3.select("#centerCircle").transition().duration(600).attr("stroke", "#FFFFFF");
+				$('.sportArc').animate({opacity: .70}, 600);
+				$('#sportsExit').fadeOut(600);
+				$('#centerDate').removeClass('selectable');
+			}
+			calendar.selectArc = function (day, sport) {
+				console.log("clicked " + day() + " " + sport());
+			};
+			//Hover Over Arc
+			calendar.hoverOver = function (day, sport) {
+				console.log(day);
+				var sport = sport().toUpperCase();
+				console.log('hovering: ' + day + sport);
+			};
+			//Hover Out of Arc
+			calendar.hoverOut = function () {
+				$('.sportArc').animate({opacity: .70}, 600);
+				console.log("hover out");
 			};
 	};
 
@@ -225,8 +257,29 @@ var seasonID = 1,
 					break;
 				}
 			};
+		console.log(vm.sportsRows()[0].sport());
 	};
+
+
+	ko.bindingHandlers.calendarHover = {
+		init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+			var calendar = valueAccessor();
+		},
+	    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+	      var calendar = valueAccessor();
+	        ko.utils.registerEventHandler(element, "mouseover", function() {
+	        	calendar.hoverOver();
+	        });  
+	        ko.utils.registerEventHandler(element, "mouseout", function() {
+	        	calendar.hoverOut();
+	        });      
+	    } 
+	};
+
 		var viewmodel = new CalendarVM(328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
+
+
+
 });

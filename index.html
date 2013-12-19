@@ -9,10 +9,14 @@
 	<div id="interactiveWrapper">
 		<div id="calendarCenter">
 			<svg width="72px" height="72px">
-				<circle cx="36" cy="36" r="30" stroke="#FFFFFF" stroke-width="2" fill="#07153D">
+				<circle id="centerCircle" cx="36" cy="36" r="30" stroke="#FFFFFF" stroke-width="2" fill="transparent">
 			</svg>
+			<div id="centerFlame">
+				<img src="img/center_flame.svg" width="42px" height="42px">
+			</div>
 		</div>
-		<div id="calendar"></div>
+		<div id="calendar" data-bind-"with: sportsRows"></div>
+		<div id="centerDate" data-bind="click: function () {$root.calendar.reset()}"></div>
 		<div id="sportsPane">
 			<div class="header">
 				<div class="htop">
@@ -24,6 +28,9 @@
 						<span>SPORTS</span>
 					</div>
 				</div>
+				<div id="sportsExit" data-bind="click: function () {$root.calendar.reset()}">
+					<img src="img/exit.svg" width="28px" height="28px">
+				</div>
 			</div>
 			<div class="row" data-bind="foreach: sportsRows">
 				<!-- ko if: ($index() %2 == 1)-->
@@ -33,7 +40,7 @@
 							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2"><span data-bind="text: sport, click: function () {$root.calendar.update(sport)}"></span></div>
+					<div class="col2"><span data-bind="text: sport, click: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 				<!-- ko if: ($index() %2 == 0) -->
@@ -43,7 +50,7 @@
 							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4"><span data-bind="text: sport, click: function () {$root.calendar.update(sport)}"></span></div>
+					<div class="col4"><span data-bind="text: sport, click: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 			</div>
@@ -61,6 +68,9 @@
 					<div class="col2">
 						<span class="">FEB 15</span>
 					</div>
+				</div>
+				<div id="dataExit">
+					<img src="img/exit.svg" width="28px" height="28px">
 				</div>
 			</div>
 		</div>
