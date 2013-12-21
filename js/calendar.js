@@ -2,7 +2,19 @@ $(function () {
 //Globals Vars
 var seasonID = 1,
 	sportID = 1, 
-	setDate = "2014-02-09";
+	setDate = "2014-02-09",
+	seasonsParams = {},
+	sportsParams = {
+		seasonID: 1
+ 		},
+ 	eventsParams = {
+ 		seasonID: 1,
+ 		sportID: 1, 
+ 		date: setDate
+ 	},
+ 	medalsParams = {
+ 		seasonID: 1
+ 	}
 
 /**
  *	Utility Functions
@@ -16,119 +28,46 @@ var seasonID = 1,
  *	AJAX Request Methods - Retrieve Data From API
  **/
 
-			var getSeasons = function () {
-				var data = null;
-				$.ajax({
-					async: false,
-					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/seasons.cfm",
-					crossDomain: true,
-					dataType: "json",
-					success: function (response) {
-						data = response;
-					},
-					error: function (XMLHttpRequest, textStatus, errorThrown) {
-						console.log("Error");
-						return;
-					}
-				});
-				return data;
-			};
+ 	//Generate URL For AJAX Request
+	var generateURL = function (location, params) {
+ 		var url = null;
+ 		var urlString = '';
+ 		var baseURL = "http://wwwtest.sportsinteraction.com/service/infostrada/" + location + ".cfm?";
+	 		$.each(params, function (key, value) {
+	 			return urlString = urlString + "&" + key + "=" + value;
+	 		});
+ 		var url = "" + baseURL + urlString;
+ 		return url;
+ 	};
 
-			var getSports = function (season) {
-				var data = null;
-				$.ajax({
-					async: false,
-					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/sports.cfm?seasonID=" + season,
-					crossDomain: true,
-					dataType: "json",
-					success: function (response) {
-						data = response;
-					},
-					error: function (XMLHttpRequest, textStatus, errorThrown) {
-						console.log("Error");
-						return;
-					}
-				});
-				return data;
-			};
+	//General AJAX request
+	var asyncResource = function (url) {
+		var data = null;
+		$.ajax({
+			async: false,
+			type: "GET",
+			url: url,
+			crossDomain: true,
+			dataType: "json",
+			success: function (response) {
+				data = response;
+			},
+			error: function (XMLHttpRequest, textStatus, errorThrown) {
+				console.log("Error");
+				return;
+			}
+		});
+		console.log("URL requested: " + url);
+		return data;
+	};
 
-			var getEvent = function (season, sport, date) {
-				var data = null;
-				if (date == null) {
-					$.ajax({
-						async: false,
-						type: "GET",
-						url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/event_phases.cfm?seasonID=" + season + "&sportID=" + sport,
-						crossDomain: true,
-						dataType: "json",
-						success: function (response) {
-							data = response;
-						},
-						error: function (XMLHttpRequest, textStatus, errorThrown) {
-							console.log("Error");
-							return;
-						}
-					});
-				} else {
-					$.ajax({
-						async: false,
-						type: "GET",
-						url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/event_phases.cfm?seasonID=" + season + "&sportID=" + sport+ "&date=" + date,
-						crossDomain: true,
-						dataType: "json",
-						success: function (response) {
-							data = response;
-						},
-						error: function (XMLHttpRequest, textStatus, errorThrown) {
-							console.log("Error");
-							return;
-						}
-					});
-				}
-				return data;
-			};
+/**
+ *	General UI Handling
+ **/
 
-			var getMedals = function (season) {
-				var data = null;
-				$.ajax({
-					async: false,
-					type: "GET",
-					url: "http://www.corsproxy.com/www.sportsinteraction.com/service/infostrada/medals.cfm?seasonID=" + season,
-					crossDomain: true,
-					dataType: "json",
-					success: function (response) {
-						data = response;
-					},
-					error: function (XMLHttpRequest, textStatus, errorThrown) {
-						console.log("Error");
-						return;
-					}
-				});
-				return data;
-			};
-
-			//General AJAX resource request
-			var asyncResource = function (link) {
-				var data = null;
-				$.ajax({
-					async: false,
-					type: "GET",
-					url: link,
-					crossDomain: false,
-					dataType: "json",
-					success: function (response) {
-						data = response;
-					},
-					error: function (XMLHttpRequest, textStatus, errorThrown) {
-						console.log("Error");
-						return;
-					}
-				});
-				return data;
-			};
-
+ 	d3.select('.sportArc').on('mouseover', function () {
+ 		console.log(this);
+ 	});
 
 /**
  *	Calendar Class
@@ -160,7 +99,7 @@ var seasonID = 1,
 			calendar.rings = days.length,
 			calendar.segments = sports.length + 1,
 			calendar.segmentWidth = calendar.segments/360;
-		//Creating SVG element
+			//Creating SVG element
 			calendar.svg = d3.select('#calendar').append("svg")
 				.attr("width", calendar.width)
 				.attr("height", calendar.height);
@@ -180,7 +119,7 @@ var seasonID = 1,
 								calendar.svg.append("path")
 									.attr("d", arc)
 									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
-									.attr("data-bind", "click: function () {$root.calendar.selectArc(sport, color)}")
+									.attr("data-arc", "{day: " + days[days.length - j] + ", sport: " + sports[i] + "}")
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
@@ -194,28 +133,30 @@ var seasonID = 1,
  **/
 			//On Update
 			calendar.filter = function (sport, color) {
-				var sport = sport().toUpperCase();
+				var sport = sport();
+				console.log(sport);
 					$('#sportsExit').fadeIn(600);
 					$('#centerDate').addClass('selectable')
-					d3.select("#centerCircle").transition().duration(600).attr("stroke", color());
+					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color());
 					$('.' + sport).animate({opacity: .70}, 600);
 					$('.sportArc').not('.' + sport).animate({opacity: .15}, 400);
 			};
 			//Resets Calendar to Init State
 			calendar.reset = function () {
-				d3.select("#centerCircle").transition().duration(600).attr("stroke", "#FFFFFF");
+				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
 				$('.sportArc').animate({opacity: .70}, 600);
 				$('#sportsExit').fadeOut(600);
 				$('#centerDate').removeClass('selectable');
 			}
 			calendar.selectArc = function (day, sport) {
-				console.log("clicked " + day() + " " + sport());
+				console.log(day, sport)
 			};
 			//Hover Over Arc
 			calendar.hoverOver = function (day, sport) {
-				console.log(day);
-				var sport = sport().toUpperCase();
-				console.log('hovering: ' + day + sport);
+				var sport = sport();
+				d3.selectAll('.sportArc').on('mouseover', function (d) {
+					console.log(d3.select(this));
+				})
 			};
 			//Hover Out of Arc
 			calendar.hoverOut = function () {
@@ -235,27 +176,77 @@ var seasonID = 1,
  *	Globals
  **/
 		var vm = this;
-			vm.seasonsData = ko.observable(getSeasons()),
-			vm.sportData = ko.observable(getSports(seasonID)),
-			vm.eventDataSpecific = ko.observable(getEvent(seasonID, sportID)),
-			vm.eventData = ko.observable(getEvent(seasonID, sportID, setDate)),
-			vm.medalData = ko.observable(getMedals(seasonID)),
-			vm.colorData = ko.observable(asyncResource('data/colors.json')),
 			vm.seasonID = seasonID,
+			vm.seasonsData = asyncResource(generateURL("seasons", seasonsParams)),
+			vm.sportData = asyncResource(generateURL("sports", sportsParams)),
+			vm.eventData = asyncResource(generateURL("event_phases", eventsParams)),
+			vm.medalData = asyncResource(generateURL("medals", medalsParams)),
+			vm.colorData = function (data) {
+				var color = null;
+				var array = [];
+				$.each(data, function (key, value) {
+					color = value.color;
+					array.push(color);
+				})
+				return array;
+			},
+			vm.sports = function (data) {
+				var name = null;
+				var array = [];
+				$.each(data, function (key, value) {
+					name = value.name;
+					array.push(name.replace(" ", "_"));
+				});
+				return array;
+			},
+			vm.menuData = function (data) {
+				var sport = null;
+				var color = null;
+				var array = [];
+				$.each(data, function (key, value) {
+					sport = value.sport;
+					color = value.color;
+					if ((sport != null) && (color != null)) {
+						array.push({sport: sport, color: color});
+						sport = null;
+						color = null;
+					}
+				});
+				return array;
+			}
 			vm.selected = ko.observable(null),
 			vm.days = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18'],
-			vm.sports = ['BIATHLON', 'BOBSLEIGH', 'SKELETON', 'CURLING', 'ICE-HOCKEY', 'LUGE', 'FIGURE-SKATING', 'SHORT-TRACK', 'SPEED-SKATING', 'ALPINE-SKIING', 'CROSS-COUNTRY', 'NORDIC-COMBINED', 'SKI-JUMPING', 'FREESTYLE', 'SNOWBOARD'],
-			vm.sportsRows = ko.mapping.fromJS(vm.colorData, {}, vm.sportsRows),
-			vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], vm.sports, vm.days),
+			vm.sportsRows = ko.mapping.fromJS(vm.menuData(asyncResource('data/mapping.json')), {}, vm.sportsRows),
+			vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], vm.sports(vm.sportData), vm.days),
 			vm.selectedSport = ko.observable(null),
 			vm.init = function () {
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
 			};
 			vm.update = function (sport) {
-				for (var i = 0; i < vm.sportData().length; i++) {
-					vm.sportData()[i] = sport ? console.log("NICE: " + vm.sportData()[i]) : console.log("nope")
+				for (var i = 0; i < vm.sportData.length; i++) {
+					vm.sportData[i] = sport ? console.log("NICE: " + vm.sportData[i]) : console.log("nope")
 					break;
 				}
+			};
+			vm.exitDataView = function () {
+				$('#dataPane').fadeOut();
+			};
+			//Creates array with matching sport names & IDs
+			vm.sportIDs = function () {
+				var name = null;
+				var id = null;
+				var array = [];
+				var data = vm.sportData;`
+				$.each(data, function (key, value) {
+					name = value.name;
+					id = value.infostrada_id;
+					if ((name != null) && (id != null)) {
+						array.push({sport: name.replace(" ", "_"), id: id});
+						name = null;
+						id = null;
+					};
+				});
+				return array;
 			};
 		console.log(vm.sportsRows()[0].sport());
 	};

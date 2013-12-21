@@ -27,9 +27,9 @@
 					<div class="col1">
 						<span>SPORTS</span>
 					</div>
-				</div>
-				<div id="sportsExit" data-bind="click: function () {$root.calendar.reset()}">
-					<img src="img/exit.svg" width="28px" height="28px">
+					<div class="col2">
+						<span class="" data-bind="click: function () {$root.calendar.reset()}">VIEW ALL</span>
+					</div>
 				</div>
 			</div>
 			<div class="row" data-bind="foreach: sportsRows">
@@ -40,7 +40,7 @@
 							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2"><span data-bind="text: sport, click: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col2"><span data-bind="text: sport().replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 				<!-- ko if: ($index() %2 == 0) -->
@@ -50,7 +50,7 @@
 							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4"><span data-bind="text: sport, click: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col4"><span data-bind="text: sport().replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 			</div>
@@ -63,14 +63,14 @@
 				<div class="hshadow"></div>
 				<div class="headtype">
 					<div class="col1">
-						<span>ICE HOCKEY</span>
+						<span class="">ICE HOCKEY</span>
 					</div>
 					<div class="col2">
 						<span class="">FEB 15</span>
 					</div>
 				</div>
 				<div id="dataExit">
-					<img src="img/exit.svg" width="28px" height="28px">
+					<img src="img/exit.svg" width="28px" height="28px" data-bind="click: function () {$root.exitDataView()}">
 				</div>
 			</div>
 		</div>
@@ -87,8 +87,9 @@
 <script src="js/calendar.js"></script>
 <script>
  	$(document).ready(function () {
- 		$("#loading").delay(0).fadeOut(1000)
- 		$("#wrapper").delay(1000).fadeIn(1000);
+ 		$("#loading").delay(0).fadeOut(1000, function () {
+ 			$("#wrapper").fadeIn(1000);
+ 		});
  	});
 </script>
 </body>
