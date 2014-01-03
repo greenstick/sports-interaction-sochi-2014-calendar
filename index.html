@@ -15,7 +15,7 @@
 				<img src="img/center_flame.svg" width="42px" height="42px">
 			</div>
 		</div>
-		<div id="calendar" data-bind-"with: sportsRows"></div>
+		<div id="calendar" data-bind-"with: menuRows"></div>
 		<div id="centerDate" data-bind="click: function () {$root.calendar.reset()}"></div>
 		<div id="sportsPane">
 			<div class="header">
@@ -32,18 +32,18 @@
 					</div>
 				</div>
 			</div>
-			<div class="row" data-bind="foreach: sportsRows">
-				<!-- ko if: ($index() %2 == 1)-->
+			<div class="row" data-bind="foreach: menuRows">
+				<!-- ko if: ($index() %2 == 0)-->
 				<div class="listSport">
 					<div class="col1">
 						<svg height="30" width="21">
 							<circle cx="10" cy="9" r="8" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2"><span data-bind="text: sport().replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col2"><span data-bind="text: strip(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
-				<!-- ko if: ($index() %2 == 0) -->
+				<!-- ko if: ($index() %2 == 1) -->
 				<div class="listSport">
 					<div class="col3">
 						<svg height="30" width="21">
@@ -86,6 +86,10 @@
 <script src="js/lib/D3.min.js"></script>
 <script src="js/calendar.js"></script>
 <script>
+ 	function strip (input) {
+ 		(input == "Cross-Country Skiing") ? input = "Cross-Country" : input = input;
+ 		return input;
+ 	}
  	$(document).ready(function () {
  		$("#loading").delay(0).fadeOut(1000, function () {
  			$("#wrapper").fadeIn(1000);
