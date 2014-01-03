@@ -513,11 +513,14 @@ var seasonID = 2,
 									.attr("d", arc)
 									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
 									.attr("data-arc", "{day: " + days[days.length - j] + ", sport: " + sports[i] + "}")
-									.attr("data-bind", "calendarHover: function () {calendar.hoverOver()}")
+									.attr("data-bind", "calendarHover: function () {calendar.hoverOver(" + sports[i] + ", " + days[i] + ")}")
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
-									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")");
+									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
+									.on("mouseover", function () {
+										calendar.hoverOver("data-arc.day", "data-arc.sport");
+									});
 						};
 						if (calendar.mapping[i].day[j] && i%2 == 1) {
 							var position = i - offsetEven;
@@ -530,11 +533,14 @@ var seasonID = 2,
 									.attr("d", arc)
 									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
 									.attr("data-arc", "{day: " + days[days.length - j] + ", sport: " + sports[i] + "}")
-									.attr("data-bind", "calendarHover: function () {calendar.hoverOver()}")
+									.attr("data-bind", "calendarHover: function () {calendar.hoverOver(" + sports[i] + ", " + days[i] + ")}")
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
-									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")");
+									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
+									.on("mouseover", function () {
+										calendar.hoverOver(data.arc.day, data.arc.sport);
+									});
 						};
 					};
 					offsetOdd = offsetOdd -.5;
@@ -566,10 +572,8 @@ var seasonID = 2,
 			};
 			//Hover Over Arc
 			calendar.hoverOver = function (day, sport) {
-				var sport = sport;
-				d3.selectAll('.sportArc').on('mouseover', function (d) {
-					console.log(d3.select(this));
-				})
+				console.log(day);
+				console.log(sport);
 			};
 			//Hover Out of Arc
 			calendar.hoverOut = function () {
@@ -697,9 +701,9 @@ var seasonID = 2,
 				return array;
 			};
 
-				//Mapping Data
+				// // Mapping Data
 				// mappingData = asyncResource('data/mapping.json');
-				//Initial Data Retrieval
+				// // Initial Data Retrieval
 				// vm.sportCountryData = asyncResource(generateURL("summary", seasonParams));
 				// console.log("vm.sportCountryData " + vm.sportCountryData);
 				// vm.sportData = asyncResource(generateURL("summary", sportParams));
@@ -738,15 +742,17 @@ var seasonID = 2,
 	ko.bindingHandlers.calendarHover = {
 		init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var calendar = valueAccessor();
+			console.log("hovering");
 		},
 	    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 	      var calendar = valueAccessor();
 	        ko.utils.registerEventHandler(element, "mouseover", function() {
-	        	calendar.hoverOver();
+	        	calendar.hoverOver(sport, day);
 	        });  
 	        ko.utils.registerEventHandler(element, "mouseout", function() {
-	        	calendar.hoverOut();
-	        });      
+	        	calendar.hoverOut(sport, day);
+	        }); 
+	        console.log("hovering");  
 	    } 
 	};
 
