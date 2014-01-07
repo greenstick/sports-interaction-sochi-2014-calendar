@@ -393,14 +393,15 @@ var mappingData =
 
 		}
 	];
-	seasonID = 2,
+//Edit these as needed to update Calendar
+	seasonID = 1,
 	sportID = 1, 
 	setDate = "2014-02-09",
 	seasonParams = {
-		seasonID: 2
+		seasonID: 1
 	},
 	sportParams = {
-		seasonID: 2,
+		seasonID: 1,
 		sportID: 1
 	};
 /**
@@ -416,7 +417,46 @@ var mappingData =
  	function convertMDash (string) {
  		return string.replace("_", " ");
  	}
-
+	var ParsedDate = function (date) {
+		
+		var months = [{"month": "01", "name": "January"}, {"month": "02", "name": "February"}, {"month": "03", "name": "March"}, {"month": "04", "name": "April"}, {"month": "05", "name": "May"}, {"month": "06", "name": "June"}, {"month": "07", "name": "July"}, {"month": "08", "name": "August"}, {"month": "09", "name": "September"}, {"month": "10", "name": "October"}, {"month": "11", "name": "November"}, {"month": "12", "name": "December"}]
+			ISO8061 = date,
+			splitDate = ISO8061.split('T'),
+			year = splitDate[0].substr(0, 4),
+			month = splitDate[0].substr(5, 2),
+			monthName = '',
+			day = splitDate[0].substr(8, 2);
+			if (day[0] == 0) {
+				day = day[1];
+			}
+			time = splitDate[1].substr(0, 8);
+			for (var i = 0; i < months.length; i++) {
+				if (months[i].month == month) {
+					var monthName = months[i].name;
+					break;
+				};
+			};
+		this.year = year;
+		this.month = month;
+		this.monthName = monthName;
+		this.day = day;
+		this.time = time;
+	};
+	ParsedDate.prototype.year = function () {
+		return this.year;
+	};
+	ParsedDate.prototype.month = function () {
+		return this.month;
+	};
+	ParsedDate.prototype.monthName = function () {
+		return this.monthName;
+	};
+	ParsedDate.prototype.day = function () {
+		return this.day;
+	};
+	ParsedDate.prototype.day = function () {
+		return this.time;
+	};
 /**
  *	AJAX Request Methods - Retrieve Data From API
  **/
@@ -435,23 +475,10 @@ var mappingData =
 
 	//General AJAX request
 	var asyncResource = function (url) {
-		var data = null;
-		$.ajax({
-			async: false,
-			type: "GET",
-			url: url,
-			crossDomain: true,
-			dataType: "json",
-			success: function (response) {
-				data = response;
-			},
-			error: function (XMLHttpRequest, textStatus, errorThrown) {
-				console.log("Error");
-				return;
-			}
-		});
-		console.log("URL requested: " + url);
-		return data;
+		return $.ajax(url, {
+				crossDomain: true,
+				dataType: "json",
+			});
 	};
 
 /**
@@ -468,7 +495,7 @@ var mappingData =
  *		Params Passed to constructor by CalendarVM
  **/
 
-	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, viewmodel) {
+	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, parentViewmodel) {
 		//Defining variables
 		var pi = Math.PI;
 		var calendar = this;
@@ -496,8 +523,7 @@ var mappingData =
 			calendar.svg = d3.select('#calendar').append("svg")
 				.attr("width", calendar.width)
 				.attr("height", calendar.height);
-			calendar.viewmodel = viewmodel;
-			calendar.sportSelected = false;
+			calendar.viewmodel = parentViewmodel;
 			calendar.dataDisplaying = false;
 
 			//Generating Calendar
@@ -524,25 +550,15 @@ var mappingData =
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
 									.on("mouseover", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if (calendar.sportSelected == false) {
 											calendar.hoverOver(arcData);
-										} else {
-											return;
-										}
 									})
 									.on("click", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if (calendar.sportSelected == false) {
 											calendar.selectArc(arcData);
-										} else {
-											return;
-										}
 									})
 									.on("mouseleave", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if(calendar.sportSelected == false) {
 											calendar.hoverOut(arcData);
-										}
 									});
 						};
 						if (calendar.mapping[i].day[j] && i%2 == 1) {
@@ -562,25 +578,16 @@ var mappingData =
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
 									.on("mouseover", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if (calendar.sportSelected == false) {
 											calendar.hoverOver(arcData);
-										} else {
-											return;
-										}
 									})
 									.on("click", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if (calendar.sportSelected == false) {
 											calendar.selectArc(arcData);
-										} else {
-											return;
-										}
+
 									})
 									.on("mouseleave", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-										if(calendar.sportSelected == false) {
 											calendar.hoverOut(arcData);
-										}
 									});
 						};
 					};
@@ -613,7 +620,14 @@ var mappingData =
 			}
 			calendar.selectArc = function (arcData) {
 				var data = $.parseJSON(arcData);
-				calendar.displayData(arcData);
+				var sport = data.sport;
+				var day = data.day;
+				var sportID = {};
+				for (var i = 0; i < calendar.viewmodel.apiSportData.length; i++) {
+					calendar.viewmodel.apiSportData.sport[i]
+				}
+				console.log("day: " + day + " sport: " + sport);
+				calendar.displayData(sport, day);
 				console.log("clicked");
 			};
 			//Hover Over Arc
@@ -641,7 +655,21 @@ var mappingData =
 				$('.sportArc').stop().animate({opacity: .7});
 				$('.day' + data.day).stop().animate({opacity: .7});
 			};
-			calendar.displayData = function (arcData) {
+			calendar.displayData = function (sportID, selectedDate) {
+				//Retrieving data from API
+				// var params = {sportID: sportID, date: selectedDate};
+				// asyncResource(generateURL("summary", params)).done(function (response) {
+				// 	calendar.viewmodel.sportData = response;
+				// 	for(var i = 0; i < calendar.viewmodel.sportData.sports.length; i++) {
+				// 		calendar.viewmodel.sportIDs[calendar.viewmodel.sportData.sports[i].name] = calendar.viewmodel.sportData.sports[i].infostrada_id;
+				// 	}
+				// }).fail(function () {
+				// 	console.log("Failed: Unable to retrieve sport data from API");
+				// }).always(function() {
+				// 	console.log("Success: Sport data retrieved");
+				// });
+
+				//Handles showing and hiding of dataPane div
 				if(calendar.dataDisplaying == false) {
 					$('#dataPane').fadeIn(600);
 					$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
@@ -660,8 +688,12 @@ var mappingData =
 				$('#dataPane').fadeOut(400);
 				$('#centerDismiss .dateDisplay').fadeOut(600).removeClass('selectable');
 				calendar.dataDisplaying = false;
-				var parseDate = Date.parse('2014-02-09T06:00:00Z');
-				console.log(parseDate);
+				// var date = new ParsedDate('2014-02-19T06:00:00Z');
+				// console.log("Year: " + date.year);
+				// console.log("Month: " + date.month);
+				// console.log("Month Name: " + date.monthName);
+				// console.log("Day: " + date.day);
+				// console.log("Time: " + date.time);
 			}
 	};
 
@@ -672,6 +704,8 @@ var mappingData =
 
 	var CalendarVM = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments) {
 		var vm = this;
+			vm.sportIDs = {},
+			vm.apiSportData = {};
 	
 	/**
 	 *	Mapping Logic
@@ -795,8 +829,7 @@ var mappingData =
 				// // Initial Data Retrieval
 				// vm.sportCountryData = asyncResource(generateURL("summary", seasonParams));
 				// console.log("vm.sportCountryData " + vm.sportCountryData);
-				// vm.sportData = asyncResource(generateURL("summary", sportParams));
-				// console.log("vm.sportData " + vm.sportData);
+				
 
 	/**
 	 *	ViewModel Methods
@@ -807,12 +840,19 @@ var mappingData =
 				//Defining Calendar
 				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
+				asyncResource(generateURL("summary", seasonParams)).done(function (response) {
+					vm.apiSportData = response;
+					for(var i = 0; i < vm.apiSportData.sports.length; i++) {
+						vm.sportIDs[vm.apiSportData.sports[i].name] = vm.apiSportData.sports[i].infostrada_id;
+					}
+				}).fail(function () {
+					console.log("Failed: Unable to retrieve Infostrada_IDs from API");
+				}).always(function() {
+					console.log("Success: Infostrada_IDs");
+				});
 			};
 			vm.update = function (sport) {
-				for (var i = 0; i < vm.sportData.length; i++) {
-					vm.sportData[i] = sport ? console.log("NICE: " + vm.sportData[i]) : console.log("nope");
-					break;
-				};
+
 			};
 	};
 
