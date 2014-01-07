@@ -1,6 +1,399 @@
 $(function () {
 //Globals Vars
-var seasonID = 2,
+var mappingData =
+	[
+		{
+			"sport": "Biathlon",
+			"color": "#0000FF", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Speed_Skating",
+			"color": "#D0F923", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": false,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Bobsleigh",
+			"color": "#490E7C", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": false,
+				"13": false,
+				"12": false,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": true
+			}
+
+		},
+		{
+			"sport": "Alpine_Skiing",
+			"color": "#32B208", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": true,
+				"14": true,
+				"13": false,
+				"12": true,
+				"11": false,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Skeleton",
+			"color": "#7438A8", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": false,
+				"13": false,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": false,
+				"7": false,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Cross-Country_Skiing",
+			"color": "#62E80C", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Curling",
+			"color": "#AF1BFA", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": true,
+				"3": true,
+				"2": false,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Nordic_Combined",
+			"color": "#045910", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": true
+			}
+
+		},
+		{
+			"sport": "Ice_Hockey",
+			"color": "#FF0000", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": true,
+				"3": true,
+				"2": true,
+				"1": true
+			}
+
+		},
+		{
+			"sport": "Ski_Jumping",
+			"color": "#20D382", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": false,
+				"11": false,
+				"10": true,
+				"9": true,
+				"8": false,
+				"7": true,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Luge",
+			"color": "#F47920", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": false,
+				"9": false,
+				"8": false,
+				"7": false,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Freestyle",
+			"color": "#05E5D4", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": false,
+				"14": true,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": false,
+				"7": true,
+				"6": true,
+				"5": false,
+				"4": true,
+				"3": true,
+				"2": false,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Figure_Skating",
+			"color": "#F7B11B", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": true,
+				"3": false,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Snowboard",
+			"color": "#09AEDB", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": true,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": false
+			}
+
+		},
+		{
+			"sport": "Short_Track",
+			"color": "#F9EE50", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": true,
+				"13": false,
+				"12": false,
+				"11": true,
+				"10": false,
+				"9": true,
+				"8": false,
+				"7": false,
+				"6": true,
+				"5": false,
+				"4": false,
+				"3": true,
+				"2": false,
+				"1": false
+			}
+
+		}
+	];
+	seasonID = 2,
 	sportID = 1, 
 	setDate = "2014-02-09",
 	seasonParams = {
@@ -9,401 +402,7 @@ var seasonID = 2,
 	sportParams = {
 		seasonID: 2,
 		sportID: 1
-	},
-	mappingData = 
-			[
-				{
-					"sport": "Biathlon",
-					"color": "#0000FF", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": true,
-						"13": true,
-						"12": false,
-						"11": true,
-						"10": true,
-						"9": false,
-						"8": true,
-						"7": true,
-						"6": false,
-						"5": true,
-						"4": false,
-						"3": true,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Speed_Skating",
-					"color": "#D0F923", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": true,
-						"13": true,
-						"12": true,
-						"11": true,
-						"10": false,
-						"9": true,
-						"8": true,
-						"7": false,
-						"6": true,
-						"5": true,
-						"4": false,
-						"3": true,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Bobsleigh",
-					"color": "#490E7C", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": false, 
-						"15": false,
-						"14": false,
-						"13": false,
-						"12": false,
-						"11": false,
-						"10": false,
-						"9": false,
-						"8": true,
-						"7": true,
-						"6": true,
-						"5": true,
-						"4": false,
-						"3": false,
-						"2": true,
-						"1": true
-					}
-
-				},
-				{
-					"sport": "Alpine_Skiing",
-					"color": "#32B208", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": false, 
-						"15": true,
-						"14": true,
-						"13": false,
-						"12": true,
-						"11": false,
-						"10": true,
-						"9": true,
-						"8": true,
-						"7": false,
-						"6": true,
-						"5": true,
-						"4": false,
-						"3": true,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Skeleton",
-					"color": "#7438A8", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": false, 
-						"15": false,
-						"14": false,
-						"13": false,
-						"12": false,
-						"11": true,
-						"10": true,
-						"9": true,
-						"8": false,
-						"7": false,
-						"6": false,
-						"5": false,
-						"4": false,
-						"3": false,
-						"2": false,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Cross-Country_Skiing",
-					"color": "#62E80C", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": true,
-						"13": true,
-						"12": false,
-						"11": true,
-						"10": true,
-						"9": false,
-						"8": true,
-						"7": true,
-						"6": false,
-						"5": true,
-						"4": false,
-						"3": true,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Curling",
-					"color": "#AF1BFA", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": false, 
-						"15": false,
-						"14": true,
-						"13": true,
-						"12": true,
-						"11": true,
-						"10": true,
-						"9": true,
-						"8": true,
-						"7": true,
-						"6": true,
-						"5": true,
-						"4": true,
-						"3": true,
-						"2": false,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Nordic_Combined",
-					"color": "#045910", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": false,
-						"13": true,
-						"12": false,
-						"11": true,
-						"10": true,
-						"9": true,
-						"8": true,
-						"7": false,
-						"6": false,
-						"5": true,
-						"4": false,
-						"3": false,
-						"2": true,
-						"1": true
-					}
-
-				},
-				{
-					"sport": "Ice_Hockey",
-					"color": "#FF0000", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": true,
-						"13": true,
-						"12": true,
-						"11": true,
-						"10": true,
-						"9": true,
-						"8": true,
-						"7": true,
-						"6": true,
-						"5": true,
-						"4": true,
-						"3": true,
-						"2": true,
-						"1": true
-					}
-
-				},
-				{
-					"sport": "Ski_Jumping",
-					"color": "#20D382", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": false,
-						"13": true,
-						"12": false,
-						"11": false,
-						"10": true,
-						"9": true,
-						"8": false,
-						"7": true,
-						"6": false,
-						"5": false,
-						"4": false,
-						"3": false,
-						"2": false,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Luge",
-					"color": "#F47920", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": true,
-						"13": true,
-						"12": true,
-						"11": true,
-						"10": false,
-						"9": false,
-						"8": false,
-						"7": false,
-						"6": false,
-						"5": false,
-						"4": false,
-						"3": false,
-						"2": false,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Freestyle",
-					"color": "#05E5D4", 
-					"day" :
-					{
-						"18": true,
-						"17": false,
-						"16": true, 
-						"15": false,
-						"14": true,
-						"13": true,
-						"12": false,
-						"11": true,
-						"10": true,
-						"9": false,
-						"8": false,
-						"7": true,
-						"6": true,
-						"5": false,
-						"4": true,
-						"3": true,
-						"2": false,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Figure_Skating",
-					"color": "#F7B11B", 
-					"day" :
-					{
-						"18": true,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": false,
-						"13": true,
-						"12": true,
-						"11": true,
-						"10": true,
-						"9": false,
-						"8": true,
-						"7": true,
-						"6": false,
-						"5": true,
-						"4": true,
-						"3": false,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Snowboard",
-					"color": "#09AEDB", 
-					"day" :
-					{
-						"18": true,
-						"17": false,
-						"16": true, 
-						"15": true,
-						"14": false,
-						"13": true,
-						"12": true,
-						"11": false,
-						"10": false,
-						"9": false,
-						"8": true,
-						"7": true,
-						"6": false,
-						"5": true,
-						"4": false,
-						"3": false,
-						"2": true,
-						"1": false
-					}
-
-				},
-				{
-					"sport": "Short_Track",
-					"color": "#F9EE50", 
-					"day" :
-					{
-						"18": false,
-						"17": false,
-						"16": false, 
-						"15": false,
-						"14": true,
-						"13": false,
-						"12": false,
-						"11": true,
-						"10": false,
-						"9": true,
-						"8": false,
-						"7": false,
-						"6": true,
-						"5": false,
-						"4": false,
-						"3": true,
-						"2": false,
-						"1": false
-					}
-
-				}
-			];
-
+	};
 /**
  *	Utility Functions
  **/
@@ -413,6 +412,9 @@ var seasonID = 2,
  	}
  	function convertSpaces (string) {
  		return string.replace(" ", "_");
+ 	}
+ 	function convertMDash (string) {
+ 		return string.replace("_", " ");
  	}
 
 /**
@@ -466,7 +468,7 @@ var seasonID = 2,
  *		Params Passed to constructor by CalendarVM
  **/
 
-	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping) {
+	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, viewmodel) {
 		//Defining variables
 		var pi = Math.PI;
 		var calendar = this;
@@ -494,6 +496,9 @@ var seasonID = 2,
 			calendar.svg = d3.select('#calendar').append("svg")
 				.attr("width", calendar.width)
 				.attr("height", calendar.height);
+			calendar.viewmodel = viewmodel;
+			calendar.sportSelected = false;
+			calendar.dataDisplaying = false;
 
 			//Generating Calendar
 			calendar.init = function (outer, inner, strokeColor, strokeWidth, segments, rings, colors, sports, days) {
@@ -512,14 +517,32 @@ var seasonID = 2,
 								calendar.svg.append("path")
 									.attr("d", arc)
 									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
-									.attr("data-arc", "{day: " + days[days.length - j] + ", sport: " + sports[i] + "}")
-									.attr("data-bind", "calendarHover: function () {calendar.hoverOver(" + sports[i] + ", " + days[i] + ")}")
+									.attr("data-arc", '{"day": ' + days[days.length - j] + ', "sport": "' + sports[i] + '"}')
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
 									.on("mouseover", function () {
-										calendar.hoverOver("data-arc.day", "data-arc.sport");
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if (calendar.sportSelected == false) {
+											calendar.hoverOver(arcData);
+										} else {
+											return;
+										}
+									})
+									.on("click", function () {
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if (calendar.sportSelected == false) {
+											calendar.selectArc(arcData);
+										} else {
+											return;
+										}
+									})
+									.on("mouseleave", function () {
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if(calendar.sportSelected == false) {
+											calendar.hoverOut(arcData);
+										}
 									});
 						};
 						if (calendar.mapping[i].day[j] && i%2 == 1) {
@@ -532,54 +555,114 @@ var seasonID = 2,
 								calendar.svg.append("path")
 									.attr("d", arc)
 									.attr("class", ("sportArc day" + days[days.length - j] + " " + sports[i]))
-									.attr("data-arc", "{day: " + days[days.length - j] + ", sport: " + sports[i] + "}")
-									.attr("data-bind", "calendarHover: function () {calendar.hoverOver(" + sports[i] + ", " + days[i] + ")}")
+									.attr("data-arc", '{"day": ' + days[days.length - j] + ', "sport": "' + sports[i] + '"}')
 									.attr("fill", colors[i])
 									.attr("stroke", strokeColor)
 									.attr("stroke-width", strokeWidth + "px")
 									.attr("transform", "translate(" + calendar.width/2 + ", " + calendar.height/2 + ")")
 									.on("mouseover", function () {
-										calendar.hoverOver(data.arc.day, data.arc.sport);
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if (calendar.sportSelected == false) {
+											calendar.hoverOver(arcData);
+										} else {
+											return;
+										}
+									})
+									.on("click", function () {
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if (calendar.sportSelected == false) {
+											calendar.selectArc(arcData);
+										} else {
+											return;
+										}
+									})
+									.on("mouseleave", function () {
+										var arcData = d3.select(this)[0][0].dataset.arc;
+										if(calendar.sportSelected == false) {
+											calendar.hoverOut(arcData);
+										}
 									});
 						};
 					};
-					offsetOdd = offsetOdd -.5;
-					offsetEven = offsetEven -.5;
+					offsetOdd -= .5;
+					offsetEven -= .5;
 				};
 			};
 /**
  *	Calendar Methods
  **/
-			//On Update
+			//On Update - Called By View Model
 			calendar.filter = function (sport, color) {
 				var sport = sport();
-				console.log(sport);
-					$('#sportsExit').fadeIn(600);
-					$('#centerDate').addClass('selectable')
-					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color());
-					$('.' + sport).animate({opacity: .70}, 600);
-					$('.sportArc').not('.' + sport).animate({opacity: .15}, 400);
+				var color = color();
+				$('#centerDismiss').addClass('selectable');
+				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
+				$('.' + sport).addClass('selected').animate({opacity: .70}, 600);
+				$('.sportArc').not('.' + sport).animate({opacity: .15}, 400);
+				calendar.sportSelected = true;
 			};
 			//Resets Calendar to Init State
 			calendar.reset = function () {
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
+				$('#centerDismiss').removeClass('selectable');
+				$('#centerDismiss .dateDisplay').fadeOut(600);
 				$('.sportArc').animate({opacity: .70}, 600);
+				$('.sportArc').removeClass('selected');
 				$('#sportsExit').fadeOut(600);
-				$('#centerDate').removeClass('selectable');
+				calendar.sportSelected = false;
 			}
-			calendar.selectArc = function (day, sport) {
-				console.log(day, sport)
+			calendar.selectArc = function (arcData) {
+				var data = $.parseJSON(arcData);
+				calendar.displayData(arcData);
+				console.log("clicked");
 			};
 			//Hover Over Arc
-			calendar.hoverOver = function (day, sport) {
-				console.log(day);
-				console.log(sport);
+			calendar.hoverOver = function (arcData) {
+				var data = $.parseJSON(arcData);
+//SVG Scaling	// var selection = d3.select('.day' + data.day + '.' + data.sport);
+				// var box = d3.select('.day' + data.day + '.' + data.sport, function () {
+				// 	return this.getBBox();
+				// })
+				// var cx = box.x + box.width;
+				// var cy = box.y + box.height;
+				// console.log(selection);
+				// selection.attr("transform", "translate (" + cx + " " + cy + ") scale(1.2)");
+				$('.sportArc').stop().animate({opacity: .2});
+				$('.selected').stop().animate({opacity: 1});
+				$('.day' + data.day).stop().animate({opacity: .6});
+				$('#sportDisplay').html(convertMDash(strip(data.sport)).toUpperCase());
+				$('.dateDisplay').html("Feb " + data.day);
 			};
 			//Hover Out of Arc
-			calendar.hoverOut = function () {
-				$('.sportArc').animate({opacity: .70}, 600);
-				console.log("hover out");
+			calendar.hoverOut = function (arcData) {
+				var data = $.parseJSON(arcData);
+//SVG Scaling	// var selection = d3.select('.day' + data.day + '.' + data.sport);
+				// selection.attr("transform", "translate (348 348) scale(1)");
+				$('.sportArc').stop().animate({opacity: .7});
+				$('.day' + data.day).stop().animate({opacity: .7});
 			};
+			calendar.displayData = function (arcData) {
+				if(calendar.dataDisplaying == false) {
+					$('#dataPane').fadeIn(600);
+					$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
+					calendar.dataDisplaying = true;
+					d3.select("#dataExit").on("click", function () {
+						calendar.exitDataView();
+					});
+					d3.select("#centerDismiss").on("click", function () {
+						calendar.exitDataView();
+					});
+				} else {
+					calendar.exitDataView();
+				};
+			};
+			calendar.exitDataView = function () {
+				$('#dataPane').fadeOut(400);
+				$('#centerDismiss .dateDisplay').fadeOut(600).removeClass('selectable');
+				calendar.dataDisplaying = false;
+				var parseDate = Date.parse('2014-02-09T06:00:00Z');
+				console.log(parseDate);
+			}
 	};
 
 /**
@@ -593,7 +676,6 @@ var seasonID = 2,
 	/**
 	 *	Mapping Logic
 	 **/
-
 
 			//Structures Mapping Data For Menu
 			vm.menuData = function (data) {
@@ -701,8 +783,15 @@ var seasonID = 2,
 				return array;
 			};
 
-				// // Mapping Data
-				// mappingData = asyncResource('data/mapping.json');
+			vm.apiDates = function (data) {
+				var date = null;
+				var array = [];
+				$.each(data, function (key, value) {
+					date = value.date;
+					array.push(date);
+				});
+				return array;
+			}
 				// // Initial Data Retrieval
 				// vm.sportCountryData = asyncResource(generateURL("summary", seasonParams));
 				// console.log("vm.sportCountryData " + vm.sportCountryData);
@@ -716,7 +805,7 @@ var seasonID = 2,
 			//Calendar Initialization
 			vm.init = function () {
 				//Defining Calendar
-				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData),
+				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
 			};
 			vm.update = function (sport) {
@@ -725,15 +814,22 @@ var seasonID = 2,
 					break;
 				};
 			};
-
-	/**
-	 *	UI Methods
-	 **/
-
-			vm.exitDataView = function () {
-				$('#dataPane').fadeOut();
-			};
 	};
+
+/**
+ *	Deferred Reference
+ **/
+
+ // vm.defObj = function () {
+ // 	var def = new $.Deferred();
+
+ // 	$.when(these, functions, are).done(function () {
+
+ // 		def.resolve();
+ // 	});
+
+ // 	return def.promise();
+ // }
 
 /**
  *	KO Custom Bindings

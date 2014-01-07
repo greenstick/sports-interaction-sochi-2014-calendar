@@ -1,11 +1,13 @@
+/* Font */
+
+@font-face {
+	font-family: 'Helvetica Neue Medium Condensed';
+	src: url('../fonts/Helvetica Neue Medium Condensed/HelveticaNeueLTStd-MdCn.otf');
+}
+
 /**
  *	Core Styles
  **/
-
-	@font-face {
-	  font-family: Knockout-HTF;
-	  src: url('../fonts/Knockout-HTF29-JuniorLiteweight.otf');
-	}
 
 	html {
 		background-color: #07153D;
@@ -16,14 +18,14 @@
 		width: 964px;
 		height: 696px;
 		background-color: #07153D;
-		font-family: Knockout-HTF;
-		font-size: 1em;
+		font-family: 'Helvetica Neue Medium Condensed', 'Open Sans Condensed', sans-serif;
+		font-size: .8em;
 		color: #FFFFFF;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
-		-khtml-user-select: none;
 		-moz-user-select: none;
 		-ms-user-select: none;
+		-o-user-select: none;
 		user-select: none;
 	}
 	#loading {
@@ -33,7 +35,7 @@
 		width: 964px;
 		height: 696px;
 		background-color: #07153D;
-		font-family: Knockout-HTF;
+		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 2.0em;
 		color: #F47920;
 		z-index: 10;
@@ -63,20 +65,40 @@
 	#centerFlame {
 		position: relative;
 		left: 14px;
-		top: -60px;
+		top: -63px;
 		width: 42px;
 		height: 42px;
 	}
-	#centerDate {
+	#centerDismiss {
 		position: relative;
 		left: 328px;
 		top: -444px;
 		width: 40px;
 		height: 40px;
-		transform: rotate(-25deg);
-		-ms-transform: rotate(-25deg);
-		-webkit-transform: rotate(-25deg);
+		transform: rotate(-52deg);
+		-o-transform: rotate(-52deg);
+		-ms-transform: rotate(-52deg);
+		-moz-transform: rotate(-52deg);
+		-webkit-transform: rotate(-52deg);
 		background-color: transparent;
+	}
+	#centerDismiss .dateDisplay {
+		position: relative;
+		left: 0px;
+		top: 0px;
+		padding: 13px 0 0 0;
+		width: 40px;
+		height: 27px;
+		background-color: #07153D;
+		display: none;
+		text-align: center;
+		display: none;
+		transform: rotate(52deg);
+		-o-transform: rotate(52deg);
+		-ms-transform: rotate(52deg);
+		-moz-transform: rotate(52deg);
+		-webkit-transform: rotate(52deg);
+		font-size: 1.2em;
 	}
 	#sportsPane {
 		position: relative;
@@ -91,6 +113,7 @@
 	#dataPane {
 		position: relative;
 		float: right;
+		display: none;
 		right: -244px;
 		top: -459px;
 		width: 256px;
@@ -104,7 +127,7 @@
 		width: 256px;
 		height: 58px;
 		color: #F47920;
-		font-size: 1.2em;
+		font-size: 1.3em;
 		margin: 0 0 8px 0;
 	}
 	#dataPane .header .htop, #sportsPane .header .htop {
@@ -133,7 +156,7 @@
 	}
 	#dataPane .header .headtype, #sportsPane .header .headtype {
 		position: relative;
-		top: -36px;
+		top: -34px;
 		left: 0px;
 		width: 256px;
 		height: 28px;
@@ -149,13 +172,13 @@
 		display: inline-block;
 	}
 	#dataPane .header .headtype .col1, #sportsPane .header .headtype .col1 {
-		width: 76%;
+		width: 70%;
 	}
 	#dataPane .header .headtype .col2, #sportsPane .header .headtype .col2 {
 		position: relative;
 		top: 0px;
 		right: 14px;
-		width: 22%;
+		width: 28%;
 		height: 28px;
 		display: inline-block;
 	}
