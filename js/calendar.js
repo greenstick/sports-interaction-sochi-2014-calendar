@@ -393,10 +393,12 @@ var mappingData =
 
 		}
 	];
-//Update to Current Season ID as Needed
-	initialParams = {
+	//Update to Current Season ID as Needed
+	var initialParams = {
 		seasonID: 1
-	};
+	},
+	seasonID = 1,
+	processingAJAX = false;
 /**
  *	Utility Functions
  **/
@@ -410,29 +412,57 @@ var mappingData =
  	function convertMDash (string) {
  		return string.replace("_", " ");
  	}
+	//Date Parsing Function
 	var ParsedDate = function (date) {
-		var months = [{"month": "01", "name": "January"}, {"month": "02", "name": "February"}, {"month": "03", "name": "March"}, {"month": "04", "name": "April"}, {"month": "05", "name": "May"}, {"month": "06", "name": "June"}, {"month": "07", "name": "July"}, {"month": "08", "name": "August"}, {"month": "09", "name": "September"}, {"month": "10", "name": "October"}, {"month": "11", "name": "November"}, {"month": "12", "name": "December"}]
-			ISO8061 = date,
-			splitDate = ISO8061.split('T'),
-			year = splitDate[0].substr(0, 4),
-			month = splitDate[0].substr(5, 2),
-			monthName = '',
-			day = splitDate[0].substr(8, 2);
-			if (day[0] == 0) {
-				day = day[1];
+		var months = [{"month": "01", "name": "January"}, {"month": "02", "name": "February"}, {"month": "03", "name": "March"}, {"month": "04", "name": "April"}, {"month": "05", "name": "May"}, {"month": "06", "name": "June"}, {"month": "07", "name": "July"}, {"month": "08", "name": "August"}, {"month": "09", "name": "September"}, {"month": "10", "name": "October"}, {"month": "11", "name": "November"}, {"month": "12", "name": "December"}];
+			if (date.length === 20){
+				var ISO8061 = date,
+					splitDate = ISO8061.split('T'),
+					year = splitDate[0].substr(0, 4),
+					month = splitDate[0].substr(5, 2),
+					monthName = '',
+					day = splitDate[0].substr(8, 2);
+					if (day[0] == 0) {
+						day = day[1];
+					};
+					time = splitDate[1].substr(0, 8);
+					for (var i = 0; i < months.length; i++) {
+						if (months[i].month == month) {
+							var monthName = months[i].name;
+							break;
+						};
+					};
+					this.year = year;
+					this.month = month;
+					this.monthName = monthName;
+					this.day = day;
+					this.time = time;
+			} else if (date.length === 10 && date[10] === "Z") {
+				var ISO8061 = date.substr(0, 9),
+					time = ISO8061.substr(0, 8);
+					this.time = time;
+			} else if (date.length === 10) {
+				var ISO8061 = date,
+					year = ISO8061.substr(0, 4),
+					month = ISO8061.substr(5, 2),
+					monthName = '',
+					day = ISO8061.substr(8, 2);
+					if (day[0] == 0) {
+						day = day[1];
+					};
+					for (var i = 0; i < months.length; i++) {
+						if (months[i].month == month) {
+							var monthName = months[i].name;
+							break;
+						};
+					};
+					this.year = year;
+					this.month = month;
+					this.monthName = monthName;
+					this.day = day;
+			} else {
+				console.log("Invalid Date Input");
 			}
-			time = splitDate[1].substr(0, 8);
-			for (var i = 0; i < months.length; i++) {
-				if (months[i].month == month) {
-					var monthName = months[i].name;
-					break;
-				};
-			};
-		this.year = year;
-		this.month = month;
-		this.monthName = monthName;
-		this.day = day;
-		this.time = time;
 	};
 	ParsedDate.prototype.year = function () {
 		return this.year;
@@ -449,6 +479,7 @@ var mappingData =
 	ParsedDate.prototype.day = function () {
 		return this.time;
 	};
+
 /**
  *	AJAX Request Methods - Retrieve Data From API
  **/
@@ -467,11 +498,14 @@ var mappingData =
 
 	//General AJAX request
 	var asyncResource = function (url) {
+		processingAJAX = true;
+		console.log("XHR Status: Requesting...");
 		return $.ajax(url, {
+				async: true,
 				crossDomain: true,
 				dataType: "json",
 			});
-	};
+		};
 
 /**
  *	General UI Handling
@@ -494,7 +528,7 @@ var mappingData =
 			calendar.mapping = mapping,
 			calendar.inner = r1,
 			calendar.outer = r2;
-			//Validating correct radius input order
+			//Validating Correct Radius Input Order
 			if (calendar.inner > calendar.outer) {
 				var outer = calendar.inner;
 				calendar.inner = calendar.outer,
@@ -510,19 +544,20 @@ var mappingData =
 			calendar.sports = sports,
 			calendar.rings = days.length,
 			calendar.segments = sports.length + 1,
-			calendar.segmentWidth = calendar.segments/360;
-			//Creating SVG element
+			calendar.segmentWidth = calendar.segments/360,
+			//Creating SVG Element
 			calendar.svg = d3.select('#calendar').append("svg")
 				.attr("width", calendar.width)
-				.attr("height", calendar.height);
-			calendar.viewmodel = parentViewmodel;
+				.attr("height", calendar.height),
+			calendar.viewmodel = parentViewmodel,
+			calendar.date = {},
+			calendar.filtering = false,
 			calendar.dataDisplaying = false;
-
 			//Generating Calendar
 			calendar.init = function (outer, inner, strokeColor, strokeWidth, segments, rings, colors, sports, days) {
 				var ringWidth = (outer - inner)/rings;
 				var offsetOdd = 0;
-				var offsetEven = 7.5;
+				var offsetEven = calendar.rings/2;
 				for(var i = 0; i < segments; i++) {
 					for(var j = 0; j < rings; j++) {
 						if (calendar.mapping[i].day[j] && i%2 == 0) {
@@ -546,7 +581,7 @@ var mappingData =
 									})
 									.on("click", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
-											calendar.selectArc(arcData);
+											calendar.selectArc(arcData); 
 									})
 									.on("mouseleave", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
@@ -575,7 +610,6 @@ var mappingData =
 									.on("click", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
 											calendar.selectArc(arcData);
-
 									})
 									.on("mouseleave", function () {
 										var arcData = d3.select(this)[0][0].dataset.arc;
@@ -594,14 +628,18 @@ var mappingData =
 			calendar.filter = function (sport, color) {
 				var sport = sport();
 				var color = color();
-				$('#centerDismiss').addClass('selectable');
+				calendar.filtering = true;
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
-				$('.' + sport).addClass('selected').animate({opacity: .70}, 600);
-				$('.sportArc').not('.' + sport).animate({opacity: .15}, 400);
+				$('#centerDismiss').addClass('selectable');
+				$('.' + sport).addClass('selected').stop().animate({opacity: .70}, 600);
+				$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
+				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .3}, 400);
 				calendar.sportSelected = true;
 			};
 			//Resets Calendar to Init State
 			calendar.reset = function () {
+				calendar.filtering = false;
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
 				$('#centerDismiss').removeClass('selectable');
 				$('#centerDismiss .dateDisplay').fadeOut(600);
@@ -609,90 +647,102 @@ var mappingData =
 				$('.sportArc').removeClass('selected');
 				$('#sportsExit').fadeOut(600);
 				calendar.sportSelected = false;
-			}
+			};
 			//Retrieves Arc Data &  Matches it to API Data
 			calendar.selectArc = function (arcData) {
-				var data = JSON.parse(arcData);
-				var apiDate = $.each(calendar.viewmodel.calendarDates, function (key, value) {
-					if (value === data.day) {
-						var date = key;
-						console.log("date: " + date + ", type: " + typeof(date));
-						return date;
-					};
-				});
-				var apiSport = $.each(calendar.viewmodel.sportIDs, function (key, value) {
-					var sport = convertMDash(data.sport);
-					if (key === sport) {
-						var id = value;
-						console.log("id: " + id + ", type: " + typeof(id));
-						return id;
-					};
-				});
-				calendar.displayData(apiSport, apiDate);
+				var data = $.parseJSON(arcData);
+				var apiDate = function () {
+					var date = '';
+					$.each(calendar.viewmodel.calendarDates, function (key, value) {
+						if (value == data.day) {
+							date = key;
+						};
+					});
+					return date;
+				};
+				var apiSport = function () {
+					var id = null;
+					$.each(calendar.viewmodel.sportIDs, function (key, value) {
+						var sport = convertMDash(data.sport);
+						if (key == sport) {
+							id = value;
+						};
+					});
+					return id;
+				}
+				calendar.displayData(apiSport(), apiDate(), data);
 			};
 			//Hover Over Arc
 			calendar.hoverOver = function (arcData) {
+				if (calendar.filtering === true) {
+					calendar.reset();
+				}
 				var data = $.parseJSON(arcData);
+				$('.col2, .col4').stop().animate({opacity: 1});
+				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .3});
 				$('.sportArc').stop().animate({opacity: .2});
 				$('.selected').stop().animate({opacity: 1});
 				$('.day' + data.day).stop().animate({opacity: .6});
-				$('#sportDisplay').html(convertMDash(strip(data.sport)).toUpperCase());
-				// var apiDate = $.each(calendar.viewmodel.calendarDates, function (key, value) {
-				// 	if (value === data.day) {
-				// 		var date = key;
-				// 		console.log("date: " + date + ", type: " + typeof(date));
-				// 		return JSON.stringify(date);
-				// 	};
-				// });
-				// var parsed = new ParsedDate(apiDate)
-				// $('.dateDisplay').html(parsed.day);
-				$('.dateDisplay').html("Feb " + data.day);
+				var apiDate = function () {
+					var date = '';
+					$.each(calendar.viewmodel.calendarDates, function (key, value) {
+						if (value == data.day) {
+							date = key;
+						};
+					});
+					return date;
+				};
+				calendar.date = new ParsedDate(apiDate());
+				$('#centerDismiss .dateDisplay').html(calendar.date.monthName.substr(0, 3) + " " + calendar.date.day);
 			};
 			//Hover Out of Arc
 			calendar.hoverOut = function (arcData) {
+				$('.col2, .col4').stop().animate({opacity: 1});
 				var data = $.parseJSON(arcData);
 				$('.sportArc').stop().animate({opacity: .7});
 				$('.day' + data.day).stop().animate({opacity: .7});
 			};
-			calendar.displayData = function (selectedSport, selectedDate) {
-				// Retrieving data from API
-				var params = {sportID: selectedSport, date: selectedDate};
-				asyncResource(generateURL("summary", params)).done(function (response) {
-					calendar.viewmodel.sportData = response;
-					for(var i = 0; i < calendar.viewmodel.sportData.sports.length; i++) {
-						calendar.viewmodel.sportIDs[calendar.viewmodel.sportData.sports[i].name] = calendar.viewmodel.sportData.sports[i].infostrada_id;
-					}
-				}).fail(function () {
-					console.log("Failed: Unable to retrieve sport data from API");
-				}).always(function() {
-					console.log("Success: Sport data retrieved");
-				});
-
-				//Handles showing and hiding of dataPane div
-				if(calendar.dataDisplaying == false) {
-					$('#dataPane').fadeIn(600);
-					$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
-					calendar.dataDisplaying = true;
-					d3.select("#dataExit").on("click", function () {
-						calendar.exitDataView();
-					});
-					d3.select("#centerDismiss").on("click", function () {
-						calendar.exitDataView();
-					});
+			calendar.displayData = function (selectedSport, selectedDate, data) {
+				// Retrieving Data From API
+				if (processingAJAX === true) {
+					console.log("XHR Status: Last Request Failed. Please Wait For Prior Request to Resolve.");
+					return;
 				} else {
-					calendar.exitDataView();
+					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
+					asyncResource(generateURL("summary", params)).done(function (response) {
+						calendar.viewmodel.sportData = response;
+						for(var i = 0; i < calendar.viewmodel.sportData.sports.length; i++) {
+							calendar.viewmodel.sportIDs[calendar.viewmodel.sportData.sports[i].name] = calendar.viewmodel.sportData.sports[i].id;
+						};
+						//Parsing Data and Appending to Element
+						console.log(calendar.viewmodel.sportData);
+						console.log("Success: Initial Data Retrieved From API");
+					}).fail(function () {
+						console.log("Failed: Unable to Retrieve Data From API");
+					}).always(function() {
+						processingAJAX = false;
+						console.log("XHR Status: Resolved");
+					});
+					//Handles Showing and Hiding of dataPane Element
+					if(calendar.dataDisplaying == false) {
+						$('#dataPane').fadeIn(600);
+						d3.select("#dataExit").on("click", function () {
+							calendar.exitDataView();
+						});
+						d3.select("#centerDismiss").on("click", function () {
+							calendar.exitDataView();
+						});
+					};
+						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
+						$('#sportDisplay').html(convertMDash(strip(data.sport)).toUpperCase());
+						$('.c2 .dateDisplay').html(calendar.date.monthName.substr(0, 3) + " " + calendar.date.day);
+						calendar.dataDisplaying = true;
 				};
 			};
 			calendar.exitDataView = function () {
 				$('#dataPane').fadeOut(400);
 				$('#centerDismiss .dateDisplay').fadeOut(600).removeClass('selectable');
 				calendar.dataDisplaying = false;
-				// var date = new ParsedDate('2014-02-19T06:00:00Z');
-				// console.log("Year: " + date.year);
-				// console.log("Month: " + date.month);
-				// console.log("Month Name: " + date.monthName);
-				// console.log("Day: " + date.day);
-				// console.log("Time: " + date.time);
 			}
 	};
 
@@ -707,7 +757,7 @@ var mappingData =
 			vm.countries = {},
 			vm.apiSportData = {}, 
 			vm.calendarDates = {};
-	
+
 	/**
 	 *	Mapping Logic
 	 **/
@@ -728,7 +778,6 @@ var mappingData =
 				});
 				return array;
 			};
-
 			//Creates Sports Array With Formatted Names
 			vm.sports = function (data) {
 				var name = null;
@@ -739,7 +788,6 @@ var mappingData =
 				});
 				return array;
 			};
-
 			//Creates Days Array From First Sport Object in Mapping JSON
 			vm.days = function (data) {
 				var array = [];
@@ -748,7 +796,6 @@ var mappingData =
 				});
 				return array;
 			};
-
 			//Creates Colors Array
 			vm.colors = function (data) {
 				var color = null;
@@ -760,7 +807,6 @@ var mappingData =
 				});
 				return array;
 			};
-
 			//Setting Menu Data
 			vm.menuRows = ko.mapping.fromJS(mappingData, {}, vm.menuRows);
 			//Retrieving Sports From Map
@@ -780,38 +826,43 @@ var mappingData =
 				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
 				//Initial AJAX Data Retrieval From API
-				asyncResource(generateURL("summary", initialParams)).done(function (response) {
-					vm.apiSportData = response;
-					for(var i = 0; i < vm.apiSportData.sports.length; i++) {
-						vm.sportIDs[vm.apiSportData.sports[i].name] = vm.apiSportData.sports[i].infostrada_id;
-					};
-					for(var i = 0; i < vm.apiSportData.countries.length; i++) {
-						vm.countries[vm.apiSportData.countries[i].infostrada_id] = vm.apiSportData.countries[i].name_short;
-					};
-					//Parses Date Object and Ensures Congruency With Event Day
-					var day = null;
-					var first = true;
-					var offset = null;
-					for(var i = 0; i < vm.apiSportData.playing_times.length; i++) {
-						var date = vm.apiSportData.playing_times[i].substr(0, 10);
-						if (!vm.calendarDates[date]) {
-							var dateNo = parseInt(date.substr(8, 2));
-							if (first === true) {
-								var offset = dateNo;
-								first = false;
-							}
-							day = - offset + dateNo + 1;
-							vm.calendarDates[date] = day;
+				if (processingAJAX === true) {
+					console.log("XHR Status: Last Request Failed. Please Wait For Prior Request to Resolve.");
+					return;
+				} else {
+					asyncResource(generateURL("summary", initialParams)).done(function (response) {
+						vm.apiSportData = response;
+						for(var i = 0; i < vm.apiSportData.sports.length; i++) {
+							vm.sportIDs[vm.apiSportData.sports[i].name] = vm.apiSportData.sports[i].id;
 						};
-					};
-					console.log(vm.sportIDs);
-					console.log(vm.countries);
-					console.log(vm.calendarDates);
-				}).fail(function () {
-					console.log("Failed: Unable to Retrieve Initial Data From API");
-				}).always(function() {
-					console.log("Success: Initial Data Retrieval");
-				});
+						for(var i = 0; i < vm.apiSportData.countries.length; i++) {
+							vm.countries[vm.apiSportData.countries[i].id] = vm.apiSportData.countries[i].name_short;
+						};
+						//Parses Date Object and Ensures Congruency With Event Day
+						var day = null;
+						var first = true;
+						var offset = null;
+						for(var i = 0; i < vm.apiSportData.playing_times.length; i++) {
+							var date = vm.apiSportData.playing_times[i].substr(0, 10);
+							if (!vm.calendarDates[date]) {
+								var dateNo = parseInt(date.substr(8, 2));
+								if (first === true) {
+									var offset = dateNo;
+									first = false;
+								}
+								day = - offset + dateNo + 1;
+								vm.calendarDates[date] = day;
+							};
+						};
+						console.log("Success: Initial Data Retrieved From API");
+					}).fail(function () {
+						console.log("Failed: Unable to Retrieve Initial Data From API");
+					}).always(function() {
+						processingAJAX = false;
+						console.log("XHR Status: Resolved");
+					});
+				};
+
 			};
 			vm.update = function (sport) {
 
