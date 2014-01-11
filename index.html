@@ -43,7 +43,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 				<!-- ko if: ($index() %2 == 1) -->
@@ -53,7 +53,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}"></span></div>
 				</div>
 				<!-- /ko -->
 			</div>
@@ -67,6 +67,14 @@
 				<div class="headtype">
 					<div class="c1">
 						<span id="sportDisplay"></span>
+						<div class="bubblingGsmall">
+							<span id="bubblingGsmall_1">
+							</span>
+							<span id="bubblingGsmall_2">
+							</span>
+							<span id="bubblingGsmall_3">
+							</span>
+						</div>
 					</div>
 					<div class="c2">
 						<span class="dateDisplay"></span>
@@ -257,26 +265,32 @@
 	</div>
 	<div id="loading">
 		<div class="dialogue">
-			Loading...
+			<div class="loadingText">
+				Loading
+			</div>
+			<div class="bubblingG">
+				<span id="bubblingG_1">
+				</span>
+				<span id="bubblingG_2">
+				</span>
+				<span id="bubblingG_3">
+				</span>
+			</div>
 		</div>
 	</div>
 <script src="js/lib/JQ-1.10.2.min.js"></script>
+<script src="js/lib/JQ-touch.js"></script>
+<script src="js/lib/D3.min.js"></script>
 <script src="js/lib/KO-3.0.0.js"></script>
 <script src="js/lib/KO-mapping.js"></script>
-<script src="js/lib/D3.min.js"></script>
 <script src="js/lib/nanoscroller.min.js"></script>
 <script src="js/lib/date.js"></script>
 <script src="js/calendar.js"></script>
 <script src="js/loadimages.js"></script>
 <script>
-	$(document).ready(function () {
- 		$("#loading").fadeOut(1000, function () {
- 			$("#wrapper").fadeIn(1000);
- 			$(".nano").nanoScroller();
- 		});
- 	});
  	function strip (input) {
  		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
+ 		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
  		return input;
  	}
 </script>
