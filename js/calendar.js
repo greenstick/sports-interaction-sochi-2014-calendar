@@ -511,14 +511,6 @@ var mappingData =
 		};
 
 /**
- *	General UI Handling
- **/
-
- 	d3.select('.sportArc').on('mouseover', function () {
- 		console.log(this);
- 	});
-
-/**
  *	Calendar Class
  *	@params Radius 1 (int), Radius 2 (int), Margins (object), Stroke Width (int), Stroke Color (hex/rgb), Colors (array - hex/rgb), Days (int), Sports (int)
  *		Params Passed to constructor by CalendarVM
@@ -716,6 +708,15 @@ var mappingData =
 					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
 					$('.c1 .bubblingGsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
+					if(calendar.dataDisplaying == false) {
+						$('#dataPane').fadeIn(600);
+						d3.select("#dataExit").on("click", function () {
+							calendar.exitDataView();
+						});
+						d3.select("#centerDismiss").on("click", function () {
+							calendar.exitDataView();
+						});
+					};
 					return;
 				} else {
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
