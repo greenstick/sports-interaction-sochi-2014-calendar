@@ -501,7 +501,7 @@ var mappingData =
 		processingAJAX = true;
 		console.log("XHR Status: Requesting...");
 		$('#sportDisplay').html('');
-		$('.c1 .bubblingGsmall').fadeIn(400);
+		$('.c1 .bubblingsmall').fadeIn(400);
 		$('.c2 .dateDisplay').html('<br>');
 		return $.ajax(url, {
 				async: true,
@@ -511,17 +511,9 @@ var mappingData =
 		};
 
 /**
- *	General UI Handling
- **/
-
- 	d3.select('.sportArc').on('mouseover', function () {
- 		console.log(this);
- 	});
-
-/**
  *	Calendar Class
  *	@params Radius 1 (int), Radius 2 (int), Margins (object), Stroke Width (int), Stroke Color (hex/rgb), Colors (array - hex/rgb), Days (int), Sports (int)
- *		Params Passed to constructor by CalendarVM
+ *	Params Passed to constructor by CalendarVM
  **/
 
 	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, parentViewmodel) {
@@ -531,7 +523,7 @@ var mappingData =
 			calendar.mapping = mapping,
 			calendar.inner = r1,
 			calendar.outer = r2;
-			//Validating Correct Radius Input Order
+			//Ensuring Largest Radius Will Always Be Assigned to Outer Radius
 			if (calendar.inner > calendar.outer) {
 				var outer = calendar.inner;
 				calendar.inner = calendar.outer,
@@ -634,7 +626,7 @@ var mappingData =
 				calendar.filtering = true;
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
 				$('#centerDismiss').addClass('selectable');
-				$('.' + sport).addClass('selected').stop().animate({opacity: .70}, 600);
+				$('.' + sport).stop().animate({opacity: .70}, 600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
 				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
 				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .3}, 400);
@@ -648,11 +640,10 @@ var mappingData =
 				$('#centerDismiss .dateDisplay').fadeOut(600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
 				$('.sportArc').animate({opacity: .70}, 600);
-				$('.sportArc').removeClass('selected');
 				$('#sportsExit').fadeOut(600);
 				calendar.sportSelected = false;
 			};
-			//Retrieves Arc Data &  Matches it to API Data
+			//Retrieves Arc Data &  Matches it to API Data From Initial Request
 			calendar.selectArc = function (arcData) {
 				var data = $.parseJSON(arcData);
 				var apiDate = function () {
@@ -685,7 +676,6 @@ var mappingData =
 				$('.col2, .col4').stop().animate({opacity: 1});
 				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .3});
 				$('.sportArc').stop().animate({opacity: .2});
-				$('.selected').stop().animate({opacity: 1});
 				$('.day' + data.day).stop().animate({opacity: .6});
 				var apiDate = function () {
 					var date = '';
@@ -700,7 +690,7 @@ var mappingData =
 					calendar.date = new ParsedDate(apiDate());
 					$('#centerDismiss .dateDisplay').html(calendar.date.monthName.substr(0, 3) + " " + calendar.date.day);
 				} catch (error) {
-					console.log("Error: Data Unavailable - Initial API Request Failed");
+					console.log("Error: Hover Data Unavailable - Initial API Request Failed");
 				}
 			};
 			//Hover Out of Arc
@@ -710,17 +700,29 @@ var mappingData =
 				$('.sportArc').stop().animate({opacity: .7});
 				$('.day' + data.day).stop().animate({opacity: .7});
 			};
+			//Called From selectArc Method, Handles Retrieval of Requested Data
 			calendar.displayData = function (selectedSport, selectedDate, data) {
 				// Retrieving Data From API
 				if (processingAJAX === true) {
 					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
-					$('.c1 .bubblingGsmall').fadeIn(600);
+					$('.c1 .bubblingsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
-					return;
+					if(calendar.dataDisplaying == false) {
+						$('#dataPane').fadeIn(600);
+						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
+						d3.select("#dataExit").on("click", function () {
+							calendar.exitDataView();
+						});
+						d3.select("#centerDismiss").on("click", function () {
+							calendar.exitDataView();
+						});
+						calendar.dataDisplaying = true;
+					};
 				} else {
+					//AJAX User Requested Data
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
 					asyncResource(generateURL("summary", params)).done(function (response) {
-						$('.c1 .bubblingGsmall').fadeOut(0);
+						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(strip(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
 						calendar.viewmodel.sportData = response;
@@ -731,7 +733,7 @@ var mappingData =
 						console.log("SPORT DATA: " + calendar.viewmodel.sportData);
 						console.log("Success: Initial Data Retrieved From API");
 					}).fail(function () {
-						$('.c1 .bubblingGsmall').fadeOut(0);
+						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html("DATA UNAVAILABLE");
 						$('.c2 .dateDisplay').html('<br>');
 						console.log("Failed: Unable to Retrieve Data From API");
@@ -740,19 +742,20 @@ var mappingData =
 						console.log("XHR Status: Resolved");
 					});
 					//Handles Showing and Hiding of dataPane Element
-					if(calendar.dataDisplaying == false) {
+					if (calendar.dataDisplaying == false) {
 						$('#dataPane').fadeIn(600);
+						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
 						d3.select("#dataExit").on("click", function () {
 							calendar.exitDataView();
 						});
 						d3.select("#centerDismiss").on("click", function () {
 							calendar.exitDataView();
 						});
-					};
-						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
 						calendar.dataDisplaying = true;
+					};
 				};
 			};
+			//Exits Data Pane and Center Date Display
 			calendar.exitDataView = function () {
 				$('#dataPane').fadeOut(400);
 				$('#centerDismiss .dateDisplay').fadeOut(600).removeClass('selectable');
@@ -821,7 +824,7 @@ var mappingData =
 				});
 				return array;
 			};
-			//Setting Menu Data
+			//Setting Menu Data, KO Mapping Maps Sports Data into Observables
 			vm.menuRows = ko.mapping.fromJS(mappingData, {}, vm.menuRows);
 			//Retrieving Sports From Map
 			vm.mappedSports = vm.sports(mappingData);
@@ -834,9 +837,11 @@ var mappingData =
 	 *	ViewModel Methods
 	 **/
 
-			//Calendar Initialization
+			//Instantiates Calendar Class
+			//Requests Initial API Data
+			//Hides Loading Screen on XHR Completion
 			vm.init = function () {
-				//Defining Calendar
+				//Instantiating
 				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
 				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
 				preloadImages(images);
@@ -873,6 +878,7 @@ var mappingData =
 					}).fail(function () {
 						console.log("Failed: Unable to Retrieve Initial Data From API");
 					}).always(function() {
+						//Rendering View to User, Initializing Data Pane Scrolling
 						processingAJAX = false;
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
