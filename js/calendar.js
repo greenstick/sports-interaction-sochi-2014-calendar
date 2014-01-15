@@ -476,7 +476,7 @@ var mappingData =
 	ParsedDate.prototype.day = function () {
 		return this.day;
 	};
-	ParsedDate.prototype.day = function () {
+	ParsedDate.prototype.time = function () {
 		return this.time;
 	};
 
@@ -544,10 +544,11 @@ var mappingData =
 			calendar.svg = d3.select('#calendar').append("svg")
 				.attr("width", calendar.width)
 				.attr("height", calendar.height),
-			calendar.viewmodel = parentViewmodel,
 			calendar.date = {},
 			calendar.filtering = false,
-			calendar.dataDisplaying = false;
+			calendar.filterHistory = [],
+			calendar.dataDisplaying = false,
+			calendar.viewmodel = parentViewmodel;
 			//Generating Calendar
 			calendar.init = function (outer, inner, strokeColor, strokeWidth, segments, rings, colors, sports, days) {
 				var ringWidth = (outer - inner)/rings;
@@ -578,6 +579,11 @@ var mappingData =
 										var arcData = d3.select(this).attr("data-arc");	
 											calendar.selectArc(arcData); 
 									})
+									.on("touchend", function (d) {
+										var arcData = d3.select(this).attr("data-arc");
+											$("html").css("zoom", "1");	
+											calendar.selectArc(arcData);
+									})
 									.on("mouseleave", function () {
 										var arcData = d3.select(this).attr("data-arc");	
 											calendar.hoverOut(arcData);
@@ -606,6 +612,11 @@ var mappingData =
 										var arcData = d3.select(this).attr("data-arc");	
 											calendar.selectArc(arcData);
 									})
+									.on("touchend", function (d) {
+										var arcData = d3.select(this).attr("data-arc");	
+											$("html").css("zoom", "100%");
+											calendar.selectArc(arcData);
+									})
 									.on("mouseleave", function (d) {
 										var arcData = d3.select(this).attr("data-arc");	
 											calendar.hoverOut(arcData);
@@ -623,7 +634,10 @@ var mappingData =
 			calendar.filter = function (sport, color) {
 				var sport = sport();
 				var color = color();
+				calendar.filterHistory.splice(0, 1);
+				calendar.filterHistory.push(sport);
 				calendar.filtering = true;
+				$('#sportsPane .header .headtype .c2 span').fadeIn(600);
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
 				$('#centerDismiss').addClass('selectable');
 				$('.' + sport).stop().animate({opacity: .70}, 600);
@@ -634,7 +648,9 @@ var mappingData =
 			};
 			//Resets Calendar to Init State
 			calendar.reset = function () {
+				calendar.filterHistory.splice(0, 1);
 				calendar.filtering = false;
+				$('#sportsPane .header .headtype .c2 span').fadeOut(400);
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
 				$('#centerDismiss').removeClass('selectable');
 				$('#centerDismiss .dateDisplay').fadeOut(600);
@@ -677,6 +693,7 @@ var mappingData =
 				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .3});
 				$('.sportArc').stop().animate({opacity: .2});
 				$('.day' + data.day).stop().animate({opacity: .6});
+				$('#centerDismiss .dateDisplay').show().addClass('selectable');
 				var apiDate = function () {
 					var date = '';
 					$.each(calendar.viewmodel.calendarDates, function (key, value) {
@@ -688,9 +705,9 @@ var mappingData =
 				};
 				try {
 					calendar.date = new ParsedDate(apiDate());
-					$('#centerDismiss .dateDisplay').html(calendar.date.monthName.substr(0, 3) + " " + calendar.date.day);
+					$('#centerDismiss .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
 				} catch (error) {
-					console.log("Error: Hover Data Unavailable - Initial API Request Failed");
+					console.log("Error: Hover Data Unavailable - Initial API Request Failed.");
 				}
 			};
 			//Hover Out of Arc
@@ -699,6 +716,7 @@ var mappingData =
 				var data = $.parseJSON(arcData);
 				$('.sportArc').stop().animate({opacity: .7});
 				$('.day' + data.day).stop().animate({opacity: .7});
+				$('#centerDismiss .dateDisplay').hide().removeClass('selectable');
 			};
 			//Called From selectArc Method, Handles Retrieval of Requested Data
 			calendar.displayData = function (selectedSport, selectedDate, data) {
@@ -709,36 +727,67 @@ var mappingData =
 					$('.c2 .dateDisplay').html('<br>');
 					if(calendar.dataDisplaying == false) {
 						$('#dataPane').fadeIn(600);
-<<<<<<< HEAD
-=======
-						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
->>>>>>> d80389badea56fdeb008a34a8ed6836ce365f191
 						d3.select("#dataExit").on("click", function () {
 							calendar.exitDataView();
 						});
 						d3.select("#centerDismiss").on("click", function () {
 							calendar.exitDataView();
 						});
-<<<<<<< HEAD
-					};
-					return;
-=======
 						calendar.dataDisplaying = true;
+						return;
 					};
->>>>>>> d80389badea56fdeb008a34a8ed6836ce365f191
 				} else {
 					//AJAX User Requested Data
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
 					asyncResource(generateURL("summary", params)).done(function (response) {
 						$('.c1 .bubblingsmall').fadeOut(0);
-						$('#sportDisplay').html(convertMDash(strip(data.sport)).toUpperCase());
+						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
-						calendar.viewmodel.sportData = response;
-						for(var i = 0; i < calendar.viewmodel.sportData.length; i++) {
-							calendar.viewmodel.sportData[calendar.viewmodel.sportData.sports[i]] = calendar.viewmodel.sportData.sports[i];
-						};
-						//Parsing Data and Appending to Element
-						console.log("SPORT DATA: " + calendar.viewmodel.sportData);
+						calendar.viewmodel.venues.removeAll();
+						var sportData = response;
+						console.log(sportData);
+						calendar.viewmodel.dataOut = ko.computed(function () {
+							console.log("in computed")
+							var obj = {};
+							for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+								console.log(obj);
+								for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+									for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
+										console.log("3");
+										var home = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
+										var away = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
+										var winner = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
+										try {
+											obj.event.home = home;
+											obj.event.away = away;
+											obj.event.winner = winner;
+										} catch (error) {
+											console.log("Error: No Match Data");
+										} 
+										console.log(obj);
+									}
+									//Inserting Venue & Event Properties
+									var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+									var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
+									obj.event = {};
+									try {
+										//Ensuring Venue is Not Duplicated
+										if (!obj.hasOwnProperty(venue)) {	
+											obj.venue = venue;
+										}
+										obj.event.startTime = startTime.time.substr(0, 5);
+									} catch (error) {
+										console.log("Error: Venue Data Unavailable.");
+									}
+								}
+							}
+							return obj;
+						});
+						console.log("exit computed, output below");
+						console.log(calendar.viewmodel.dataOut());
+						//Mapping Parsed API Data Into New dataPane Viewmodel
+						// calendar.dataPane = ko.mapping.fromJS(calendar.viewmodel.sportData, {}, calendar.dataPane);
+						// console.log(calendar.dataPane);
 						console.log("Success: Initial Data Retrieved From API");
 					}).fail(function () {
 						$('.c1 .bubblingsmall').fadeOut(0);
@@ -752,11 +801,10 @@ var mappingData =
 					//Handles Showing and Hiding of dataPane Element
 					if (calendar.dataDisplaying == false) {
 						$('#dataPane').fadeIn(600);
-						$('#centerDismiss .dateDisplay').fadeIn(600).addClass('selectable');
-						d3.select("#dataExit").on("click", function () {
+						$("#dataExit").on("click touchend", function () {
 							calendar.exitDataView();
 						});
-						d3.select("#centerDismiss").on("click", function () {
+						$("#centerDismiss").on("click touchend", function () {
 							calendar.exitDataView();
 						});
 						calendar.dataDisplaying = true;
@@ -766,8 +814,8 @@ var mappingData =
 			//Exits Data Pane and Center Date Display
 			calendar.exitDataView = function () {
 				$('#dataPane').fadeOut(400);
-				$('#centerDismiss .dateDisplay').fadeOut(600).removeClass('selectable');
 				calendar.dataDisplaying = false;
+				calendar.reset();
 			}
 	};
 
@@ -850,8 +898,41 @@ var mappingData =
 			//Hides Loading Screen on XHR Completion
 			vm.init = function () {
 				//Instantiating
-				vm.calendar = new Calendar (328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
-				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports);
+				vm.calendar = new Calendar (328, 18, {top: 20, right: 4, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
+				vm.scheduleTeam = ko.observable(true),
+				vm.resultTeam = ko.observable(true),
+				vm.resultTeam = ko.observable(true),
+				vm.venues = ko.observableArray([]),
+				vm.matches = ko.observableArray([])
+				vm.homeParticipant = ko.observable([]),
+				vm.awayParticipant = ko.observable([]),
+				vm.winning = ko.observableArray([]),
+				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports),
+				vm.menuhoverOver = function (sport, color) {
+					vm.calendar.filter(sport, color);
+				};
+				vm.menuhoverOut = function (sport, color) {
+					var sport = sport();
+					var color = color();
+					if (vm.calendar.filtering == false) {
+						$('.col2, .col4').stop().animate({opacity: 1}, 600);
+					} else if (vm.calendar.filtering == true) {
+						$('.col2, .col4').stop().animate({opacity: 1}, 600);
+						$('.col2, .col4').not('#' + vm.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
+					};
+				};
+
+
+// calendar.filtering = true;
+// 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
+// 				$('#centerDismiss').addClass('selectable');
+// 				$('.' + sport).stop().animate({opacity: .70}, 600);
+// 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
+// 				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
+// 				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .3}, 400);
+// 				calendar.sportSelected = true;
+
+
 				preloadImages(images);
 				//Initial AJAX Data Retrieval From API
 				if (processingAJAX === true) {
@@ -891,11 +972,12 @@ var mappingData =
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
 				 			$(".nano").nanoScroller();
+				 			$(".pane").css("display", "block");
+				 			$(".slider").css("display", "block");
 				 		});
 						console.log("XHR Status: Resolved");
 					});
 				};
-
 			};
 			vm.update = function (sport) {
 
@@ -926,7 +1008,7 @@ var mappingData =
  *	Initializing ViewModel
  **/
 
-		var viewmodel = new CalendarVM(328, 18, {top: 20, right: 20, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
+		var viewmodel = new CalendarVM(328, 18, {top: 20, right: 0, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
 });

@@ -16,9 +16,9 @@
 				<img src="img/center_flame.svg" width="42px" height="42px" />
 			</div>
 		</div>
-		<div id="calendar" data-bind-"with: menuRows"></div>
+		<div id="calendar" data-bind="with: menuRows"></div>
 		<div id="centerDismiss">
-			<div class="dateDisplay"><span class="text"></span></div>
+			<div class="dateDisplay" data-bind="click: calendar.reset"><span class="text"></span></div>
 		</div>
 		<div id="sportsPane">
 			<div class="header">
@@ -31,7 +31,7 @@
 						<span>SPORTS</span>
 					</div>
 					<div class="c2">
-						<span class="" data-bind="click: function () {$root.calendar.reset()}">VIEW ALL</span>
+						<span data-bind="click: function () {$root.calendar.reset()}">VIEW ALL</span>
 					</div>
 				</div>
 			</div>
@@ -43,7 +43,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
 				</div>
 				<!-- /ko -->
 				<!-- ko if: ($index() %2 == 1) -->
@@ -53,7 +53,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: strip(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}"></span></div>
+					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
 				</div>
 				<!-- /ko -->
 			</div>
@@ -84,11 +84,10 @@
 					<img src="img/exit.svg" width="28px" height="28px" />
 				</div>
 			</div>
-<!-- HTML for Schedule - Team -->
 			<div class="dataOut nano">
 				<div class="content">
 					<div class="venue scheduleTeam">
-						<div class="head venue">"Bolshoy" Venue</div>
+						<div class="head venue"></div>
 						<div class="rowData">
 							<div class="time">10:00 AM</div>
 							<div class="match">
@@ -102,7 +101,6 @@
 							</div>
 						</div>
 					</div>
-	<!-- HTML for Results - Team -->
 					<div class="venue resultTeam">
 						<div class="head venue">"Bolshoy" Venue</div>
 						<div class="rowData">
@@ -124,7 +122,6 @@
 							</div>
 						</div>
 					</div>
-	<!-- HTML for Results - Single -->
 					<div class="venue resultSingle">
 						<div class="head venue">"Bolshoy" Venue</div>
 						<div class="rowData">
@@ -140,121 +137,55 @@
 								</div>
 							</div>
 						</div>
-	<!-- End -->
 						<div class="rowData">
 							<div class="result">
 								<div class="subRow">
-									<div class="position">2</div>
-									<div class="competitor">Switzerland</div>
+									<div class="position">1</div>
+									<div class="competitor">Sweden</div>
 								</div>
 								<div class="subRow">
-									<div class="flag"><img src="img/flags/SUI.png" /></div>
-									<div class="country">SUI</div>
-									<div class="result">23:48:12</div>
+									<div class="flag"><img src="img/flags/SWE.png" /></div>
+									<div class="country">SWE</div>
+									<div class="result">23:47:15</div>
 								</div>
 							</div>
 						</div>
 						<div class="rowData">
 							<div class="result">
 								<div class="subRow">
-									<div class="position">3</div>
-									<div class="competitor">Great Britain</div>
+									<div class="position">1</div>
+									<div class="competitor">Sweden</div>
 								</div>
 								<div class="subRow">
-									<div class="flag"><img src="img/flags/GBR.png" /></div>
-									<div class="country">GBR</div>
-									<div class="result">23:52:63</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">4</div>
-									<div class="competitor">South Africa</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/RSA.png" /></div>
-									<div class="country">RSA</div>
-									<div class="result">23:53:61</div>
+									<div class="flag"><img src="img/flags/SWE.png" /></div>
+									<div class="country">SWE</div>
+									<div class="result">23:47:15</div>
 								</div>
 							</div>
 						</div>
 						<div class="rowData">
 							<div class="result">
 								<div class="subRow">
-									<div class="position">5</div>
-									<div class="competitor">Mexico</div>
+									<div class="position">1</div>
+									<div class="competitor">Sweden</div>
 								</div>
 								<div class="subRow">
-									<div class="flag"><img src="img/flags/MEX.png" /></div>
-									<div class="country">MEX</div>
-									<div class="result">23:54:81</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">6</div>
-									<div class="competitor">Italy</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/ITA.png" /></div>
-									<div class="country">ITA</div>
-									<div class="result">23:55:22</div>
+									<div class="flag"><img src="img/flags/SWE.png" /></div>
+									<div class="country">SWE</div>
+									<div class="result">23:47:15</div>
 								</div>
 							</div>
 						</div>
 						<div class="rowData">
 							<div class="result">
 								<div class="subRow">
-									<div class="position">7</div>
-									<div class="competitor">Czech Republic</div>
+									<div class="position">1</div>
+									<div class="competitor">Sweden</div>
 								</div>
 								<div class="subRow">
-									<div class="flag"><img src="img/flags/CZE.png" /></div>
-									<div class="country">CZE</div>
-									<div class="result">24:57:42</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">8</div>
-									<div class="competitor">Tajikistan</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/TJK.png" /></div>
-									<div class="country">TJK</div>
-									<div class="result">24:58:17</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">9</div>
-									<div class="competitor">Iran</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/IRI.png" /></div>
-									<div class="country">IRI</div>
-									<div class="result">24:58:77</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">10</div>
-									<div class="competitor">Netherlands</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/NED.png" /></div>
-									<div class="country">NED</div>
-									<div class="result">24:59:21</div>
+									<div class="flag"><img src="img/flags/SWE.png" /></div>
+									<div class="country">SWE</div>
+									<div class="result">23:47:15</div>
 								</div>
 							</div>
 						</div>
@@ -283,12 +214,14 @@
 <script src="js/lib/D3.min.js"></script>
 <script src="js/lib/KO-3.0.0.js"></script>
 <script src="js/lib/KO-mapping.js"></script>
+<!-- <script src="js/lib/JsonQ.min.js"></script> -->
 <script src="js/lib/nanoscroller.min.js"></script>
 <script src="js/lib/date.js"></script>
 <script src="js/calendar.js"></script>
 <script src="js/loadimages.js"></script>
 <script>
- 	function strip (input) {
+	//Formats Specifically Identified Data to Fit with Design
+ 	function format (input) {
  		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
  		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
  		return input;
@@ -296,3 +229,10 @@
 </script>
 </body>
 </html>
+
+					<!-- ko if: $root.scheduleTeam == true; -->
+					<!-- /ko -->
+					<!-- ko if: $root.resultTeam == true; -->
+					<!-- /ko -->
+					<!-- ko if: $root.resultSingle == true; -->
+					<!-- /ko -->
