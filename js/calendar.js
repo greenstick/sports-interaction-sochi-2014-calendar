@@ -743,48 +743,43 @@ var mappingData =
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
-						calendar.viewmodel.venues.removeAll();
+						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
 						console.log(sportData);
-						calendar.viewmodel.dataOut = ko.computed(function () {
-							console.log("in computed")
-							var obj = {};
-							for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
-								console.log(obj);
-								for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-									for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-										console.log("3");
-										var home = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-										var away = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-										var winner = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
-										try {
-											obj.event.home = home;
-											obj.event.away = away;
-											obj.event.winner = winner;
-										} catch (error) {
-											console.log("Error: No Match Data");
-										} 
-										console.log(obj);
-									}
-									//Inserting Venue & Event Properties
-									var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-									var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
-									obj.event = {};
+						var obj = {};
+						for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+							for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+								for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
+									var home = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
+									var away = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
+									var winner = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
 									try {
-										//Ensuring Venue is Not Duplicated
-										if (!obj.hasOwnProperty(venue)) {	
-											obj.venue = venue;
-										}
-										obj.event.startTime = startTime.time.substr(0, 5);
+										obj.event.home = home;
+										obj.event.away = away;
+										obj.event.winner = winner;
 									} catch (error) {
-										console.log("Error: Venue Data Unavailable.");
+										console.log("Error: No Match Data");
+									} 
+									console.log(obj);
+								}
+								//Inserting Venue & Event Properties
+								var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+								var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
+								obj.event = {};
+								try {
+									//Ensuring Venue is Not Duplicated
+									if (!obj.hasOwnProperty(venue)) {	
+										obj.venue = venue;
 									}
+									obj.event.startTime = startTime.time.substr(0, 5);
+								} catch (error) {
+									console.log("Error: Venue Data Unavailable.");
 								}
 							}
-							return obj;
-						});
+						}
+						calendar.viewmodel.dataOutput.push(obj)
 						console.log("exit computed, output below");
-						console.log(calendar.viewmodel.dataOut());
+						console.log(calendar.viewmodel.dataOutput());
 						//Mapping Parsed API Data Into New dataPane Viewmodel
 						// calendar.dataPane = ko.mapping.fromJS(calendar.viewmodel.sportData, {}, calendar.dataPane);
 						// console.log(calendar.dataPane);
@@ -825,18 +820,41 @@ var mappingData =
  **/
 
 	var CalendarVM = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments) {
-		var vm = this;
-			vm.sportIDs = {},
-			vm.countries = {},
-			vm.apiSportData = {}, 
-			vm.calendarDates = {};
+		var master = this;
+			master.sportIDs = {},
+			master.countries = {},
+			master.apiSportData = {}, 
+			master.calendarDates = {},
+			master.dataOutput = ko.observableArray([]);
+			master.venueData = ko.computed(function () {
+				if (master.dataOutput()[0] == undefined || master.dataOutput()[0].venue == '') {
+					return 'No Venue Data';
+				}
+				console.log(master.dataOutput()[0].venue);
+				return master.dataOutput()[0].venue;
+			});
+			master.eventData = ko.computed(function () {
+				if (master.dataOutput()[0] == undefined || master.dataOutput()[0].event == '') {
+					return null;
+				}
+				console.log(master.dataOutput()[0].event);
+				return master.dataOutput()[0].event;
+			})
+			master.startData = ko.computed(function () {
+				if (master.dataOutput()[0] == undefined) {
+					return '';
+				} else {
+					console.log(master.dataOutput()[0].event.startTime);
+					return master.dataOutput()[0].event.startTime;
+				}
+			});
 
 	/**
 	 *	Mapping Logic
 	 **/
 
 			//Structures Mapping Data For Menu
-			vm.menuData = function (data) {
+			master.menuData = function (data) {
 				var sport = null;
 				var color = null;
 				var array = [];
@@ -852,7 +870,7 @@ var mappingData =
 				return array;
 			};
 			//Creates Sports Array With Formatted Names
-			vm.sports = function (data) {
+			master.sports = function (data) {
 				var name = null;
 				var array = [];
 				$.each(data, function (key, value) {
@@ -862,7 +880,7 @@ var mappingData =
 				return array;
 			};
 			//Creates Days Array From First Sport Object in Mapping JSON
-			vm.days = function (data) {
+			master.days = function (data) {
 				var array = [];
 				$.each(data[0].day, function (key, value) {
 					array.push(key);
@@ -870,7 +888,7 @@ var mappingData =
 				return array;
 			};
 			//Creates Colors Array
-			vm.colors = function (data) {
+			master.colors = function (data) {
 				var color = null;
 				var array = [];
 				var data = data;
@@ -881,13 +899,13 @@ var mappingData =
 				return array;
 			};
 			//Setting Menu Data, KO Mapping Maps Sports Data into Observables
-			vm.menuRows = ko.mapping.fromJS(mappingData, {}, vm.menuRows);
+			master.menuRows = ko.mapping.fromJS(mappingData, {}, master.menuRows);
 			//Retrieving Sports From Map
-			vm.mappedSports = vm.sports(mappingData);
+			master.mappedSports = master.sports(mappingData);
 			//Retrieving Days From Map
-			vm.mappedDays = vm.days(mappingData);
+			master.mappedDays = master.days(mappingData);
 			//Retrieving Colors From Map
-			vm.mappedColors = vm.colors(mappingData);
+			master.mappedColors = master.colors(mappingData);
 
 	/**
 	 *	ViewModel Methods
@@ -896,29 +914,21 @@ var mappingData =
 			//Instantiates Calendar Class
 			//Requests Initial API Data
 			//Hides Loading Screen on XHR Completion
-			vm.init = function () {
+			master.init = function () {
 				//Instantiating
-				vm.calendar = new Calendar (328, 18, {top: 20, right: 4, bottom: 20, left: 20}, 2, '#07153D', vm.mappedColors, vm.mappedSports, vm.mappedDays, mappingData, vm),
-				vm.scheduleTeam = ko.observable(true),
-				vm.resultTeam = ko.observable(true),
-				vm.resultTeam = ko.observable(true),
-				vm.venues = ko.observableArray([]),
-				vm.matches = ko.observableArray([])
-				vm.homeParticipant = ko.observable([]),
-				vm.awayParticipant = ko.observable([]),
-				vm.winning = ko.observableArray([]),
-				vm.calendar.init(vm.calendar.outer, vm.calendar.inner, vm.calendar.strokeColor, vm.calendar.strokeWidth, vm.calendar.rings, vm.calendar.segments, vm.calendar.colors, vm.calendar.days, vm.calendar.sports),
-				vm.menuhoverOver = function (sport, color) {
-					vm.calendar.filter(sport, color);
+				master.calendar = new Calendar (328, 18, {top: 20, right: 4, bottom: 20, left: 20}, 2, '#07153D', master.mappedColors, master.mappedSports, master.mappedDays, mappingData, master),
+				master.calendar.init(master.calendar.outer, master.calendar.inner, master.calendar.strokeColor, master.calendar.strokeWidth, master.calendar.rings, master.calendar.segments, master.calendar.colors, master.calendar.days, master.calendar.sports),
+				master.menuhoverOver = function (sport, color) {
+					master.calendar.filter(sport, color);
 				};
-				vm.menuhoverOut = function (sport, color) {
+				master.menuhoverOut = function (sport, color) {
 					var sport = sport();
 					var color = color();
-					if (vm.calendar.filtering == false) {
+					if (master.calendar.filtering == false) {
 						$('.col2, .col4').stop().animate({opacity: 1}, 600);
-					} else if (vm.calendar.filtering == true) {
+					} else if (master.calendar.filtering == true) {
 						$('.col2, .col4').stop().animate({opacity: 1}, 600);
-						$('.col2, .col4').not('#' + vm.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
+						$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
 					};
 				};
 
@@ -940,27 +950,27 @@ var mappingData =
 					return;
 				} else {
 					asyncResource(generateURL("summary", initialParams)).done(function (response) {
-						vm.apiSportData = response;
-						for(var i = 0; i < vm.apiSportData.sports.length; i++) {
-							vm.sportIDs[vm.apiSportData.sports[i].name] = vm.apiSportData.sports[i].id;
+						master.apiSportData = response;
+						for(var i = 0; i < master.apiSportData.sports.length; i++) {
+							master.sportIDs[master.apiSportData.sports[i].name] = master.apiSportData.sports[i].id;
 						};
-						for(var i = 0; i < vm.apiSportData.countries.length; i++) {
-							vm.countries[vm.apiSportData.countries[i].id] = vm.apiSportData.countries[i].name_short;
+						for(var i = 0; i < master.apiSportData.countries.length; i++) {
+							master.countries[master.apiSportData.countries[i].id] = master.apiSportData.countries[i].name_short;
 						};
 						//Parses Date Object and Ensures Congruency With Event Day
 						var day = null;
 						var first = true;
 						var offset = null;
-						for(var i = 0; i < vm.apiSportData.playing_times.length; i++) {
-							var date = vm.apiSportData.playing_times[i].substr(0, 10);
-							if (!vm.calendarDates[date]) {
+						for(var i = 0; i < master.apiSportData.playing_times.length; i++) {
+							var date = master.apiSportData.playing_times[i].substr(0, 10);
+							if (!master.calendarDates[date]) {
 								var dateNo = parseInt(date.substr(8, 2));
 								if (first === true) {
 									var offset = dateNo;
 									first = false;
 								}
 								day = - offset + dateNo + 1;
-								vm.calendarDates[date] = day;
+								master.calendarDates[date] = day;
 							};
 						};
 						console.log("Success: Initial Data Retrieved From API");
@@ -979,29 +989,9 @@ var mappingData =
 					});
 				};
 			};
-			vm.update = function (sport) {
+			master.update = function (sport) {
 
 			};
-	};
-
-/**
- *	KO Custom Bindings
- **/
-
- 	//Calendar Hover
-	ko.bindingHandlers.calendarHover = {
-		init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-			var calendar = valueAccessor();
-		},
-	    update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-	      var calendar = valueAccessor();
-	        ko.utils.registerEventHandler(element, "mouseover", function() {
-	        	calendar.hoverOver(sport, day);
-	        });  
-	        ko.utils.registerEventHandler(element, "mouseout", function() {
-	        	calendar.hoverOut(sport, day);
-	        }); 
-	    } 
 	};
 
 /**

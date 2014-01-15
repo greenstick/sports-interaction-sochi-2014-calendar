@@ -87,9 +87,9 @@
 			<div class="dataOut nano">
 				<div class="content">
 					<div class="venue scheduleTeam">
-						<div class="head venue"></div>
-						<div class="rowData">
-							<div class="time">10:00 AM</div>
+						<div class="head venue" data-bind="text: venueData"></div>
+						<div class="rowData" data-bind="foreach: eventData">
+							<div class="time" data-bind="text: startData"></div>
 							<div class="match">
 								<div class="flag flagA"><img src="img/flags/SWE.png" /></div>
 								<div class="competing">
