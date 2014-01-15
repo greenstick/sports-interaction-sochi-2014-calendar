@@ -749,6 +749,19 @@ var mappingData =
 						var obj = {};
 						for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
 							for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+								try {
+									//Inserting Venue & Event Properties
+									var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+									var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
+									obj.event = {};
+									//Ensuring Venue is Not Duplicated
+									if (!obj.hasOwnProperty(venue)) {
+										obj.venue = venue;
+									}
+									obj.event.startTime = startTime.time.substr(0, 5);
+								} catch (error) {
+									console.log("Error: Venue Data Unavailable.");
+								}
 								for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
 									var home = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
 									var away = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
@@ -761,19 +774,6 @@ var mappingData =
 										console.log("Error: No Match Data");
 									} 
 									console.log(obj);
-								}
-								//Inserting Venue & Event Properties
-								var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-								var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
-								obj.event = {};
-								try {
-									//Ensuring Venue is Not Duplicated
-									if (!obj.hasOwnProperty(venue)) {	
-										obj.venue = venue;
-									}
-									obj.event.startTime = startTime.time.substr(0, 5);
-								} catch (error) {
-									console.log("Error: Venue Data Unavailable.");
 								}
 							}
 						}
@@ -826,26 +826,73 @@ var mappingData =
 			master.apiSportData = {}, 
 			master.calendarDates = {},
 			master.dataOutput = ko.observableArray([]);
+			//Data Computed Functions - Return User Requested Data
 			master.venueData = ko.computed(function () {
-				if (master.dataOutput()[0] == undefined || master.dataOutput()[0].venue == '') {
-					return 'No Venue Data';
+				try {
+					if (master.dataOutput()[0] == null || master.dataOutput()[0].venue == undefined) {
+					return 'No Data';
+					} else {
+						var venue = master.dataOutput()[0].venue;
+						switch (venue) {
+							case "Adler Arena Skating Center":
+								return '"Adler" Venue';
+								break;
+							case "Bolshoy Ice Dome":
+								return '"Bolshoy" Venue';
+								break;
+							case "Ice Cube Curling Center":
+								return '"Ice Cube" Venue';
+								break;
+							case "Iceberg Skating Palace":
+								return '"Iceberg" Venue';
+								break;
+							case "Laura Cross-country Ski & Biathlon Center":
+								return '"Laura" Venue';
+								break;
+							case "Rosa Khutor Alpine Center":
+								return '"Khutor" Venue';
+								break;
+							case "Rosa Khutor Extreme Park":
+								return '"Khutor" Venue';
+								break;
+							case "RusSki Gorki Jumping Center":
+								return '"RusSki" Venue';
+								break;
+							case "Shayba Arena":
+								return '"Shayba" Venue';
+								break;
+							case "Sliding Center Sanki":
+								return '"Sanki" Venue'
+								break;
+						}
+						console.log(venue);
+						return venue
+					}
+				} catch (error) {
+					return 'Error Retrieving Data'
 				}
-				console.log(master.dataOutput()[0].venue);
-				return master.dataOutput()[0].venue;
 			});
 			master.eventData = ko.computed(function () {
-				if (master.dataOutput()[0] == undefined || master.dataOutput()[0].event == '') {
-					return null;
+				try {
+					if (master.dataOutput()[0] == null || master.dataOutput()[0].event == undefined) {
+						return null;
+					}
+					console.log(master.dataOutput()[0].event);
+					return master.dataOutput()[0].event;
+				} catch (error) {
+					return ''
 				}
-				console.log(master.dataOutput()[0].event);
-				return master.dataOutput()[0].event;
 			})
 			master.startData = ko.computed(function () {
-				if (master.dataOutput()[0] == undefined) {
+				try {
+					if (master.dataOutput()[0] == null || master.dataOutput()[0].event.startTime == undefined) {
+						return '';
+					} else {
+						console.log(master.dataOutput()[0].event.startTime);
+						return master.dataOutput()[0].event.startTime;
+					}
+				} catch (error) {
 					return '';
-				} else {
-					console.log(master.dataOutput()[0].event.startTime);
-					return master.dataOutput()[0].event.startTime;
 				}
 			});
 
