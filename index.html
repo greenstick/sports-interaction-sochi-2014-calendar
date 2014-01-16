@@ -86,110 +86,77 @@
 			</div>
 			<div class="dataOut nano">
 				<div class="content">
-					<div class="venue scheduleTeam">
+					<div class="venue scheduleTeam" data-bind="if: $root.teamSchedule">
 						<div class="head venue" data-bind="text: venueData"></div>
-						<div class="rowData" data-bind="foreach: eventData">
-							<div class="time" data-bind="text: $root.startData"></div>
-							<div class="match">
-								<div class="flag flagA"><img src="img/flags/SWE.png" /></div>
-								<div class="competing">
-									<div class="team teamA">SWE</div>
-									<div class="versus">vs</div>
-									<div class="team teamB">FIN</div>
-								</div>
-								<div class="flag flagB"><img src="img/flags/FIN.png" /></div>
-							</div>
-						</div>
-					</div>
-					<div class="venue resultTeam">
-						<div class="head venue">"Bolshoy" Venue</div>
-						<div class="rowData">
-							<div class="match">
-								<div class="win">
-									<div class="flag flagA">
-										<img src="img/flags/SWE.png" />
+						<div data-bind="foreach: eventData">
+							<div class="rowData">
+								<div class="time" data-bind="text: formatHour(startTime)"></div>
+								<div class="match">
+									<div class="flag flagA"><img src="img/flags/SWE.png" /></div>
+									<div class="competing">
+										<div class="team teamA">SWE</div>
+										<div class="versus">vs</div>
+										<div class="team teamB">FIN</div>
 									</div>
-									<div class="team teamA">SWE</div>
-									<div class="score scoreA">1</div>
+									<div class="flag flagB"><img src="img/flags/FIN.png" /></div>
 								</div>
-								<div class="loss">
-									<div class="flag flagB">
-										<img src="img/flags/FIN.png" />
+							</div>
+						</div>
+					</div>
+					<div class="venue scheduleSingle" data-bind="if: $root.singleSchedule">
+						<div class="head venue" data-bind="text: venueData"></div>
+						<div data-bind="foreach: eventData">
+							<div class="time" data-bind="text: formatHour(startTime)"></div>
+							<div class="rowData">
+								<div class="subRow">
+									<div class="competitor">Sweden</div>
+									<div class="flag"><img src="img/flags/SWE.png" /></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="venue resultTeam" data-bind="if: $root.teamResult">
+						<div class="head venue" data-bind="text: venueData"></div>
+						<div data-bind="foreach: eventData">
+							<div class="rowData">
+								<div class="match">
+									<div class="win">
+										<div class="flag flagA">
+											<img src="img/flags/SWE.png" />
+										</div>
+										<div class="team teamA">SWE</div>
+										<div class="score scoreA">1</div>
 									</div>
-									<div class="team teamB">FIN</div>
-									<div class="score scoreB">0</div>
+									<div class="loss">
+										<div class="flag flagB">
+											<img src="img/flags/FIN.png" />
+										</div>
+										<div class="team teamB">FIN</div>
+										<div class="score scoreB">0</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="venue resultSingle">
-						<div class="head venue">"Bolshoy" Venue</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">1</div>
-									<div class="competitor">Sweden</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/SWE.png" /></div>
-									<div class="country">SWE</div>
-									<div class="result">23:47:15</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">1</div>
-									<div class="competitor">Sweden</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/SWE.png" /></div>
-									<div class="country">SWE</div>
-									<div class="result">23:47:15</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">1</div>
-									<div class="competitor">Sweden</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/SWE.png" /></div>
-									<div class="country">SWE</div>
-									<div class="result">23:47:15</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">1</div>
-									<div class="competitor">Sweden</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/SWE.png" /></div>
-									<div class="country">SWE</div>
-									<div class="result">23:47:15</div>
-								</div>
-							</div>
-						</div>
-						<div class="rowData">
-							<div class="result">
-								<div class="subRow">
-									<div class="position">1</div>
-									<div class="competitor">Sweden</div>
-								</div>
-								<div class="subRow">
-									<div class="flag"><img src="img/flags/SWE.png" /></div>
-									<div class="country">SWE</div>
-									<div class="result">23:47:15</div>
+					<div class="venue resultSingle" data-bind="if: $root.singleResult">
+						<div class="head venue" data-bind="text: venueData"></div>
+						<div data-bind="foreach: eventData">
+							<div class="rowData">
+								<div class="result">
+									<div class="subRow">
+										<div class="position">1</div>
+										<div class="competitor">Sweden</div>
+									</div>
+									<div class="subRow">
+										<div class="flag"><img src="img/flags/SWE.png" /></div>
+										<div class="country">SWE</div>
+										<div class="result">23:47:15</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
+					<!-- /ko -->
 				</div>
 			</div>
 		</div>

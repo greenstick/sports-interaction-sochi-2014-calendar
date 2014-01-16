@@ -211,7 +211,7 @@
 		display: inline-block;
 		vertical-align: middle;
 		text-align: center;
-		margin: 0 8px 0 8px;
+		margin: 8px 8px 0 8px;
 	}
 	#dataPane .dataOut .venue .rowData:nth-child(odd) {
 		border-bottom: 1px solid #23345C;
@@ -275,6 +275,48 @@
 		height: 20px;
 		display: inline-block;
 	}
+/* Schedule - Single */
+	#dataPane .dataOut .venue.scheduleSingle .time {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 260px;
+		height: 20px;
+		padding: 0 0 0 8px;
+	}
+	#dataPane .dataOut .venue.scheduleSingle .rowData {
+		position: relative;
+		top: -12px;
+		left: 0px;
+		width: 260px;
+		height: 20px;
+		padding: 0 0 0 0;
+		text-align: left;
+	}
+	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 260px;
+		height: 20px;
+		display: inline-block;
+	}
+	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow .competitor {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 228px;
+		height: 20px;
+		display: inline-block;
+	}
+	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow .flag {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		width: 28px;
+		height: 20px;
+		display: inline-block;
+	}
 /* Result - Team */
 	#dataPane .dataOut .venue.resultTeam {
 		display: block;
@@ -294,7 +336,7 @@
 		position: relative;
 		top: 0px;
 		left: 0px;
-		width: 108px;
+		width: 128px;
 		height: 20px;
 		display: inline-block;
 	}
@@ -375,7 +417,7 @@
 		position: relative;
 		top: -2px;
 		left: 0px;
-		width: 164px;
+		width: 184px;
 		height: 20px;
 		text-align: right;
 		display: inline-block;
@@ -484,7 +526,7 @@
 	  right         : 0;
 	  bottom        : 0;
 	  left          : 0;
-	  height: 256px;
+	  height: 296px;
 	}
 	.nano .content:focus {
 	  outline: none;

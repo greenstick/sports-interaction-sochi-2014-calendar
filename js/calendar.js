@@ -479,6 +479,38 @@ var mappingData =
 	ParsedDate.prototype.time = function () {
 		return this.time;
 	};
+	pastPresent = function (test) {
+		var dates = {
+		    convert:function(d) {
+		        return (
+		            d.constructor === Date ? d :
+		            d.constructor === Array ? new Date(d[0],d[1],d[2]) :
+		            d.constructor === Number ? new Date(d) :
+		            d.constructor === String ? new Date(d) :
+		            typeof d === "object" ? new Date(d.year,d.month,d.date) :
+		            NaN
+		        );
+		    },
+		    compare:function(a,b) {
+		        return (
+		            isFinite(a=this.convert(a).valueOf()) &&
+		            isFinite(b=this.convert(b).valueOf()) ?
+		            (a>b)-(a<b) :
+		            NaN
+		        );
+		    }
+		}
+		var now = new Date();
+		var formatted = new Date(test);
+		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
+			return false;
+		};
+	}
+	formatHour = function (time) {
+		parsedDate = new ParsedDate(time),
+		hour = parsedDate.time.substr(0, 5);
+		return hour;
+	}
 
 /**
  *	AJAX Request Methods - Retrieve Data From API
@@ -630,7 +662,7 @@ var mappingData =
 /**
  *	Calendar Methods
  **/
-			//On Update - Called By View Model
+			//Called By Data Bind in View
 			calendar.filter = function (sport, color) {
 				var sport = sport();
 				var color = color();
@@ -718,7 +750,7 @@ var mappingData =
 				$('.day' + data.day).stop().animate({opacity: .7});
 				$('#centerDismiss .dateDisplay').hide().removeClass('selectable');
 			};
-			//Called From selectArc Method, Handles Retrieval of Requested Data
+			//Called From selectArc Method, Retrieves Data From API and Constructs New Data Object
 			calendar.displayData = function (selectedSport, selectedDate, data) {
 				// Retrieving Data From API
 				if (processingAJAX === true) {
@@ -743,41 +775,95 @@ var mappingData =
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
+						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
 						console.log(sportData);
 						var obj = {};
+							obj.events = [];
 						for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
 							for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+								var venue = null,
+									startTime = null;
 								try {
 									//Inserting Venue & Event Properties
-									var venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-									var startTime = new ParsedDate(sportData.sports[0].event_phases[i].phases[j].started_at);
-									obj.event = {};
+									venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+									startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
 									//Ensuring Venue is Not Duplicated
 									if (!obj.hasOwnProperty(venue)) {
 										obj.venue = venue;
 									}
-									obj.event.startTime = startTime.time.substr(0, 5);
+									obj.events[j] = {startTime: startTime};
+									console.log(obj.events[j]);
 								} catch (error) {
 									console.log("Error: Venue Data Unavailable.");
 								}
 								for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-									var home = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-									var away = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-									var winner = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
+									var homeResult = null,
+										awayResult = null,
+										homeParticipant = null,
+										awayParticipant = null,
+										winningParticipant = null,
+										losingParticipant = null;
 									try {
-										obj.event.home = home;
-										obj.event.away = away;
-										obj.event.winner = winner;
+										homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
+										awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
+										homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant;
+										awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant;
+										winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
+										if (winningParticipant == awayParticipant) {
+											var holder = awayParticipant,
+											losingParticipant = homeParticipant,
+											winningParticipant = holder;
+										} else {
+											winningParticipant = homeParticipant;
+											losingParticipant = awayParticipant;
+										};
+										obj.event[j] = {winningParticipant: winningParticipant};
+										obj.event[j] = {losingParticipant: losingParticipant};
+										obj.event[j] = {homeResult: homeResult};
+										obj.event[j] = {awayResult: awayResult};
 									} catch (error) {
 										console.log("Error: No Match Data");
 									} 
+									try {
+
+									} catch (error) {
+										console.log("Error: No Results Data");
+									}
 									console.log(obj);
 								}
 							}
 						}
-						calendar.viewmodel.dataOutput.push(obj)
+						//Setting Observable to Determine Which Template to Render to View
+						calendar.viewmodel.teamSchedule = ko.observable(false),
+						calendar.viewmodel.singleSchedule = ko.observable(false),
+						calendar.viewmodel.teamResult = ko.observable(false),
+						calendar.viewmodel.singleResult = ko.observable(false);
+						try {
+							if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport != 'Ice_Hockey') {
+								calendar.viewmodel.singleSchedule(true);
+								console.log("singleSchedule");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport != 'Ice_Hockey') {
+								calendar.viewmodel.singleResult(true);
+								console.log("singleResult");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport == 'Ice_Hockey') {
+								calendar.viewmodel.teamSchedule(true);
+								console.log("teamSchedule");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport == 'Ice_Hockey') {
+								calendar.viewmodel.teamResult(true);
+								console.log("teamResult");
+							} else {
+								console.log("Template Observable Failure");
+							}
+							console.log(calendar.viewmodel.teamSchedule());
+							console.log(calendar.viewmodel.singleSchedule());
+							console.log(calendar.viewmodel.teamResult());
+							console.log(calendar.viewmodel.singleResult());
+						} catch (error) {
+							console.log("Unable to Determine Timing of Events");
+						}
+						calendar.viewmodel.dataOutput.push(obj);
 						console.log("exit computed, output below");
 						console.log(calendar.viewmodel.dataOutput());
 						//Mapping Parsed API Data Into New dataPane Viewmodel
@@ -825,8 +911,17 @@ var mappingData =
 			master.countries = {},
 			master.apiSportData = {}, 
 			master.calendarDates = {},
-			master.dataOutput = ko.observableArray([]);
-			//Data Computed Functions - Return User Requested Data
+			master.dataOutput = ko.observableArray([]),
+			master.startTimes = ko.observableArray([]),
+			master.teamSchedule = ko.observable(true),
+			master.singleSchedule = ko.observable(true),
+			master.teamResult = ko.observable(true),
+			master.singleResult = ko.observable(true);
+
+	/**
+	 *	Data Computed Functions - Return User Requested Data
+	 **/
+
 			master.venueData = ko.computed(function () {
 				try {
 					if (master.dataOutput()[0] == null || master.dataOutput()[0].venue == undefined) {
@@ -874,30 +969,17 @@ var mappingData =
 			});
 			master.eventData = ko.computed(function () {
 				try {
-					if (master.dataOutput()[0] == null || master.dataOutput()[0].event == undefined) {
+					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined) {
 						return null;
 					}
-					console.log(master.dataOutput()[0].event);
-					return master.dataOutput()[0].event;
+					return master.dataOutput()[0].events;
 				} catch (error) {
 					return ''
 				}
 			})
-			master.startData = ko.computed(function () {
-				try {
-					if (master.dataOutput()[0] == null || master.dataOutput()[0].event.startTime == undefined) {
-						return '';
-					} else {
-						console.log(master.dataOutput()[0].event.startTime);
-						return master.dataOutput()[0].event.startTime;
-					}
-				} catch (error) {
-					return '';
-				}
-			});
 
 	/**
-	 *	Mapping Logic
+	 *	Mapping Data Logic
 	 **/
 
 			//Structures Mapping Data For Menu
@@ -965,31 +1047,6 @@ var mappingData =
 				//Instantiating
 				master.calendar = new Calendar (328, 18, {top: 20, right: 4, bottom: 20, left: 20}, 2, '#07153D', master.mappedColors, master.mappedSports, master.mappedDays, mappingData, master),
 				master.calendar.init(master.calendar.outer, master.calendar.inner, master.calendar.strokeColor, master.calendar.strokeWidth, master.calendar.rings, master.calendar.segments, master.calendar.colors, master.calendar.days, master.calendar.sports),
-				master.menuhoverOver = function (sport, color) {
-					master.calendar.filter(sport, color);
-				};
-				master.menuhoverOut = function (sport, color) {
-					var sport = sport();
-					var color = color();
-					if (master.calendar.filtering == false) {
-						$('.col2, .col4').stop().animate({opacity: 1}, 600);
-					} else if (master.calendar.filtering == true) {
-						$('.col2, .col4').stop().animate({opacity: 1}, 600);
-						$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
-					};
-				};
-
-
-// calendar.filtering = true;
-// 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
-// 				$('#centerDismiss').addClass('selectable');
-// 				$('.' + sport).stop().animate({opacity: .70}, 600);
-// 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
-// 				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
-// 				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .3}, 400);
-// 				calendar.sportSelected = true;
-
-
 				preloadImages(images);
 				//Initial AJAX Data Retrieval From API
 				if (processingAJAX === true) {
@@ -1036,8 +1093,20 @@ var mappingData =
 					});
 				};
 			};
-			master.update = function (sport) {
-
+			//Sports Pane Hover Over Event
+			master.menuhoverOver = function (sport, color) {
+				master.calendar.filter(sport, color);
+			};
+			//Sports Pane Hover Out Event
+			master.menuhoverOut = function (sport, color) {
+				var sport = sport();
+				var color = color();
+				if (master.calendar.filtering == false) {
+					$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				} else if (master.calendar.filtering == true) {
+					$('.col2, .col4').stop().animate({opacity: 1}, 600);
+					$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
+				};
 			};
 	};
 
