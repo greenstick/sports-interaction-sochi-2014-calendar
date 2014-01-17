@@ -77,7 +77,7 @@
 		-ms-transform: rotate(52deg);
 		-moz-transform: rotate(52deg);
 		-webkit-transform: rotate(52deg);
-		font-size: 11px;
+		font-size: 12px;
 	}
 	#sportsPane {
 		position: relative;
@@ -105,7 +105,7 @@
 		left: 0px;
 		width: 276px;
 		height: 42px;
-		color: #F47920;
+		color: #FF9600;
 		font-size: 14px;
 		font-weight: bold;
 		margin: 0 0 17px 0;
@@ -165,6 +165,9 @@
 	#sportsPane .header .headtype .c2 {
 		cursor: pointer;
 	}
+	#dataPane .header .headtype .c2 {
+		color: #FFFFFF;
+	}
 	#dataExit {
 		position: relative;
 		left: 262px;
@@ -173,7 +176,7 @@
 		height: 28px;
 		cursor: pointer;
 	}
-	#dataPane .venue .head {
+	#dataPane .template .head {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -182,9 +185,9 @@
 		font-size: 16px;
 		font-weight: bold;
 		color: #FF9600;
-		margin: 5px 8px 0 8px;
+		margin: 17px 8px 0 8px;
 	}
-	#dataPane .venue:first-child {
+	#dataPane .template:first-child {
 		top: 12px;
 	}
 	#dataPane .dataOut {
@@ -202,7 +205,7 @@
 		user-select: none;
 		cursor: move;
 	}
-	#dataPane .dataOut .venue .rowData {
+	#dataPane .dataOut .template .rowData {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -213,20 +216,20 @@
 		text-align: center;
 		margin: 8px 8px 0 8px;
 	}
-	#dataPane .dataOut .venue .rowData:nth-child(odd) {
+	#dataPane .dataOut .template .rowData:nth-child(odd) {
 		border-bottom: 1px solid #23345C;
 	}
-	#dataPane .dataOut .venue .rowData:nth-child(even) {
+	#dataPane .dataOut .template .rowData:nth-child(even) {
 		border-bottom: 1px solid #192951;
 	}
 /* Schedule - Team */
-	#dataPane .dataOut .venue.scheduleTeam {
+	#dataPane .dataOut .template.scheduleTeam {
 		display: block;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData {
+	#dataPane .dataOut .template.scheduleTeam .rowData {
 		height: 20px;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .match {
+	#dataPane .dataOut .template.scheduleTeam .rowData .match {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -234,7 +237,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .time {
+	#dataPane .dataOut .template.scheduleTeam .rowData .time {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -243,7 +246,7 @@
 		display: inline-block;
 		text-align: left;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .match .flag {
+	#dataPane .dataOut .template.scheduleTeam .rowData .match .flag {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -251,7 +254,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .match .competing {
+	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -259,7 +262,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .match .competing .team {
+	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing .team {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -267,7 +270,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleTeam .rowData .match .competing .versus {
+	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing .versus {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -276,7 +279,7 @@
 		display: inline-block;
 	}
 /* Schedule - Single */
-	#dataPane .dataOut .venue.scheduleSingle .time {
+	#dataPane .dataOut .template.scheduleSingle .time {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -284,7 +287,7 @@
 		height: 20px;
 		padding: 0 0 0 8px;
 	}
-	#dataPane .dataOut .venue.scheduleSingle .rowData {
+	#dataPane .dataOut .template.scheduleSingle .rowData {
 		position: relative;
 		top: -12px;
 		left: 0px;
@@ -293,7 +296,7 @@
 		padding: 0 0 0 0;
 		text-align: left;
 	}
-	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow {
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -301,7 +304,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow .competitor {
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .competitor {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -309,7 +312,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.scheduleSingle .rowData .subRow .flag {
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .flag {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -318,13 +321,13 @@
 		display: inline-block;
 	}
 /* Result - Team */
-	#dataPane .dataOut .venue.resultTeam {
+	#dataPane .dataOut .template.resultTeam {
 		display: block;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData {
+	#dataPane .dataOut .template.resultTeam .rowData {
 		height: 20px;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData .match, #dataPane .dataOut .venue.resultSingle .rowData .result {
+	#dataPane .dataOut .template.resultTeam .rowData .match, #dataPane .dataOut .template.resultSingle .rowData .result {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -332,7 +335,7 @@
 		height: 20px;
 		text-align: left;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData .match .win, #dataPane .dataOut .venue.resultTeam .rowData .match .loss {
+	#dataPane .dataOut .template.resultTeam .rowData .match .win, #dataPane .dataOut .template.resultTeam .rowData .match .loss {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -340,7 +343,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData .match .win .flag, #dataPane .dataOut .venue.resultTeam .rowData .match .loss .flag {
+	#dataPane .dataOut .template.resultTeam .rowData .match .win .flag, #dataPane .dataOut .template.resultTeam .rowData .match .loss .flag {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -348,7 +351,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData .match .win .team, #dataPane .dataOut .venue.resultTeam .rowData .match .loss .team {
+	#dataPane .dataOut .template.resultTeam .rowData .match .win .team, #dataPane .dataOut .template.resultTeam .rowData .match .loss .team {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -356,7 +359,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultTeam .rowData .match .win .score, #dataPane .dataOut .venue.resultTeam .rowData .match .loss .score {
+	#dataPane .dataOut .template.resultTeam .rowData .match .win .score, #dataPane .dataOut .template.resultTeam .rowData .match .loss .score {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -365,7 +368,7 @@
 		display: inline-block;
 	}
 /* Result - Single */
-	#dataPane .dataOut .venue.resultSingle .rowData {
+	#dataPane .dataOut .template.resultSingle .rowData {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -373,7 +376,7 @@
 		height: 40px;
 		padding: 4px 0 0 0;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -381,7 +384,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow .position {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .position {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -389,7 +392,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow .competitor {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .competitor {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -397,7 +400,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow .flag {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .flag {
 		position: relative;
 		top: 0px;
 		left: 0px;
@@ -405,7 +408,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow .country {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .country {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -413,7 +416,7 @@
 		height: 20px;
 		display: inline-block;
 	}
-	#dataPane .dataOut .venue.resultSingle .rowData .result .subRow .result {
+	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .result {
 		position: relative;
 		top: -2px;
 		left: 0px;
@@ -572,7 +575,7 @@
 		background-color: #07153D;
 		font-family: 'Open Sans Condensed', sans-serif;
 		font-size: 2.0em;
-		color: #F47920;
+		color: #FF9600;
 		z-index: 10;
 	}
 	#loading .dialogue {
@@ -597,7 +600,7 @@
 		width: 18px;
 		height: 18px;
 		margin: 44px auto;
-		background: #F47920;
+		background: #FF9600;
 		-moz-border-radius: 88px;
 		-moz-animation: bubbling 0.7s infinite alternate;
 		-webkit-border-radius: 88px;
@@ -686,7 +689,7 @@
 		width: 4px;
 		height: 4px;
 		margin: 10px auto;
-		background: #F47920;
+		background: #FF9600;
 		-moz-border-radius: 20px;
 		-moz-animation: bubblingsmall 0.7s infinite alternate;
 		-webkit-border-radius: 20px;

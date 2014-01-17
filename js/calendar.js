@@ -479,6 +479,11 @@ var mappingData =
 	ParsedDate.prototype.time = function () {
 		return this.time;
 	};
+	//Used to Change Scheduled Times to EST
+	ParsedDate.prototype.eastern = function () {
+		return this.eastern;
+	};
+	//Allows For The Comparing of Date Objects
 	pastPresent = function (test) {
 		var dates = {
 		    convert:function(d) {
@@ -506,10 +511,28 @@ var mappingData =
 			return false;
 		};
 	}
+	//Format ParsedDate Object to Hour
 	formatHour = function (time) {
-		parsedDate = new ParsedDate(time),
+		var parsedDate = new ParsedDate(time),
 		hour = parsedDate.time.substr(0, 5);
 		return hour;
+	}
+	//Format ParsedDate Object to EST
+	formatEastern = function (time) {
+		var parsedDate = new ParsedDate(time);
+		var hour = parsedDate.time.substr(0, 5);
+		var hours = parseInt(hour.substr(0, 2));
+		var minutes = hour.substr(3, 2);
+		var eastern = hours - 4; //Offset is representative of the timezone dates are delivered in by the API
+		if (eastern < 0) {
+			return eastern = eastern + 24;
+		}
+		eastern = eastern.toString();
+		if (eastern.length == 1) {
+			eastern = "0" + eastern;
+		}
+		eastern = eastern + ":" + minutes;
+		return eastern;
 	}
 
 /**
@@ -545,7 +568,7 @@ var mappingData =
 /**
  *	Calendar Class
  *	@params Radius 1 (int), Radius 2 (int), Margins (object), Stroke Width (int), Stroke Color (hex/rgb), Colors (array - hex/rgb), Days (int), Sports (int)
- *	Params Passed to constructor by CalendarVM
+ *		Params Passed to constructor by CalendarVM
  **/
 
 	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, parentViewmodel) {
@@ -577,11 +600,16 @@ var mappingData =
 				.attr("width", calendar.width)
 				.attr("height", calendar.height),
 			calendar.date = {},
-			calendar.filtering = false,
+			calendar.viewmodel = parentViewmodel,
 			calendar.filterHistory = [],
-			calendar.dataDisplaying = false,
-			calendar.viewmodel = parentViewmodel;
-			//Generating Calendar
+			//Control Flow Variables
+			calendar.filtering = false,
+			calendar.dataDisplaying = false;
+			
+			/**
+			 *	Outputs Calendar Chart and Binds Event Handlers
+			 **/
+
 			calendar.init = function (outer, inner, strokeColor, strokeWidth, segments, rings, colors, sports, days) {
 				var ringWidth = (outer - inner)/rings;
 				var offsetOdd = 0;
@@ -613,7 +641,8 @@ var mappingData =
 									})
 									.on("touchend", function (d) {
 										var arcData = d3.select(this).attr("data-arc");
-											$("html").css("zoom", "1");	
+											// $("html").css("zoom", "1");	
+											// $("#interactiveWrapper").css({"-webkit-transform": "scale(1.0)"});
 											calendar.selectArc(arcData);
 									})
 									.on("mouseleave", function () {
@@ -646,7 +675,6 @@ var mappingData =
 									})
 									.on("touchend", function (d) {
 										var arcData = d3.select(this).attr("data-arc");	
-											$("html").css("zoom", "100%");
 											calendar.selectArc(arcData);
 									})
 									.on("mouseleave", function (d) {
@@ -662,6 +690,7 @@ var mappingData =
 /**
  *	Calendar Methods
  **/
+
 			//Called By Data Bind in View
 			calendar.filter = function (sport, color) {
 				var sport = sport();
@@ -682,13 +711,13 @@ var mappingData =
 			calendar.reset = function () {
 				calendar.filterHistory.splice(0, 1);
 				calendar.filtering = false;
-				$('#sportsPane .header .headtype .c2 span').fadeOut(400);
+				$('#sportsPane .header .headtype .c2 span').stop().fadeOut(400);
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
 				$('#centerDismiss').removeClass('selectable');
-				$('#centerDismiss .dateDisplay').fadeOut(600);
+				$('#centerDismiss .dateDisplay').stop().fadeOut(600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
-				$('.sportArc').animate({opacity: .70}, 600);
-				$('#sportsExit').fadeOut(600);
+				$('.sportArc').stop().animate({opacity: .70}, 600);
+				$('#sportsExit').stop().fadeOut(600);
 				calendar.sportSelected = false;
 			};
 			//Retrieves Arc Data &  Matches it to API Data From Initial Request
@@ -737,7 +766,7 @@ var mappingData =
 				};
 				try {
 					calendar.date = new ParsedDate(apiDate());
-					$('#centerDismiss .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
+					$('#centerDismiss .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
 				} catch (error) {
 					console.log("Error: Hover Data Unavailable - Initial API Request Failed.");
 				}
@@ -771,10 +800,19 @@ var mappingData =
 				} else {
 					//AJAX User Requested Data
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
+					calendar.viewmodel.teamSchedule(false);
+					calendar.viewmodel.singleSchedule(false);
+					calendar.viewmodel.teamResult(false);
+					calendar.viewmodel.singleResult(false);
+					calendar.viewmodel.noData(false);
+					calendar.viewmodel.loadingData(true);
 					asyncResource(generateURL("summary", params)).done(function (response) {
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
-						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)).toUpperCase() + " " + calendar.date.day);
+						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
+						$(".nano").nanoScroller({scrollTo: $('.template'), sliderMaxHeight: 60});
+				 		$(".pane").css("display", "block");
+				 		$(".slider").css("display", "block");
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
@@ -835,37 +873,30 @@ var mappingData =
 								}
 							}
 						}
-						//Setting Observable to Determine Which Template to Render to View
-						calendar.viewmodel.teamSchedule = ko.observable(false),
-						calendar.viewmodel.singleSchedule = ko.observable(false),
-						calendar.viewmodel.teamResult = ko.observable(false),
-						calendar.viewmodel.singleResult = ko.observable(false);
+						//Determining Which Template to Render to View
+						calendar.viewmodel.loadingData(false);
 						try {
 							if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport != 'Ice_Hockey') {
 								calendar.viewmodel.singleSchedule(true);
-								console.log("singleSchedule");
 							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport != 'Ice_Hockey') {
 								calendar.viewmodel.singleResult(true);
-								console.log("singleResult");
 							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport == 'Ice_Hockey') {
 								calendar.viewmodel.teamSchedule(true);
-								console.log("teamSchedule");
 							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport == 'Ice_Hockey') {
 								calendar.viewmodel.teamResult(true);
-								console.log("teamResult");
 							} else {
-								console.log("Template Observable Failure");
+								calendar.viewmodel.noData(true);
 							}
-							console.log(calendar.viewmodel.teamSchedule());
-							console.log(calendar.viewmodel.singleSchedule());
-							console.log(calendar.viewmodel.teamResult());
-							console.log(calendar.viewmodel.singleResult());
 						} catch (error) {
-							console.log("Unable to Determine Timing of Events");
+							calendar.viewmodel.noData(true);
 						}
-						calendar.viewmodel.dataOutput.push(obj);
-						console.log("exit computed, output below");
-						console.log(calendar.viewmodel.dataOutput());
+						try {
+							calendar.viewmodel.dataOutput.push(obj);
+							console.log("exit computed, output below");
+							console.log(calendar.viewmodel.dataOutput());
+						} catch (error) {
+							console.log("Error: Unable To Render Data")
+						}
 						//Mapping Parsed API Data Into New dataPane Viewmodel
 						// calendar.dataPane = ko.mapping.fromJS(calendar.viewmodel.sportData, {}, calendar.dataPane);
 						// console.log(calendar.dataPane);
@@ -913,10 +944,12 @@ var mappingData =
 			master.calendarDates = {},
 			master.dataOutput = ko.observableArray([]),
 			master.startTimes = ko.observableArray([]),
-			master.teamSchedule = ko.observable(true),
-			master.singleSchedule = ko.observable(true),
-			master.teamResult = ko.observable(true),
-			master.singleResult = ko.observable(true);
+			master.teamSchedule = ko.observable(false),
+			master.singleSchedule = ko.observable(false),
+			master.teamResult = ko.observable(false),
+			master.singleResult = ko.observable(false),
+			master.loadingData = ko.observable(false),
+			master.noData = ko.observable(false);
 
 	/**
 	 *	Data Computed Functions - Return User Requested Data
@@ -925,7 +958,7 @@ var mappingData =
 			master.venueData = ko.computed(function () {
 				try {
 					if (master.dataOutput()[0] == null || master.dataOutput()[0].venue == undefined) {
-					return 'No Data';
+					return 'Retrieving Data...';
 					} else {
 						var venue = master.dataOutput()[0].venue;
 						switch (venue) {
@@ -1085,9 +1118,6 @@ var mappingData =
 						processingAJAX = false;
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
-				 			$(".nano").nanoScroller();
-				 			$(".pane").css("display", "block");
-				 			$(".slider").css("display", "block");
 				 		});
 						console.log("XHR Status: Resolved");
 					});

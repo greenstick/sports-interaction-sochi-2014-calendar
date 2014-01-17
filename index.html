@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, height=device-height, user-scalable=yes" />
+	<meta name="viewport" content="width=device-width initial-scale=1" />
 	<link href="css/calendar.css" type="text/css" rel="stylesheet" />
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css' />
 </head>
@@ -43,7 +43,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
+					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
 				</div>
 				<!-- /ko -->
 				<!-- ko if: ($index() %2 == 1) -->
@@ -53,7 +53,7 @@
 							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
 						</svg>
 					</div>
-					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, touchMenu: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
+					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
 				</div>
 				<!-- /ko -->
 			</div>
@@ -86,11 +86,14 @@
 			</div>
 			<div class="dataOut nano">
 				<div class="content">
-					<div class="venue scheduleTeam" data-bind="if: $root.teamSchedule">
-						<div class="head venue" data-bind="text: venueData"></div>
+					<div class="template loadingData" data-bind="if: $root.loadingData">
+						<div class="head">Loading...</div>
+					</div>
+					<div class="template scheduleTeam" data-bind="if: $root.teamSchedule">
+						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
 							<div class="rowData">
-								<div class="time" data-bind="text: formatHour(startTime)"></div>
+								<div class="time" data-bind="text: formatEastern(startTime)"></div>
 								<div class="match">
 									<div class="flag flagA"><img src="img/flags/SWE.png" /></div>
 									<div class="competing">
@@ -103,10 +106,10 @@
 							</div>
 						</div>
 					</div>
-					<div class="venue scheduleSingle" data-bind="if: $root.singleSchedule">
-						<div class="head venue" data-bind="text: venueData"></div>
+					<div class="template scheduleSingle" data-bind="if: $root.singleSchedule">
+						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
-							<div class="time" data-bind="text: formatHour(startTime)"></div>
+							<div class="time" data-bind="text: formatEastern(startTime)"></div>
 							<div class="rowData">
 								<div class="subRow">
 									<div class="competitor">Sweden</div>
@@ -115,8 +118,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="venue resultTeam" data-bind="if: $root.teamResult">
-						<div class="head venue" data-bind="text: venueData"></div>
+					<div class="template resultTeam" data-bind="if: $root.teamResult">
+						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
 							<div class="rowData">
 								<div class="match">
@@ -138,8 +141,8 @@
 							</div>
 						</div>
 					</div>
-					<div class="venue resultSingle" data-bind="if: $root.singleResult">
-						<div class="head venue" data-bind="text: venueData"></div>
+					<div class="template resultSingle" data-bind="if: $root.singleResult">
+						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
 							<div class="rowData">
 								<div class="result">
@@ -156,7 +159,9 @@
 							</div>
 						</div>
 					</div>
-					<!-- /ko -->
+					<div class="template noData" data-bind="if: $root.noData">
+						<div class="head">No Schedule or Results<br>Data Available</div> 
+					</div>
 				</div>
 			</div>
 		</div>
@@ -181,7 +186,7 @@
 <script src="js/lib/D3.min.js"></script>
 <script src="js/lib/KO-3.0.0.js"></script>
 <script src="js/lib/KO-mapping.js"></script>
-<!-- <script src="js/lib/JsonQ.min.js"></script> -->
+<script src="js/lib/iOS-OCZ-bugfix.js"></script>
 <script src="js/lib/nanoscroller.min.js"></script>
 <script src="js/lib/date.js"></script>
 <script src="js/calendar.js"></script>
@@ -191,6 +196,7 @@
  	function format (input) {
  		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
  		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
+ 		(input == "Snowboard" || input == "SNOWBOARD") ? input = "SNOWBOARDING" : input = input;
  		return input;
  	}
 </script>
