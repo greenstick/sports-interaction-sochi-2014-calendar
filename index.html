@@ -91,17 +91,17 @@
 					</div>
 					<div class="template scheduleTeam" data-bind="if: $root.teamSchedule">
 						<div class="head" data-bind="text: venueData"></div>
-						<div data-bind="foreach: eventData">
-							<div class="rowData">
+						<div class="rowData" data-bind="foreach: eventData">
+							<div data-bind="foreach: match">
 								<div class="time" data-bind="text: formatEastern(startTime)"></div>
 								<div class="match">
-									<div class="flag flagA"><img src="img/flags/SWE.png" /></div>
+									<div class="flag flagA"><img data-bind="attr:{src: 'img/flags/' + homeShort + '.png'}" /></div>
 									<div class="competing">
-										<div class="team teamA">SWE</div>
+										<div class="team teamA" data-bind="text: homeShort"></div>
 										<div class="versus">vs</div>
-										<div class="team teamB">FIN</div>
+										<div class="team teamB" data-bind="text: awayShort"></div>
 									</div>
-									<div class="flag flagB"><img src="img/flags/FIN.png" /></div>
+									<div class="flag flagB"><img data-bind="attr:{src: 'img/flags/' + awayShort + '.png'}" /></div>
 								</div>
 							</div>
 						</div>
@@ -121,20 +121,20 @@
 					<div class="template resultTeam" data-bind="if: $root.teamResult">
 						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
-							<div class="rowData">
+							<div class="rowData" data-bind="foreach: $index.match">
 								<div class="match">
 									<div class="win">
 										<div class="flag flagA">
 											<img src="img/flags/SWE.png" />
 										</div>
-										<div class="team teamA">SWE</div>
+										<div class="team teamA" data-bind="winningShort">SWE</div>
 										<div class="score scoreA">1</div>
 									</div>
 									<div class="loss">
 										<div class="flag flagB">
 											<img src="img/flags/FIN.png" />
 										</div>
-										<div class="team teamB">FIN</div>
+										<div class="team teamB" data-bind="awayShort">FIN</div>
 										<div class="score scoreB">0</div>
 									</div>
 								</div>
@@ -144,16 +144,16 @@
 					<div class="template resultSingle" data-bind="if: $root.singleResult">
 						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
-							<div class="rowData">
+							<div class="rowData" data-bind="foreach: participant">
 								<div class="result">
 									<div class="subRow">
-										<div class="position">1</div>
-										<div class="competitor">Sweden</div>
+										<div class="position" data-bind="text: rank"></div>
+										<div class="competitor" data-bind="text: participantName"></div>
 									</div>
 									<div class="subRow">
-										<div class="flag"><img src="img/flags/SWE.png" /></div>
-										<div class="country">SWE</div>
-										<div class="result">23:47:15</div>
+										<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
+										<div class="country" data-bind="text: countryShort"></div>
+										<div class="result" data-bind="text: result"></div>
 									</div>
 								</div>
 							</div>
@@ -167,6 +167,70 @@
 		</div>
 		<div id="disclaimer">
 			All times displayed in Eastern Standard Time
+		</div>
+		<div id="logo">
+			<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="50px" viewBox="0 0 100 50" enable-background="new 0 0 100 50" xml:space="preserve">
+			<g>
+				<g>
+					<path fill="#FFFFFF" d="M51.433,17.188c1.226,0,2.311,0.542,3.059,1.409l-1.138,0.965c-0.477-0.532-1.159-0.856-1.921-0.856
+						c-1.344,0-2.396,1.018-2.396,2.386c0,1.366,1.051,2.376,2.396,2.376c0.762,0,1.454-0.328,1.93-0.869l1.141,0.965
+						c-0.748,0.878-1.845,1.421-3.07,1.421c-2.245,0-4.066-1.639-4.066-3.894C47.367,18.836,49.188,17.188,51.433,17.188z"/>
+					<path fill="#FFFFFF" d="M59.231,17.188c2.246,0,4.037,1.723,4.037,3.915c0,2.201-1.791,3.915-4.037,3.915
+						c-2.231,0-4.034-1.713-4.034-3.915C55.197,18.911,57,17.188,59.231,17.188z M59.231,23.499c1.323,0,2.364-1.064,2.364-2.396
+						c0-1.313-1.031-2.397-2.364-2.397c-1.334,0-2.363,1.072-2.363,2.397C56.868,22.458,57.897,23.499,59.231,23.499z"/>
+					<path fill="#FFFFFF" d="M64.695,17.307h1.673v6.04h2.948v1.519h-4.621V17.307z"/>
+					<path fill="#FFFFFF" d="M70.413,17.307h1.671v4.327c0,1.322,0.618,1.833,1.551,1.833c0.925,0,1.539-0.511,1.539-1.833v-4.327
+						h1.671v4.5c0,2.137-1.451,3.178-3.21,3.178c-1.769,0-3.222-1.041-3.222-3.178V17.307z"/>
+					<path fill="#FFFFFF" d="M78.895,17.307h1.401l2.592,3.871l2.59-3.871h1.397v7.559h-1.57v-4.609l-2.417,3.578l-2.431-3.578v4.609
+						h-1.562V17.307z"/>
+					<path fill="#FFFFFF" d="M88.996,17.307h1.49l3.618,4.695v-4.695h1.616v7.559h-1.365l-3.741-4.827v4.827h-1.618V17.307z"/>
+				</g>
+				<g>
+					<path fill="#FFFFFF" d="M47.503,30.108h4.977v1.519h-3.307v1.551h3.014v1.482h-3.014v3.007h-1.67V30.108z"/>
+					<path fill="#FFFFFF" d="M54.088,30.108h1.667v7.559h-1.667V30.108z"/>
+					<path fill="#FFFFFF" d="M57.091,30.108h1.779l2.06,5.119l2.05-5.119h1.775l-3.087,7.559h-1.477L57.091,30.108z"/>
+					<path fill="#FFFFFF" d="M66.091,30.108h5.163v1.519h-3.492v1.42h3.264v1.488h-3.264v1.611h3.568v1.521h-5.239V30.108z"/>
+				</g>
+				<g>
+					<path fill="#FFFFFF" d="M29.711,46.277c-1.091,0-2.081-0.68-2.788-1.907l-8.237-14.258l7.626-13.206l1.303,0.752L20.42,30.112
+						l7.802,13.51c0.422,0.734,0.967,1.153,1.489,1.153c0.523,0,1.064-0.419,1.487-1.153l8.018-13.887l1.301,0.752L32.499,44.37
+						C31.791,45.598,30.801,46.277,29.711,46.277z"/>
+					<path fill="#FFFFFF" d="M26.232,46.277c-1.088,0-2.081-0.68-2.789-1.907l-8.234-14.258l7.626-13.206l1.301,0.752l-7.194,12.454
+						l7.804,13.506c0.42,0.736,0.964,1.157,1.486,1.157V46.277z"/>
+					<polygon fill="#FFFFFF" points="29.705,43.192 37.042,30.487 35.743,29.735 28.838,41.692 		"/>
+					<polygon fill="#FFFFFF" points="27.968,40.184 33.567,30.487 32.269,29.735 27.101,38.684 		"/>
+					<polygon fill="#FFFFFF" points="26.23,37.177 30.094,30.487 28.793,29.735 25.364,35.677 		"/>
+					<polygon fill="#FFFFFF" points="24.494,34.166 26.619,30.487 25.318,29.735 23.626,32.668 		"/>
+					<path fill="#FFFFFF" d="M22.762,46.277c-1.092,0-2.081-0.68-2.789-1.907l-8.235-14.258l7.625-13.206l1.301,0.752L13.47,30.112
+						l7.803,13.506c0.422,0.736,0.965,1.157,1.489,1.157V46.277z"/>
+					<path fill="#FFFFFF" d="M19.286,46.277c-1.09,0-2.08-0.68-2.789-1.907L8.263,30.112l7.627-13.206l1.3,0.752L9.997,30.112
+						l7.801,13.506c0.422,0.736,0.966,1.157,1.488,1.157V46.277z"/>
+					<path fill="#FFFFFF" d="M15.813,46.277c-1.092,0-2.081-0.68-2.789-1.907L4.79,30.112l7.625-13.206l1.302,0.752L6.523,30.112
+						l7.801,13.506c0.422,0.736,0.965,1.157,1.489,1.157V46.277z"/>
+				</g>
+				<g>
+					<path fill="#FFFFFF" d="M6.791,3.993c0.643,0,1.209,0.284,1.603,0.738L7.795,5.236C7.546,4.958,7.188,4.788,6.791,4.788
+						c-0.704,0-1.255,0.535-1.255,1.25c0,0.716,0.551,1.245,1.255,1.245c0.397,0,0.761-0.169,1.011-0.454l0.598,0.504
+						C8.007,7.794,7.433,8.078,6.791,8.078c-1.176,0-2.13-0.857-2.13-2.04C4.66,4.856,5.615,3.993,6.791,3.993z"/>
+					<path fill="#FFFFFF" d="M9.716,4.056h1.659c0.74,0,1.347,0.568,1.347,1.306c0,0.517-0.284,0.942-0.705,1.126l0.967,1.528h-0.989
+						l-0.824-1.318h-0.013h-0.573v1.318h-0.87V4.056z M11.279,5.925c0.34,0,0.567-0.216,0.567-0.551c0-0.309-0.214-0.523-0.493-0.523
+						h-0.768v1.074H11.279z"/>
+					<path fill="#FFFFFF" d="M14.322,4.056h2.705v0.795h-1.829v0.744h1.71v0.777h-1.71V7.22h1.87v0.795h-2.746V4.056z"/>
+					<path fill="#FFFFFF" d="M19.733,4.056h0.778l1.637,3.96h-0.933l-0.268-0.665h-1.654l-0.266,0.665h-0.932L19.733,4.056z
+						 M20.698,6.651l-0.574-1.437l-0.579,1.437H20.698z"/>
+					<path fill="#FFFFFF" d="M23.777,4.851h-1.072V4.056h3.005v0.795h-1.057v3.165h-0.875V4.851z"/>
+					<path fill="#FFFFFF" d="M27.362,4.056h2.703v0.795h-1.829v0.744h1.71v0.777h-1.71V7.22h1.87v0.795h-2.743V4.056z"/>
+					<path fill="#FFFFFF" d="M31.945,4.056h1.501c1.38,0,2.103,0.841,2.103,1.989c0,1.164-0.716,1.971-2.098,1.971h-1.506V4.056z
+						 M33.395,7.22c1,0,1.272-0.522,1.272-1.176c0-0.67-0.272-1.193-1.278-1.193h-0.567V7.22H33.395z"/>
+					<path fill="#FFFFFF" d="M40.081,4.056h1.575c0.63,0,1.131,0.426,1.131,1.01c0,0.382-0.188,0.683-0.507,0.796
+						c0.522,0.091,0.796,0.488,0.796,0.983c0,0.67-0.512,1.17-1.206,1.17h-1.79V4.056z M41.514,5.634c0.249,0,0.427-0.175,0.427-0.42
+						c0-0.233-0.178-0.409-0.421-0.409h-0.58v0.829H41.514z M41.695,7.26c0.296,0,0.513-0.21,0.513-0.482
+						c0-0.268-0.211-0.467-0.519-0.467H40.94v0.95H41.695z"/>
+					<path fill="#FFFFFF" d="M45.37,6.538l-1.455-2.482h0.95l0.942,1.647l0.944-1.647h0.949l-1.455,2.482v1.478H45.37V6.538z"/>
+				</g>
+			</g>
+			</svg>
+
 		</div>
 	</div>
 	<div id="loading">
@@ -184,31 +248,24 @@
 			</div>
 		</div>
 	</div>
-<script src="js/lib/JQ-1.10.2.min.js"></script>
-<script src="js/lib/JQ-touch.js"></script>
-<script src="js/lib/D3.min.js"></script>
-<script src="js/lib/KO-3.0.0.js"></script>
-<script src="js/lib/KO-mapping.js"></script>
-<script src="js/lib/iOS-OCZ-bugfix.js"></script>
-<script src="js/lib/nanoscroller.min.js"></script>
-<script src="js/lib/date.js"></script>
-<script src="js/calendar.js"></script>
-<script src="js/loadimages.js"></script>
-<script>
-	//Formats Specifically Identified Data to Fit with Design
- 	function format (input) {
- 		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
- 		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
- 		(input == "Snowboard" || input == "SNOWBOARD") ? input = "SNOWBOARDING" : input = input;
- 		return input;
- 	}
-</script>
+	<script src="js/lib/JQ-1.10.2.min.js"></script>
+	<script src="js/lib/JQ-touch.js"></script>
+	<script src="js/lib/D3.min.js"></script>
+	<script src="js/lib/KO-3.0.0.js"></script>
+	<script src="js/lib/KO-mapping.js"></script>
+	<script src="js/lib/iOS-OCZ-bugfix.js"></script>
+	<script src="js/lib/nanoscroller.min.js"></script>
+	<script src="js/lib/date.js"></script>
+	<script src="js/calendar.js"></script>
+	<script src="js/loadimages.js"></script>
+	<script>
+		//Formats Specifically Identified Data to Fit with Design
+	 	function format (input) {
+	 		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
+	 		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
+	 		(input == "Snowboard" || input == "SNOWBOARD") ? input = "SNOWBOARDING" : input = input;
+	 		return input;
+	 	}
+	</script>
 </body>
 </html>
-
-					<!-- ko if: $root.scheduleTeam == true; -->
-					<!-- /ko -->
-					<!-- ko if: $root.resultTeam == true; -->
-					<!-- /ko -->
-					<!-- ko if: $root.resultSingle == true; -->
-					<!-- /ko -->

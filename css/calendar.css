@@ -31,7 +31,7 @@
 		position: relative;
 		left: 0px;
 		top: -76px;
-		width: 656px;
+		width: 696px;
 		height: 696px;
 	}
 	#calendarCenter {
@@ -82,7 +82,7 @@
 	#sportsPane {
 		position: relative;
 		float: right;
-		left: -32px;
+		left: -2px;
 		top: -810px;
 		width: 276px;
 		height: 306px;
@@ -92,7 +92,7 @@
 	#dataPane {
 		position: relative;
 		float: right;
-		right: -244px;
+		right: -274px;
 		top: -467px;
 		width: 276px;
 		height: 338px;
@@ -101,11 +101,18 @@
 	}
 	#disclaimer {
 		position: relative;
-		top: -138px;
-		left: 32px;
+		top: -126px;
+		left: 796px;
 		color: #FF9600;
 		font-size: 8px;
 		font-style: italic;
+	}
+	#logo {
+		position: relative;
+		width: 100px;
+		height: 50px;
+		top: -174px;
+		left: 0px;
 	}
 	#dataPane .header, #sportsPane .header {
 		position: relative;
@@ -224,12 +231,12 @@
 		text-align: center;
 		margin: 8px 8px 0 8px;
 	}
-	#dataPane .dataOut .template .rowData:nth-child(odd) {
+/*	#dataPane .dataOut .template .rowData:nth-child(odd) {
 		border-bottom: 1px solid #23345C;
 	}
 	#dataPane .dataOut .template .rowData:nth-child(even) {
 		border-bottom: 1px solid #192951;
-	}
+	}*/
 /* Schedule - Team */
 	#dataPane .dataOut .template.scheduleTeam {
 		display: block;
@@ -381,8 +388,15 @@
 		top: 0px;
 		left: 0px;
 		width: 260px;
-		height: 40px;
 		padding: 4px 0 0 0;
+	}
+	#dataPane .dataOut .template.resultSingle .rowData .result:nth-child(odd) {
+/*		border-bottom: 1px solid #23345C;*/
+		height: 40px;
+	}
+	#dataPane .dataOut .template.resultSingle .rowData .result:nth-child(even) {
+/*		border-bottom: 1px solid #192951;*/
+		height: 40px;
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow {
 		position: relative;

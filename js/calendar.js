@@ -398,7 +398,8 @@ var mappingData =
 		seasonID: 1
 	},
 	seasonID = 1,
-	processingAJAX = false;
+	processingAJAX = false,
+	notifications = [];
 
 /**
  *	Utility Functions - String Formatters and Date Object Parsers
@@ -421,72 +422,80 @@ var mappingData =
 
  	//Format ParsedDate Object to EST Hour
 	formatEastern = function (time) {
-		var parsedDate = new ParsedDate(time);
-		var hour = parsedDate.time.substr(0, 5);
-		var hours = parseInt(hour.substr(0, 2));
-		var minutes = hour.substr(3, 2);
-		var eastern = hours - 4; //Offset is representative of the timezone dates are delivered in by the API
-		if (eastern < 0) {
-			return eastern = eastern + 24;
+		if (time == null) {
+			return "- - : - -";
+		} else {
+			var parsedDate = new ParsedDate(time);
+			var hour = parsedDate.time.substr(0, 5);
+			var hours = parseInt(hour.substr(0, 2));
+			var minutes = hour.substr(3, 2);
+			var eastern = hours - 4; //Offset is representative of the timezone dates are delivered in by the API
+			if (eastern < 0) {
+				return eastern = eastern + 24;
+			}
+			eastern = eastern.toString();
+			if (eastern.length == 1) {
+				eastern = "0" + eastern;
+			}
+			eastern = eastern + ":" + minutes;
+			return eastern;
 		}
-		eastern = eastern.toString();
-		if (eastern.length == 1) {
-			eastern = "0" + eastern;
-		}
-		eastern = eastern + ":" + minutes;
-		return eastern;
 	}
 
 	//Date Parsing Function
 	var ParsedDate = function (date) {
-		var months = [{"month": "01", "name": "January"}, {"month": "02", "name": "February"}, {"month": "03", "name": "March"}, {"month": "04", "name": "April"}, {"month": "05", "name": "May"}, {"month": "06", "name": "June"}, {"month": "07", "name": "July"}, {"month": "08", "name": "August"}, {"month": "09", "name": "September"}, {"month": "10", "name": "October"}, {"month": "11", "name": "November"}, {"month": "12", "name": "December"}];
-			if (date.length === 20){
-				var ISO8061 = date,
-					splitDate = ISO8061.split('T'),
-					year = splitDate[0].substr(0, 4),
-					month = splitDate[0].substr(5, 2),
-					monthName = '',
-					day = splitDate[0].substr(8, 2);
-					if (day[0] == 0) {
-						day = day[1];
-					};
-					time = splitDate[1].substr(0, 8);
-					for (var i = 0; i < months.length; i++) {
-						if (months[i].month == month) {
-							var monthName = months[i].name;
-							break;
+		if (date == null) {
+			return "- - : - -";
+		} else {
+			var months = [{"month": "01", "name": "January"}, {"month": "02", "name": "February"}, {"month": "03", "name": "March"}, {"month": "04", "name": "April"}, {"month": "05", "name": "May"}, {"month": "06", "name": "June"}, {"month": "07", "name": "July"}, {"month": "08", "name": "August"}, {"month": "09", "name": "September"}, {"month": "10", "name": "October"}, {"month": "11", "name": "November"}, {"month": "12", "name": "December"}];
+				if (date.length === 20){
+					var ISO8061 = date,
+						splitDate = ISO8061.split('T'),
+						year = splitDate[0].substr(0, 4),
+						month = splitDate[0].substr(5, 2),
+						monthName = '',
+						day = splitDate[0].substr(8, 2);
+						if (day[0] == 0) {
+							day = day[1];
 						};
-					};
-					this.year = year;
-					this.month = month;
-					this.monthName = monthName;
-					this.day = day;
-					this.time = time;
-			} else if (date.length === 10 && date[10] === "Z") {
-				var ISO8061 = date.substr(0, 9),
-					time = ISO8061.substr(0, 8);
-					this.time = time;
-			} else if (date.length === 10) {
-				var ISO8061 = date,
-					year = ISO8061.substr(0, 4),
-					month = ISO8061.substr(5, 2),
-					monthName = '',
-					day = ISO8061.substr(8, 2);
-					if (day[0] == 0) {
-						day = day[1];
-					};
-					for (var i = 0; i < months.length; i++) {
-						if (months[i].month == month) {
-							var monthName = months[i].name;
-							break;
+						time = splitDate[1].substr(0, 8);
+						for (var i = 0; i < months.length; i++) {
+							if (months[i].month == month) {
+								var monthName = months[i].name;
+								break;
+							};
 						};
-					};
-					this.year = year;
-					this.month = month;
-					this.monthName = monthName;
-					this.day = day;
-			} else {
-				return;
+						this.year = year;
+						this.month = month;
+						this.monthName = monthName;
+						this.day = day;
+						this.time = time;
+				} else if (date.length === 10 && date[10] === "Z") {
+					var ISO8061 = date.substr(0, 9),
+						time = ISO8061.substr(0, 8);
+						this.time = time;
+				} else if (date.length === 10) {
+					var ISO8061 = date,
+						year = ISO8061.substr(0, 4),
+						month = ISO8061.substr(5, 2),
+						monthName = '',
+						day = ISO8061.substr(8, 2);
+						if (day[0] == 0) {
+							day = day[1];
+						};
+						for (var i = 0; i < months.length; i++) {
+							if (months[i].month == month) {
+								var monthName = months[i].name;
+								break;
+							};
+						};
+						this.year = year;
+						this.month = month;
+						this.monthName = monthName;
+						this.day = day;
+				} else {
+					return;
+				};
 			};
 	};
 	ParsedDate.prototype.year = function () {
@@ -511,6 +520,7 @@ var mappingData =
 
 	//Allows For The Comparing of Date Objects
 	pastPresent = function (test) {
+		console.log(test);
 		var dates = {
 		    convert:function(d) {
 		        return (
@@ -820,89 +830,231 @@ var mappingData =
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
 						console.log(sportData);
-						var obj = {};
-							obj.events = [];
+						console.log(data.sport);
+						//Determines Which Template to Render in Data Pane
 						try {
-							for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
-								for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-									var venue = null,
-										startTime = null;
-									try {
-										//Inserting Venue & Event Properties
-										venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-										startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
-										//Ensuring Venue is Not Duplicated
-										if (!obj.hasOwnProperty(venue)) {
-											obj.venue = venue;
+							if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+								calendar.viewmodel.singleSchedule(true);
+								console.log("1");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+								calendar.viewmodel.singleResult(true);
+								console.log("2");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+								calendar.viewmodel.teamSchedule(true);
+								console.log("3");
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+								calendar.viewmodel.teamResult(true);
+								console.log("4");
+							} else {
+								calendar.viewmodel.noData(true);
+								console.log("5");
+							}
+							console.log(calendar.viewmodel.singleSchedule());
+							console.log(calendar.viewmodel.singleResult());
+							console.log(calendar.viewmodel.teamSchedule());
+							console.log(calendar.viewmodel.teamResult());
+							// calendar.viewmodel.singleResult(true);
+							//Contructing Data Object
+							//Is the Selected Sport a Team Sport
+							if (calendar.viewmodel.teamSchedule() == true || calendar.viewmodel.teamResult() == true) {
+								console.log("ENTER TREAM SPORT");
+								var obj =  {};
+								obj.events = [];
+								try {
+									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+											var venue = null,
+												startTime = null;
+											try {
+												//Inserting Venue & Event Properties
+												venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+												startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
+												//Ensuring Venue is Not Duplicated
+												if (!obj.hasOwnProperty(venue)) {
+													obj.venue = venue;
+												}
+												obj.events[j] = {startTime: startTime};
+												obj.events[j] = {match: []};
+											} catch (error) {
+												notifications.push("Error: Venue Data Unavailable \n" + error);
+											}
+											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
+												var homeResult = '',
+													awayResult = '',
+													homeParticipant = '',
+													awayParticipant = '',
+													homeShort = '',
+													awayShort = '',
+													winningParticipant = '',
+													losingParticipant = '';
+												try {
+													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
+													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
+													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
+													homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name;
+													awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name;
+													homeShort = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name_short;
+													awayShort = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name_short;
+													try {
+														//Ensure this same logic is applied to away/home short
+														winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name;
+														winningShort = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name_short;
+														if (winningParticipant == awayParticipant) {
+															var holder = awayParticipant,
+															losingParticipant = homeParticipant,
+															winningParticipant = holder;
+														} else {
+															winningParticipant = homeParticipant;
+															losingParticipant = awayParticipant;
+														};
+														obj.events[j].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, awayShort: awayShort, winningShort: winningShort};
+													} catch (error) {
+														// console.log("Error: Unable to Determine Winning Participant");
+														obj.events[j].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, homeShort: homeShort, awayShort: awayShort};
+													}
+												//Who Won?
+												} catch (error) {
+													notifications.push("Error: No Match Data \n" + error);
+												} 
+											}
 										}
-										obj.events[j] = {startTime: startTime};
-										console.log(obj.events[j]);
-									} catch (error) {
-										console.log("Error: Venue Data Unavailable.");
 									}
-									for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-										var homeResult = null,
-											awayResult = null,
-											homeParticipant = null,
-											awayParticipant = null,
-											winningParticipant = null,
-											losingParticipant = null;
-										try {
-											homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-											awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-											homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant;
-											awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant;
-											winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
-											if (winningParticipant == awayParticipant) {
-												var holder = awayParticipant,
-												losingParticipant = homeParticipant,
-												winningParticipant = holder;
-											} else {
-												winningParticipant = homeParticipant;
-												losingParticipant = awayParticipant;
-											};
-											obj.event[j] = {winningParticipant: winningParticipant};
-											obj.event[j] = {losingParticipant: losingParticipant};
-											obj.event[j] = {homeResult: homeResult};
-											obj.event[j] = {awayResult: awayResult};
-										} catch (error) {
-											console.log("Error: No Match Data");
-										} 
-										try {
-
-										} catch (error) {
-											console.log("Error: No Results Data");
+									// console.log(obj);
+								} catch (error) {
+									notifications.push("Error: No Event Data Available \n" + error);
+								}
+							}
+							//Is The Selected Sport a Single Sport?
+							if (calendar.viewmodel.singleSchedule() == true || calendar.viewmodel.singleResult() == true) {
+								console.log("ENTER SINGLE SPORT");
+								var obj = {};
+								obj.events = [],
+								participant = [];
+								//Searching Results Data Object
+								try {
+									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										console.log("1");
+										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+											console.log("2");
+											var venue = '',
+												startTime = '';
+											try {
+												if (sportData.sports[0].event_phases[i].phases[j].venue == null) {
+													venue = sportData.sports[0].event_phases[i].phases[j].venue
+													if (!obj.hasOwnProperty(venue)) {
+														obj.venue = venue;
+													}
+												} else {
+													//Inserting Venue & Event Properties
+													venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+													//Ensuring Venue is Not Duplicated
+													if (!obj.hasOwnProperty(venue)) {
+														obj.venue = venue;
+													}
+												}
+												// console.log(obj.events[j]);
+											} catch (error) {
+												notifications.push("Error: Venue Data Unavailable \n" + error);
+											}
+											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].results.length; k++) {
+												// console.log("3");
+												var participantName = '',
+													countryName = '',
+													countryShort = '',
+													rank = '',
+													result = '';
+												try {
+													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.name);
+													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name);
+													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name_short);
+													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].rank);
+													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].result);
+													participantName = sportData.sports[0].event_phases[i].phases[j].results[k].participant.name;
+													countryName = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name;
+													countryShort = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name_short;
+													rank = sportData.sports[0].event_phases[i].phases[j].results[k].rank;
+													result = sportData.sports[0].event_phases[i].phases[j].results[k].result;
+													participant.push({participantName: participantName, countryName: countryName, countryShort: countryShort, rank: rank, result: result});
+												} catch (error) {
+													notifications.push("Error: No Results Data \n" + error);
+												} 
+												// console.log(obj);
+											}
 										}
-										console.log(obj);
 									}
+									obj.events.participant = participant;
+								} catch (error) {
+									notifications.push("Alert: No Results Data \n" + error);
+								}
+								try {
+									//Searching Match Data Object
+									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+											var venue = null,
+												startTime = null;
+											try {
+												//Inserting Venue & Event Properties
+												try {
+													venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
+												} catch (error) {
+													notifications.push("Alert: No Venue Data \n" + error);
+												}
+												startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
+												//Ensuring Venue is Not Duplicated
+												if (!obj.hasOwnProperty(venue)) {
+													obj.venue = venue;
+												}
+												obj.events[j] = {startTime: startTime};
+											} catch (error) {
+												notifications.push("Error: Venue Data Unavailable \n" + error);
+											}
+											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
+												var homeResult = null,
+													awayResult = null,
+													homeParticipant = null,
+													awayParticipant = null,
+													winningParticipant = null,
+													losingParticipant = null;
+												try {
+													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
+													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
+													homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant;
+													awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant;
+													winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
+													if (winningParticipant == awayParticipant) {
+														var holder = awayParticipant,
+														losingParticipant = homeParticipant,
+														winningParticipant = holder;
+													} else {
+														winningParticipant = homeParticipant;
+														losingParticipant = awayParticipant;
+													};
+													obj.events[j] = {winningParticipant: winningParticipant};
+													obj.events[j] = {losingParticipant: losingParticipant};
+													obj.events[j] = {homeResult: homeResult};
+													obj.events[j] = {awayResult: awayResult};
+												} catch (error) {
+													notifications.push("Error: No Match Data \n" + error);
+												} 
+												console.log(obj);
+											}
+										}
+									}
+								} catch (error) {
+									notifications.push("Alert: No Match Data \n" + error)
 								}
 							}
 						} catch (error) {
-							console.log("Error: No Event Data Available");
-						}
-						//Determining Which Template to Render to View
-						calendar.viewmodel.loadingData(false);
-						try {
-							if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport != 'Ice_Hockey') {
-								calendar.viewmodel.singleSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport != 'Ice_Hockey') {
-								calendar.viewmodel.singleResult(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == false && data.sport == 'Ice_Hockey') {
-								calendar.viewmodel.teamSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].phases[0].started_at) == true && data.sport == 'Ice_Hockey') {
-								calendar.viewmodel.teamResult(true);
-							} else {
-								calendar.viewmodel.noData(true);
-							}
-						} catch (error) {
 							calendar.viewmodel.noData(true);
+							notifications.push("Error: Unable to Determine Render Template \n" + error)
 						}
 						try {
+							console.log(obj);
+							calendar.viewmodel.loadingData(false);
 							calendar.viewmodel.dataOutput.push(obj);
-							console.log("exit computed, output below");
 							console.log(calendar.viewmodel.dataOutput());
 						} catch (error) {
-							console.log("Error: Unable To Render Data")
+							notifications.push("Error: Unable To Render Data \n" + error)
 						}
 						//Mapping Parsed API Data Into New dataPane Viewmodel
 						// calendar.dataPane = ko.mapping.fromJS(calendar.viewmodel.sportData, {}, calendar.dataPane);
@@ -916,6 +1068,9 @@ var mappingData =
 					}).always(function() {
 						processingAJAX = false;
 						console.log("XHR Status: Resolved");
+						for (var e = 0; e < notifications.length; e++) {
+							console.log("\n" + notifications[e]);
+						}
 					});
 					//Handles Showing and Hiding of dataPane Element
 					if (calendar.dataDisplaying == false) {
@@ -965,8 +1120,10 @@ var mappingData =
 	 		//Outputs Formatted Venue Data
 			master.venueData = ko.computed(function () {
 				try {
-					if (master.dataOutput()[0] == null || master.dataOutput()[0].venue == undefined) {
-					return 'Retrieving Data...';
+					if (master.dataOutput()[0].venue == null) {
+						return "No Venue Data";
+					} else if (master.dataOutput()[0] == null || master.dataOutput()[0].venue == undefined) {
+						return 'Retrieving Data...';
 					} else {
 						var venue = master.dataOutput()[0].venue;
 						switch (venue) {
@@ -1000,6 +1157,7 @@ var mappingData =
 							case "Sliding Center Sanki":
 								return '"Sanki" Venue'
 								break;
+							default: "";
 						}
 						console.log(venue);
 						return venue
@@ -1015,6 +1173,7 @@ var mappingData =
 					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined) {
 						return null;
 					}
+					console.log(master.dataOutput()[0].events);
 					return master.dataOutput()[0].events;
 				} catch (error) {
 					return ''
