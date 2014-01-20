@@ -396,9 +396,9 @@ var mappingData =
 	//Update to Current Season ID as Needed
 	var initialParams = {
 		seasonID: 1
-	},
+		},
 	seasonID = 1,
-	processingAJAX = false,
+	processingXHR = false,
 	notifications = [];
 
 /**
@@ -513,14 +513,9 @@ var mappingData =
 	ParsedDate.prototype.time = function () {
 		return this.time;
 	};
-	//Used to Change Scheduled Times to EST
-	ParsedDate.prototype.eastern = function () {
-		return this.eastern;
-	};
 
 	//Allows For The Comparing of Date Objects
 	pastPresent = function (test) {
-		console.log(test);
 		var dates = {
 		    convert:function(d) {
 		        return (
@@ -541,7 +536,7 @@ var mappingData =
 		        );
 		    }
 		}
-		//Create New Date and Compare Output
+		//Create New Date (Present) and Compare Output
 		var now = new Date();
 		var formatted = new Date(test);
 		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
@@ -565,9 +560,9 @@ var mappingData =
  		return url;
  	};
 
-	//General AJAX request
+	//General AJAX Request With a Few Styling for Data Pane Loading Header
 	var asyncResource = function (url) {
-		processingAJAX = true;
+		processingXHR = true;
 		console.log("XHR Status: Requesting...");
 		$('#sportDisplay').html('');
 		$('.c1 .bubblingsmall').fadeIn(400);
@@ -582,7 +577,7 @@ var mappingData =
 /**
  *	Calendar Class
  *	@params Radius 1 (int), Radius 2 (int), Margins (object), Stroke Width (int), Stroke Color (hex/rgb), Colors (array - hex/rgb), Days (int), Sports (int)
- *		Params Passed to constructor by CalendarVM
+ *	Params Passed to constructor by ViewModel
  **/
 
 	var Calendar = function (r1, r2, margins, strokeWidth, strokeColor, colors, days, sports, mapping, parentViewmodel) {
@@ -701,7 +696,7 @@ var mappingData =
 				};
 			};
 
-			//Called By Data Bind in View
+			//Called in View
 			calendar.filter = function (sport, color) {
 				var sport = sport();
 				var color = color();
@@ -732,7 +727,7 @@ var mappingData =
 				calendar.sportSelected = false;
 			};
 
-			//Retrieves Arc Data &  Matches it to API Data From Initial Request
+			//Retrieves Arc Data & Matches it to API Data From Initial XHR Request
 			calendar.selectArc = function (arcData) {
 				var data = $.parseJSON(arcData);
 				var apiDate = function () {
@@ -779,7 +774,7 @@ var mappingData =
 					calendar.date = new ParsedDate(apiDate());
 					$('#centerDismiss .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
 				} catch (error) {
-					console.log("Error: Hover Data Unavailable - Initial API Request Failed.");
+					notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
 				}
 			};
 
@@ -795,7 +790,7 @@ var mappingData =
 			//Called From selectArc Method, Retrieves Data From API and Constructs New Data Object
 			calendar.displayData = function (selectedSport, selectedDate, data) {
 				// Retrieving Data From API
-				if (processingAJAX === true) {
+				if (processingXHR === true) {
 					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
 					$('.c1 .bubblingsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
@@ -1036,7 +1031,6 @@ var mappingData =
 												} catch (error) {
 													notifications.push("Error: No Match Data \n" + error);
 												} 
-												console.log(obj);
 											}
 										}
 									}
@@ -1056,21 +1050,16 @@ var mappingData =
 						} catch (error) {
 							notifications.push("Error: Unable To Render Data \n" + error)
 						}
-						//Mapping Parsed API Data Into New dataPane Viewmodel
-						// calendar.dataPane = ko.mapping.fromJS(calendar.viewmodel.sportData, {}, calendar.dataPane);
-						// console.log(calendar.dataPane);
-						console.log("Success: Initial Data Retrieved From API");
+						console.log("XHR Notification: Success - Initial Data Retrieved From API");
 					}).fail(function () {
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html("DATA UNAVAILABLE");
 						$('.c2 .dateDisplay').html('<br>');
-						console.log("Failed: Unable to Retrieve Data From API");
+						console.log("XHR Notification: Failed - Unable to Retrieve Data From API");
 					}).always(function() {
-						processingAJAX = false;
+						processingXHR = false;
 						console.log("XHR Status: Resolved");
-						for (var e = 0; e < notifications.length; e++) {
-							console.log("\n" + notifications[e]);
-						}
+						calendar.logErrors(notifications);
 					});
 					//Handles Showing and Hiding of dataPane Element
 					if (calendar.dataDisplaying == false) {
@@ -1091,6 +1080,19 @@ var mappingData =
 				calendar.dataDisplaying = false;
 				calendar.reset();
 			}
+			//Removes Duplicate Notifications Then Logs Each Notification into Console
+			calendar.logErrors = function (errors) {
+				var array = [];
+				for (var e = 0; e < errors.length; e++) {
+					var errorExists = false;
+					for (var i = 0; i < errors.length; i++) {
+						(errors[e] == errors[i]) ? errorExists = true : errorExists = false;
+						if (errorExists == false) {
+							console.log(error[e]);
+						}
+					}
+				}
+			}
 	};
 
 /**
@@ -1098,7 +1100,7 @@ var mappingData =
  *	@params (Inner Radius (int), Outer Radius(int), Margins(obj), Stroke Width(int), Stroke Color(str), Colors(arr), Days(int), Sports(int))
  **/
 
-	var CalendarVM = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments) {
+	var ViewModel = function (r1, r2, margins, strokeWidth, strokeColor, colors, rings, segments) {
 		var master = this;
 			master.sportIDs = {},
 			master.countries = {},
@@ -1253,8 +1255,8 @@ var mappingData =
 				master.calendar.init(master.calendar.outer, master.calendar.inner, master.calendar.strokeColor, master.calendar.strokeWidth, master.calendar.rings, master.calendar.segments, master.calendar.colors, master.calendar.days, master.calendar.sports),
 				preloadImages(images);
 				//Initial AJAX Data Retrieval From API
-				if (processingAJAX === true) {
-					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
+				if (processingXHR === true) {
+					console.log("XHR Notification: Unable to Process Request. Please Wait For Prior Request to Resolve.");
 					return;
 				} else {
 					asyncResource(generateURL("summary", initialParams)).done(function (response) {
@@ -1281,12 +1283,12 @@ var mappingData =
 								master.calendarDates[date] = day;
 							};
 						};
-						console.log("Success: Initial Data Retrieved From API");
+						console.log("XHR Notification: Success - Initial Data Retrieved From API");
 					}).fail(function () {
-						console.log("Failed: Unable to Retrieve Initial Data From API");
+						console.log("XHR Notification: Failed - Unable to Retrieve Initial Data From API");
 					}).always(function() {
 						//Rendering View to User, Initializing Data Pane Scrolling
-						processingAJAX = false;
+						processingXHR = false;
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
 				 		});
@@ -1317,7 +1319,7 @@ var mappingData =
  *	Initializing ViewModel
  **/
 
-		var viewmodel = new CalendarVM(328, 18, {top: 20, right: 0, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
+		var viewmodel = new ViewModel(328, 18, {top: 20, right: 0, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
 });
