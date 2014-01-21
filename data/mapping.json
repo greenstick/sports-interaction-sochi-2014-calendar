@@ -1,392 +1,392 @@
 [
-	{
-		"sport": "Biathlon",
-		"color": "#0000FF", 
-		"day" :
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": true,
-			"13": true,
-			"12": false,
-			"11": true,
-			"10": true,
-			"9": false,
-			"8": true,
-			"7": true,
-			"6": false,
-			"5": true,
-			"4": false,
-			"3": true,
-			"2": true,
-			"1": false
-		}
+			"sport": "Biathlon",
+			"color": "#0000FF", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Speed_Skating",
-		"color": "#D0F923", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": true,
-			"13": true,
-			"12": true,
-			"11": true,
-			"10": false,
-			"9": true,
-			"8": true,
-			"7": false,
-			"6": true,
-			"5": true,
-			"4": false,
-			"3": true,
-			"2": true,
-			"1": false
-		}
+			"sport": "Speed_Skating",
+			"color": "#D0F923", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": false,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Bobsleigh",
-		"color": "#490E7C", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": false, 
-			"15": false,
-			"14": false,
-			"13": false,
-			"12": false,
-			"11": false,
-			"10": false,
-			"9": false,
-			"8": true,
-			"7": true,
-			"6": true,
-			"5": true,
-			"4": false,
-			"3": false,
-			"2": true,
-			"1": true
-		}
+			"sport": "Bobsleigh",
+			"color": "#490E7C", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": false,
+				"13": false,
+				"12": false,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": true
+			}
 
-	},
-	{
-		"sport": "Alpine_Skiing",
-		"color": "#32B208", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": false, 
-			"15": true,
-			"14": true,
-			"13": false,
-			"12": true,
-			"11": false,
-			"10": true,
-			"9": true,
-			"8": true,
-			"7": false,
-			"6": true,
-			"5": true,
-			"4": false,
-			"3": true,
-			"2": true,
-			"1": false
-		}
+			"sport": "Alpine_Skiing",
+			"color": "#32B208", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": true,
+				"14": true,
+				"13": false,
+				"12": true,
+				"11": false,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": true,
+				"5": true,
+				"4": false,
+				"3": true,
+				"2": true,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Skeleton",
-		"color": "#7438A8", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": false, 
-			"15": false,
-			"14": false,
-			"13": false,
-			"12": false,
-			"11": true,
-			"10": true,
-			"9": true,
-			"8": false,
-			"7": false,
-			"6": false,
-			"5": false,
-			"4": false,
-			"3": false,
-			"2": false,
-			"1": false
-		}
+			"sport": "Skeleton",
+			"color": "#7438A8", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": false,
+				"13": false,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": false,
+				"7": false,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Cross-Country_Skiing",
-		"color": "#62E80C", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": true,
-			"13": true,
-			"12": false,
-			"11": true,
-			"10": true,
-			"9": false,
-			"8": true,
-			"7": true,
-			"6": false,
-			"5": true,
-			"4": false,
-			"3": true,
-			"2": true,
-			"1": false
-		}
+			"sport": "Cross-Country_Skiing",
+			"color": "#62E80C", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": false,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": true
+			}
 
-	},
-	{
-		"sport": "Curling",
-		"color": "#AF1BFA", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": false, 
-			"15": false,
-			"14": true,
-			"13": true,
-			"12": true,
-			"11": true,
-			"10": true,
-			"9": true,
-			"8": true,
-			"7": true,
-			"6": true,
-			"5": true,
-			"4": true,
-			"3": true,
-			"2": false,
-			"1": false
-		}
+			"sport": "Curling",
+			"color": "#AF1BFA", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": true,
+				"3": true,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Nordic_Combined",
-		"color": "#045910", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": false,
-			"13": true,
-			"12": false,
-			"11": true,
-			"10": true,
-			"9": true,
-			"8": true,
-			"7": false,
-			"6": false,
-			"5": true,
-			"4": false,
-			"3": false,
-			"2": true,
-			"1": true
-		}
+			"sport": "Nordic_Combined",
+			"color": "#045910", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": false,
+				"13": false,
+				"12": true,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": false,
+				"7": false,
+				"6": true,
+				"5": false,
+				"4": true,
+				"3": false,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Ice_Hockey",
-		"color": "#FF0000", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": true,
-			"13": true,
-			"12": true,
-			"11": true,
-			"10": true,
-			"9": true,
-			"8": true,
-			"7": true,
-			"6": true,
-			"5": true,
-			"4": true,
-			"3": true,
-			"2": true,
-			"1": true
-		}
+			"sport": "Ice_Hockey",
+			"color": "#FF0000", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": true,
+				"8": true,
+				"7": true,
+				"6": true,
+				"5": true,
+				"4": true,
+				"3": true,
+				"2": true,
+				"1": true
+			}
 
-	},
-	{
-		"sport": "Ski_Jumping",
-		"color": "#20D382", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": false,
-			"13": true,
-			"12": false,
-			"11": false,
-			"10": true,
-			"9": true,
-			"8": false,
-			"7": true,
-			"6": false,
-			"5": false,
-			"4": false,
-			"3": false,
-			"2": false,
-			"1": false
-		}
+			"sport": "Ski_Jumping",
+			"color": "#20D382", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": false,
+				"11": false,
+				"10": true,
+				"9": true,
+				"8": false,
+				"7": true,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Luge",
-		"color": "#F47920", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": true,
-			"13": true,
-			"12": true,
-			"11": true,
-			"10": false,
-			"9": false,
-			"8": false,
-			"7": false,
-			"6": false,
-			"5": false,
-			"4": false,
-			"3": false,
-			"2": false,
-			"1": false
-		}
+			"sport": "Luge",
+			"color": "#F47920", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": true,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": false,
+				"9": false,
+				"8": false,
+				"7": false,
+				"6": false,
+				"5": false,
+				"4": false,
+				"3": false,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Freestyle_Skiing",
-		"color": "#05E5D4", 
-		"day" :
+		},
 		{
-			"18": true,
-			"17": false,
-			"16": true, 
-			"15": false,
-			"14": true,
-			"13": true,
-			"12": false,
-			"11": true,
-			"10": true,
-			"9": false,
-			"8": false,
-			"7": true,
-			"6": true,
-			"5": false,
-			"4": true,
-			"3": true,
-			"2": false,
-			"1": false
-		}
+			"sport": "Freestyle_Skiing",
+			"color": "#05E5D4", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": false,
+				"14": true,
+				"13": true,
+				"12": false,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": false,
+				"7": true,
+				"6": true,
+				"5": false,
+				"4": true,
+				"3": true,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Figure_Skating",
-		"color": "#F7B11B", 
-		"day" :
+		},
 		{
-			"18": true,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": false,
-			"13": true,
-			"12": true,
-			"11": true,
-			"10": true,
-			"9": false,
-			"8": true,
-			"7": true,
-			"6": false,
-			"5": true,
-			"4": true,
-			"3": false,
-			"2": true,
-			"1": false
-		}
+			"sport": "Figure_Skating",
+			"color": "#F7B11B", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": true,
+				"11": true,
+				"10": true,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": true,
+				"3": false,
+				"2": false,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Snowboard",
-		"color": "#09AEDB", 
-		"day" :
+		},
 		{
-			"18": true,
-			"17": false,
-			"16": true, 
-			"15": true,
-			"14": false,
-			"13": true,
-			"12": true,
-			"11": false,
-			"10": false,
-			"9": false,
-			"8": true,
-			"7": true,
-			"6": false,
-			"5": true,
-			"4": false,
-			"3": false,
-			"2": true,
-			"1": false
-		}
+			"sport": "Snowboard",
+			"color": "#09AEDB", 
+			"day" :
+			{
+				"18": true,
+				"17": false,
+				"16": true, 
+				"15": true,
+				"14": false,
+				"13": true,
+				"12": true,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": true,
+				"7": true,
+				"6": false,
+				"5": true,
+				"4": false,
+				"3": false,
+				"2": true,
+				"1": false
+			}
 
-	},
-	{
-		"sport": "Short_Track",
-		"color": "#F9EE50", 
-		"day" :
+		},
 		{
-			"18": false,
-			"17": false,
-			"16": false, 
-			"15": false,
-			"14": true,
-			"13": false,
-			"12": false,
-			"11": true,
-			"10": false,
-			"9": true,
-			"8": false,
-			"7": false,
-			"6": true,
-			"5": false,
-			"4": false,
-			"3": true,
-			"2": false,
-			"1": false
-		}
+			"sport": "Short_Track",
+			"color": "#F9EE50", 
+			"day" :
+			{
+				"18": false,
+				"17": false,
+				"16": false, 
+				"15": false,
+				"14": true,
+				"13": false,
+				"12": false,
+				"11": true,
+				"10": false,
+				"9": true,
+				"8": false,
+				"7": false,
+				"6": true,
+				"5": false,
+				"4": false,
+				"3": true,
+				"2": false,
+				"1": false
+			}
 
-	}
-];
+		}
+	];

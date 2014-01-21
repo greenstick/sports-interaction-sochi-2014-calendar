@@ -141,20 +141,20 @@ var mappingData =
 				"17": false,
 				"16": true, 
 				"15": true,
-				"14": true,
+				"14": false,
 				"13": true,
 				"12": false,
 				"11": true,
 				"10": true,
-				"9": false,
+				"9": true,
 				"8": true,
-				"7": true,
+				"7": false,
 				"6": false,
 				"5": true,
 				"4": false,
-				"3": true,
+				"3": false,
 				"2": true,
-				"1": false
+				"1": true
 			}
 
 		},
@@ -191,22 +191,22 @@ var mappingData =
 			{
 				"18": false,
 				"17": false,
-				"16": true, 
-				"15": true,
+				"16": false, 
+				"15": false,
 				"14": false,
-				"13": true,
-				"12": false,
-				"11": true,
-				"10": true,
-				"9": true,
-				"8": true,
+				"13": false,
+				"12": true,
+				"11": false,
+				"10": false,
+				"9": false,
+				"8": false,
 				"7": false,
-				"6": false,
-				"5": true,
-				"4": false,
+				"6": true,
+				"5": false,
+				"4": true,
 				"3": false,
-				"2": true,
-				"1": true
+				"2": false,
+				"1": false
 			}
 
 		},
@@ -335,7 +335,7 @@ var mappingData =
 				"5": true,
 				"4": true,
 				"3": false,
-				"2": true,
+				"2": false,
 				"1": false
 			}
 
@@ -828,27 +828,27 @@ var mappingData =
 						console.log(data.sport);
 						//Determines Which Template to Render in Data Pane
 						try {
-							if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
-								calendar.viewmodel.singleSchedule(true);
-								console.log("1");
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
-								calendar.viewmodel.singleResult(true);
-								console.log("2");
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
-								calendar.viewmodel.teamSchedule(true);
-								console.log("3");
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
-								calendar.viewmodel.teamResult(true);
-								console.log("4");
-							} else {
-								calendar.viewmodel.noData(true);
-								console.log("5");
-							}
-							console.log(calendar.viewmodel.singleSchedule());
-							console.log(calendar.viewmodel.singleResult());
-							console.log(calendar.viewmodel.teamSchedule());
-							console.log(calendar.viewmodel.teamResult());
-							// calendar.viewmodel.singleResult(true);
+							// if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							// 	calendar.viewmodel.singleSchedule(true);
+							// 	console.log("1");
+							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							// 	calendar.viewmodel.singleResult(true);
+							// 	console.log("2");
+							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							// 	calendar.viewmodel.teamSchedule(true);
+							// 	console.log("3");
+							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							// 	calendar.viewmodel.teamResult(true);
+							// 	console.log("4");
+							// } else {
+							// 	calendar.viewmodel.noData(true);
+							// 	console.log("5");
+							// }
+							// console.log(calendar.viewmodel.singleSchedule());
+							// console.log(calendar.viewmodel.singleResult());
+							// console.log(calendar.viewmodel.teamSchedule());
+							// console.log(calendar.viewmodel.teamResult());
+							calendar.viewmodel.teamResult(true);
 							//Contructing Data Object
 							//Is the Selected Sport a Team Sport
 							if (calendar.viewmodel.teamSchedule() == true || calendar.viewmodel.teamResult() == true) {
@@ -859,17 +859,19 @@ var mappingData =
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
 											var venue = null,
-												startTime = null;
+												startTime = null,
+												newMatch = false;
+												if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0) {
+													newMatch = true;
+												}
 											try {
 												//Inserting Venue & Event Properties
 												venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-												startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
+												startTime = sportData.sports[0].event_phases[i].started_at;
 												//Ensuring Venue is Not Duplicated
 												if (!obj.hasOwnProperty(venue)) {
 													obj.venue = venue;
 												}
-												obj.events[j] = {startTime: startTime};
-												obj.events[j] = {match: []};
 											} catch (error) {
 												notifications.push("Error: Venue Data Unavailable \n" + error);
 											}
@@ -883,6 +885,11 @@ var mappingData =
 													winningParticipant = '',
 													losingParticipant = '';
 												try {
+													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
+														obj.events[j] = {startTime: startTime};
+														obj.events[j] = {match: []};
+														newMatch = false;
+													};
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
 													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
 													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
@@ -1082,16 +1089,11 @@ var mappingData =
 			}
 			//Removes Duplicate Notifications Then Logs Each Notification into Console
 			calendar.logErrors = function (errors) {
-				var array = [];
+				console.log(">>>>>>>> Notifications >>>>>>>>")
 				for (var e = 0; e < errors.length; e++) {
-					var errorExists = false;
-					for (var i = 0; i < errors.length; i++) {
-						(errors[e] == errors[i]) ? errorExists = true : errorExists = false;
-						if (errorExists == false) {
-							console.log(error[e]);
-						}
-					}
+					console.log("\n" + errors[e]);
 				}
+				console.log("\n<<<<<<<< Notifications <<<<<<<<")
 			}
 	};
 
