@@ -40,7 +40,7 @@
 				<div class="listSport">
 					<div class="col1">
 						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
+							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color, 'class': sport() + 'Circle'}" />
 						</svg>
 					</div>
 					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
@@ -50,7 +50,7 @@
 				<div class="listSport">
 					<div class="col3">
 						<svg height="30" width="21">
-							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color}" />
+							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color, 'class': sport() + 'Circle'}" />
 						</svg>
 					</div>
 					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
@@ -165,10 +165,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="disclaimer">
-			All times displayed in Eastern Standard Time
-		</div>
-		<div id="logo">
+		<!-- <div id="logo">
 			<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="50px" viewBox="0 0 100 50" enable-background="new 0 0 100 50" xml:space="preserve">
 			<g>
 				<g>
@@ -231,7 +228,7 @@
 			</g>
 			</svg>
 
-		</div>
+		</div> -->
 	</div>
 	<div id="loading">
 		<div class="dialogue">

@@ -508,6 +508,7 @@ var mappingData =
 		return this.monthName;
 	};
 	ParsedDate.prototype.day = function () {
+		console.log(this.day + "this.day");
 		return this.day;
 	};
 	ParsedDate.prototype.time = function () {
@@ -708,8 +709,10 @@ var mappingData =
 				$('#centerDismiss').addClass('selectable');
 				$('.' + sport).stop().animate({opacity: .70}, 600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 600);
 				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
-				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .3}, 400);
+				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .15}, 400);
+				$('.col1 svg circle, .col3 svg circle').not('.' + sport + "Circle").stop().animate({opacity: .15}, 400);
 				calendar.sportSelected = true;
 			};
 
@@ -722,6 +725,7 @@ var mappingData =
 				$('#centerDismiss').removeClass('selectable');
 				$('#centerDismiss .dateDisplay').stop().fadeOut(600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 600);
 				$('.sportArc').stop().animate({opacity: .70}, 600);
 				$('#sportsExit').stop().fadeOut(600);
 				calendar.sportSelected = false;
@@ -759,7 +763,9 @@ var mappingData =
 				}
 				var data = $.parseJSON(arcData);
 				$('.col2, .col4').stop().animate({opacity: 1});
-				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .3});
+				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1});
+				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .15});
+				$('.col1 svg circle, .col3 svg circle').not('.' + data.sport + "Circle").stop().animate({opacity: .15});
 				$('.sportArc').stop().animate({opacity: .2});
 				$('.day' + data.day).stop().animate({opacity: .6});
 				$('#centerDismiss .dateDisplay').show().addClass('selectable');
@@ -772,7 +778,7 @@ var mappingData =
 				};
 				try {
 					calendar.date = new ParsedDate(apiDate());
-					$('#centerDismiss .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
+					$('#centerDismiss .dateDisplay').html(((calendar.date.monthName).substr(0, 3)) + " " + calendar.date.day);
 				} catch (error) {
 					notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
 				}
@@ -781,6 +787,7 @@ var mappingData =
 			//Hover Out of Arc
 			calendar.hoverOut = function (arcData) {
 				$('.col2, .col4').stop().animate({opacity: 1});
+				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1});
 				var data = $.parseJSON(arcData);
 				$('.sportArc').stop().animate({opacity: .7});
 				$('.day' + data.day).stop().animate({opacity: .7});
@@ -794,7 +801,7 @@ var mappingData =
 					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
 					$('.c1 .bubblingsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
-					if(calendar.dataDisplaying == false) {
+					if(calendar.dataDisplaying == false) {	
 						$('#dataPane').fadeIn(600);
 						d3.select("#dataExit").on("click", function () {
 							calendar.exitDataView();
@@ -824,31 +831,24 @@ var mappingData =
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
-						console.log(sportData);
-						console.log(data.sport);
 						//Determines Which Template to Render in Data Pane
 						try {
-							// if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
-							// 	calendar.viewmodel.singleSchedule(true);
-							// 	console.log("1");
-							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
-							// 	calendar.viewmodel.singleResult(true);
-							// 	console.log("2");
-							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
-							// 	calendar.viewmodel.teamSchedule(true);
-							// 	console.log("3");
-							// } else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
-							// 	calendar.viewmodel.teamResult(true);
-							// 	console.log("4");
-							// } else {
-							// 	calendar.viewmodel.noData(true);
-							// 	console.log("5");
-							// }
-							// console.log(calendar.viewmodel.singleSchedule());
-							// console.log(calendar.viewmodel.singleResult());
-							// console.log(calendar.viewmodel.teamSchedule());
-							// console.log(calendar.viewmodel.teamResult());
-							calendar.viewmodel.teamResult(true);
+							if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+								calendar.viewmodel.singleSchedule(true);
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+								calendar.viewmodel.singleResult(true);
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+								calendar.viewmodel.teamSchedule(true);
+							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+								calendar.viewmodel.teamResult(true);
+							} else {
+								calendar.viewmodel.noData(true);
+							}
+							console.log(calendar.viewmodel.singleSchedule());
+							console.log(calendar.viewmodel.singleResult());
+							console.log(calendar.viewmodel.teamSchedule());
+							console.log(calendar.viewmodel.teamResult());
+							// calendar.viewmodel.teamResult(true); //Change this and comment out above conditionals for template testing
 							//Contructing Data Object
 							//Is the Selected Sport a Team Sport
 							if (calendar.viewmodel.teamSchedule() == true || calendar.viewmodel.teamResult() == true) {
@@ -1222,6 +1222,7 @@ var mappingData =
 				$.each(data[0].day, function (key, value) {
 					array.push(key);
 				});
+				array = array.sort(function (a, b) {return a - b});
 				return array;
 			};
 
@@ -1312,7 +1313,7 @@ var mappingData =
 					$('.col2, .col4').stop().animate({opacity: 1}, 600);
 				} else if (master.calendar.filtering == true) {
 					$('.col2, .col4').stop().animate({opacity: 1}, 600);
-					$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .3}, 400);
+					$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
 				};
 			};
 	};
