@@ -210,7 +210,7 @@
 		-ms-user-select: none;
 		-o-user-select: none;
 		user-select: none;
-		cursor: move;
+		cursor: ns-resize;
 		}
 	#dataPane .dataOut .template .rowData {
 		position: relative;
