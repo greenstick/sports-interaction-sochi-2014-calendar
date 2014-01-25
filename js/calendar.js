@@ -30,7 +30,7 @@ var mappingData =
 		},
 		{
 			"sport": "Speed_Skating",
-			"color": "#D0F923", 
+			"color": "#CCFF00", 
 			"day" :
 			{
 				"18": false,
@@ -82,7 +82,7 @@ var mappingData =
 		},
 		{
 			"sport": "Alpine_Skiing",
-			"color": "#32B208", 
+			"color": "#46A81A", 
 			"day" :
 			{
 				"18": false,
@@ -134,7 +134,7 @@ var mappingData =
 		},
 		{
 			"sport": "Cross-Country_Skiing",
-			"color": "#62E80C", 
+			"color": "#0F7B00", 
 			"day" :
 			{
 				"18": false,
@@ -264,7 +264,7 @@ var mappingData =
 		},
 		{
 			"sport": "Luge",
-			"color": "#F47920", 
+			"color": "#FF7800", 
 			"day" :
 			{
 				"18": false,
@@ -316,7 +316,7 @@ var mappingData =
 		},
 		{
 			"sport": "Figure_Skating",
-			"color": "#F7B11B", 
+			"color": "#FFAE00", 
 			"day" :
 			{
 				"18": true,
@@ -368,7 +368,7 @@ var mappingData =
 		},
 		{
 			"sport": "Short_Track",
-			"color": "#F9EE50", 
+			"color": "#FFF000", 
 			"day" :
 			{
 				"18": false,
@@ -395,11 +395,11 @@ var mappingData =
 	];
 	//Update to Current Season ID as Needed
 	var initialParams = {
-		seasonID: 1
+			seasonID: 3
 		},
-	seasonID = 1,
-	processingXHR = false,
-	notifications = [];
+		seasonID = 3,
+		processingXHR = false,
+		notifications = [];
 
 /**
  *	Utility Functions - String Formatters and Date Object Parsers
@@ -429,15 +429,25 @@ var mappingData =
 			var hour = parsedDate.time.substr(0, 5);
 			var hours = parseInt(hour.substr(0, 2));
 			var minutes = hour.substr(3, 2);
+			var m = '';
 			var eastern = hours - 4; //Offset is representative of the timezone dates are delivered in by the API
 			if (eastern < 0) {
 				return eastern = eastern + 24;
 			}
 			eastern = eastern.toString();
-			if (eastern.length == 1) {
-				eastern = "0" + eastern;
+			// if (eastern.length == 1) {
+			// 	eastern = "0" + eastern;
+			// }
+			if (parseInt(eastern) > 12) {
+				eastern = eastern - 12;
+				m = "pm";
+			} else {
+				m = "am";
 			}
-			eastern = eastern + ":" + minutes;
+			if (parseInt(eastern) == 0) {
+				eastern = 12;
+			}
+			eastern = eastern + ":" + minutes + " " + m;
 			return eastern;
 		}
 	}
@@ -508,7 +518,6 @@ var mappingData =
 		return this.monthName;
 	};
 	ParsedDate.prototype.day = function () {
-		console.log(this.day + "this.day");
 		return this.day;
 	};
 	ParsedDate.prototype.time = function () {
@@ -542,7 +551,8 @@ var mappingData =
 		var formatted = new Date(test);
 		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
 			return false;
-		};
+		}
+		return true;
 	}
 
 /**
@@ -564,7 +574,7 @@ var mappingData =
 	//General AJAX Request With a Few Styling for Data Pane Loading Header
 	var asyncResource = function (url) {
 		processingXHR = true;
-		console.log("XHR Status: Requesting...");
+		// console.log("XHR Status: Requesting...");
 		$('#sportDisplay').html('');
 		$('.c1 .bubblingsmall').fadeIn(400);
 		$('.c2 .dateDisplay').html('<br>');
@@ -612,6 +622,8 @@ var mappingData =
 			calendar.date = {},
 			calendar.viewmodel = parentViewmodel,
 			calendar.filterHistory = [],
+			calendar.selectedHistory = [],
+			calendar.temp = [],
 			//Control Flow Variables
 			calendar.filtering = false,
 			calendar.dataDisplaying = false;
@@ -701,21 +713,20 @@ var mappingData =
 			calendar.filter = function (sport, color) {
 				var sport = sport();
 				var color = color();
+				calendar.selectedHistory.splice(0, 2);
 				calendar.filterHistory.splice(0, 1);
 				calendar.filterHistory.push(sport);
 				calendar.filtering = true;
 				$('#sportsPane .header .headtype .c2 span').fadeIn(600);
 				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
 				$('#centerDismiss').addClass('selectable');
-				$('.' + sport).stop().animate({opacity: .70}, 600);
+				$('.' + sport).stop().animate({opacity: .9}, 600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
 				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 600);
 				$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 400);
 				$('.col2, .col4').not('#' + sport).stop().animate({opacity: .15}, 400);
 				$('.col1 svg circle, .col3 svg circle').not('.' + sport + "Circle").stop().animate({opacity: .15}, 400);
-				calendar.sportSelected = true;
 			};
-
 			//Resets Calendar to Init State
 			calendar.reset = function () {
 				calendar.filterHistory.splice(0, 1);
@@ -726,79 +737,144 @@ var mappingData =
 				$('#centerDismiss .dateDisplay').stop().fadeOut(600);
 				$('.col2, .col4').stop().animate({opacity: 1}, 600);
 				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 600);
-				$('.sportArc').stop().animate({opacity: .70}, 600);
+				$('.sportArc').stop().animate({opacity: 1}, 600);
 				$('#sportsExit').stop().fadeOut(600);
-				calendar.sportSelected = false;
+				calendar.selectedHistory.splice(0, 2);
+			};
+			//Resets Calendar to Init State
+			calendar.softReset = function () {
+				calendar.filterHistory.splice(0, 1);
+				calendar.filtering = false;
+				$('#sportsPane .header .headtype .c2 span').stop().fadeOut(400);
+				d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
+				$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 600);
+				$('.sportArc').stop().animate({opacity: 1}, 600);
+				// calendar.selectedHistory.splice(0, 2);
+				$('#sportsExit').stop().fadeOut(600);
 			};
 
 			//Retrieves Arc Data & Matches it to API Data From Initial XHR Request
 			calendar.selectArc = function (arcData) {
-				var data = $.parseJSON(arcData);
-				var apiDate = function () {
-					var date = '';
-					$.each(calendar.viewmodel.calendarDates, function (key, value) {
-						if (value == data.day) {
-							date = key;
-						};
-					});
-					return date;
-				};
-				var apiSport = function () {
-					var id = null;
-					$.each(calendar.viewmodel.sportIDs, function (key, value) {
-						var sport = convertMDash(data.sport);
-						if (key == sport) {
-							id = value;
-						};
-					});
-					return id;
-				}
-				calendar.displayData(apiSport(), apiDate(), data);
+					var data = $.parseJSON(arcData);
+					if (processingXHR !== true) {
+						$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": .20});
+					}
+					calendar.selectedHistory.splice(0, 2);
+					calendar.selectedHistory.push("day" + data.day, data.sport);
+					$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": 1});
+					var apiDate = function () {
+						var date = '';
+						$.each(calendar.viewmodel.calendarDates, function (key, value) {
+							if (value == data.day) {
+								date = key;
+							};
+						});
+						return date;
+					};
+					var apiSport = function () {
+						var id = null;
+						$.each(calendar.viewmodel.sportIDs, function (key, value) {
+							var sport = convertMDash(data.sport);
+							if (key == sport) {
+								id = value;
+							};
+						});
+						return id;
+					}
+					calendar.displayData(apiSport(), apiDate(), data, arcData);
 			};
 
 			//Hover Over Arc
 			calendar.hoverOver = function (arcData) {
-				if (calendar.filtering === true) {
-					calendar.reset();
-				}
 				var data = $.parseJSON(arcData);
-				$('.col2, .col4').stop().animate({opacity: 1});
-				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1});
-				$('.col2, .col4').not('#' + data.sport).stop().animate({opacity: .15});
-				$('.col1 svg circle, .col3 svg circle').not('.' + data.sport + "Circle").stop().animate({opacity: .15});
-				$('.sportArc').stop().animate({opacity: .2});
-				$('.day' + data.day).stop().animate({opacity: .6});
-				$('#centerDismiss .dateDisplay').show().addClass('selectable');
-				var apiDate = function () {
-					var date = '';
-					$.each(calendar.viewmodel.calendarDates, function (key, value) {
-						if (value == data.day) { date = key };
-					});
-					return date;
-				};
-				try {
-					calendar.date = new ParsedDate(apiDate());
-					$('#centerDismiss .dateDisplay').html(((calendar.date.monthName).substr(0, 3)) + " " + calendar.date.day);
-				} catch (error) {
-					notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
+				if (calendar.filtering === true) {
+					$('#centerDismiss .dateDisplay').show().addClass('selectable');
+					$('#' + data.sport + ', .' + data.sport + 'Circle').stop().animate({opacity: .7});
+					$('.col2, .col4').not('#' + data.sport + ', #' + calendar.filterHistory[0]).stop().animate({opacity: .15});
+					$('.col1 svg circle, .col3 svg circle').not('.' + data.sport + "Circle, ." + calendar.filterHistory[0] + "Circle").stop().animate({opacity: .15});
+					var apiDate = function () {
+						var date = '';
+						$.each(calendar.viewmodel.calendarDates, function (key, value) {
+							if (value == data.day) { date = key };
+						});
+						return date;
+					};
+					try {
+						calendar.date = new ParsedDate(apiDate());
+						$('#centerDismiss .dateDisplay').html(((calendar.date.monthName).substr(0, 3)) + " " + calendar.date.day);
+					} catch (error) {
+						notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
+					}
+				} else {
+					$('#' + data.sport + ', .' + data.sport + 'Circle').stop().animate({opacity: .7});
+					$('.col2, .col4').not('#' + data.sport + ', #' + calendar.selectedHistory[1]).stop().animate({opacity: .15});
+					$('.col1 svg circle, .col3 svg circle').not('.' + data.sport + "Circle, ." + calendar.selectedHistory[1] + "Circle").stop().animate({opacity: .15});
+					$('.sportArc').stop().animate({opacity: .2});
+					$('.day' + data.day).stop().animate({opacity: .6});
+					$('#centerDismiss .dateDisplay').show().addClass('selectable');
+					var apiDate = function () {
+						var date = '';
+						$.each(calendar.viewmodel.calendarDates, function (key, value) {
+							if (value == data.day) { date = key };
+						});
+						return date;
+					};
+					try {
+						calendar.date = new ParsedDate(apiDate());
+						$('#centerDismiss .dateDisplay').html(((calendar.date.monthName).substr(0, 3)) + " " + calendar.date.day);
+					} catch (error) {
+						notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
+					}
 				}
+				$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": 1});
 			};
 
 			//Hover Out of Arc
 			calendar.hoverOut = function (arcData) {
-				$('.col2, .col4').stop().animate({opacity: 1});
-				$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1});
 				var data = $.parseJSON(arcData);
-				$('.sportArc').stop().animate({opacity: .7});
-				$('.day' + data.day).stop().animate({opacity: .7});
-				$('#centerDismiss .dateDisplay').hide().removeClass('selectable');
+				if (calendar.filtering === true) {
+					$('.col2, .col4').not('#' + calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
+					$('.col1 svg circle, .col3 svg circle').not('.' + calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
+					return;
+				} else if (calendar.selectedHistory.length !== 0) {
+					$('#' + calendar.selectedHistory[1] + ", ." + calendar.selectedHistory[1] + "Circle").stop().animate({opacity: 1}, 600);
+					$('.col2, .col4').not('#' + calendar.selectedHistory[1]).stop().animate({opacity: .15}, 600);
+					$('.col1 svg circle, .col3 svg circle').not('.' + calendar.selectedHistory[1] + "Circle").stop().animate({opacity: .15}, 600);
+					$('.sportArc').not('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({opacity: .20});
+				} else {
+					$('.col2, .col4').stop().animate({opacity: 1});
+					$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1});
+					var data = $.parseJSON(arcData);
+					$('.sportArc').stop().animate({opacity: 1});
+					$('.day' + data.day).stop().animate({opacity: 1});
+					$('#centerDismiss .dateDisplay').hide().removeClass('selectable');
+				}
+				if (processingXHR !== true) {
+					$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": 1});
+				}
 			};
 
 			//Called From selectArc Method, Retrieves Data From API and Constructs New Data Object
-			calendar.displayData = function (selectedSport, selectedDate, data) {
+			calendar.displayData = function (selectedSport, selectedDate, data, arcData) {
 				// Retrieving Data From API
-				if (processingXHR === true) {
-					console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
+				if (calendar.filtering === true && data.sport != calendar.filterHistory[0]) {
+					calendar.softReset();
+					calendar.hoverOver(arcData);
+				}
+				//Temp Selected Arc Cache - Reverts Arc Selection on New XHR Failure
+				calendar.temp.push(calendar.selectedHistory[0], calendar.selectedHistory[1]);
+				//Clearing Old Data in Preparation for New XHR
+				if (data.sport != calendar.selectedHistory[1] && processingXHR !== true) {
+					calendar.softReset();
+					calendar.hoverOver(arcData);
+				//Prevents Stacking of XHR
+				} else if (processingXHR === true) {
+					calendar.selectedHistory.splice(0 , 2);
+					calendar.selectedHistory.push(calendar.temp[0], calendar.temp[1]);
+					calendar.temp.splice(0, 10);
+					$('.' + calendar.temp[0] + '.' + calendar.temp[1]).stop().animate({"opacity": 1});
+					// console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
 					$('.c1 .bubblingsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
 					if(calendar.dataDisplaying == false) {	
@@ -812,9 +888,14 @@ var mappingData =
 						calendar.dataDisplaying = true;
 						return;
 					};
+				// Retrieving Data From API
 				} else {
-					//AJAX User Requested Data
+					if (calendar.filtering == true) {
+						$('.' + calendar.selectedHistory[1]).stop().animate({opacity: .9});
+					}
+					//User Requested Data
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
+					//Setting Template Rendering Observables to False
 					calendar.viewmodel.teamSchedule(false);
 					calendar.viewmodel.singleSchedule(false);
 					calendar.viewmodel.teamResult(false);
@@ -825,9 +906,7 @@ var mappingData =
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
-						$(".nano").nanoScroller({scrollTo: $('.template'), sliderMaxHeight: 60});
-				 		$(".pane").css("display", "block");
-				 		$(".slider").css("display", "block");
+						$('.dataOut').perfectScrollbar('update');
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
@@ -844,17 +923,12 @@ var mappingData =
 							} else {
 								calendar.viewmodel.noData(true);
 							}
-							console.log(calendar.viewmodel.singleSchedule());
-							console.log(calendar.viewmodel.singleResult());
-							console.log(calendar.viewmodel.teamSchedule());
-							console.log(calendar.viewmodel.teamResult());
 							// calendar.viewmodel.teamResult(true); //Change this and comment out above conditionals for template testing
 							//Contructing Data Object
 							//Is the Selected Sport a Team Sport
 							if (calendar.viewmodel.teamSchedule() == true || calendar.viewmodel.teamResult() == true) {
-								console.log("ENTER TREAM SPORT");
 								var obj =  {};
-								obj.events = [];
+									obj.events = [];
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
@@ -873,21 +947,29 @@ var mappingData =
 													obj.venue = venue;
 												}
 											} catch (error) {
+												obj.startTime = "- - : - -";
+												obj.venue = "Venue Data Unavailable";
 												notifications.push("Error: Venue Data Unavailable \n" + error);
 											}
 											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-												var homeResult = '',
-													awayResult = '',
-													homeParticipant = '',
-													awayParticipant = '',
-													homeShort = '',
-													awayShort = '',
-													winningParticipant = '',
-													losingParticipant = '';
+												var startTime = "- - : - -";
+													homeResult = "";
+													awayResult = "";
+													homeParticipant = "Unknown";
+													awayParticipant = "Unknown";
+													homeShort = null;
+													awayShort = null;
+													winningShort = null;
+													winningParticipant = "Unknown";
+													winningResult = "";
+													losingShort = null;
+													losingParticipant = "Unknown";
+													losingResult = "";
+
 												try {
 													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events[j] = {startTime: startTime};
-														obj.events[j] = {match: []};
+														obj.events[i] = {startTime: startTime};
+														obj.events[i] = {match: []};
 														newMatch = false;
 													};
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
@@ -905,44 +987,51 @@ var mappingData =
 															var holder = awayParticipant,
 															losingParticipant = homeParticipant,
 															winningParticipant = holder;
+															var score = awayResult,
+															losingResult = homeResult,
+															winningResult = score;
+															var shortN = awayShort,
+															losingShort = homeShort,
+															winningShort = shortN;
 														} else {
 															winningParticipant = homeParticipant;
 															losingParticipant = awayParticipant;
+															winningResult = homeResult;
+															losingResult = awayResult;
+															winningShort = homeShort;
+															losingShort = awayShort;
 														};
-														obj.events[j].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, awayShort: awayShort, winningShort: winningShort};
+														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort, losingShort: losingShort};
 													} catch (error) {
-														// console.log("Error: Unable to Determine Winning Participant");
-														obj.events[j].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, homeShort: homeShort, awayShort: awayShort};
+														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, losingShort: losingShort, homeShort: homeShort};
+														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
 													}
-												//Who Won?
+												// Who Won?
 												} catch (error) {
+													obj.events[i].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort};
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
 										}
 									}
-									// console.log(obj);
 								} catch (error) {
 									notifications.push("Error: No Event Data Available \n" + error);
 								}
 							}
 							//Is The Selected Sport a Single Sport?
 							if (calendar.viewmodel.singleSchedule() == true || calendar.viewmodel.singleResult() == true) {
-								console.log("ENTER SINGLE SPORT");
 								var obj = {};
 								obj.events = [],
 								participant = [];
 								//Searching Results Data Object
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
-										console.log("1");
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-											console.log("2");
 											var venue = '',
-												startTime = '';
+												startTime =  "- - : - -";
 											try {
 												if (sportData.sports[0].event_phases[i].phases[j].venue == null) {
-													venue = sportData.sports[0].event_phases[i].phases[j].venue
+													venue = "Unknown";
 													if (!obj.hasOwnProperty(venue)) {
 														obj.venue = venue;
 													}
@@ -954,23 +1043,16 @@ var mappingData =
 														obj.venue = venue;
 													}
 												}
-												// console.log(obj.events[j]);
 											} catch (error) {
 												notifications.push("Error: Venue Data Unavailable \n" + error);
 											}
 											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].results.length; k++) {
-												// console.log("3");
 												var participantName = '',
 													countryName = '',
 													countryShort = '',
 													rank = '',
 													result = '';
 												try {
-													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.name);
-													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name);
-													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name_short);
-													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].rank);
-													console.log(sportData.sports[0].event_phases[i].phases[j].results[k].result);
 													participantName = sportData.sports[0].event_phases[i].phases[j].results[k].participant.name;
 													countryName = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name;
 													countryShort = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name_short;
@@ -978,9 +1060,8 @@ var mappingData =
 													result = sportData.sports[0].event_phases[i].phases[j].results[k].result;
 													participant.push({participantName: participantName, countryName: countryName, countryShort: countryShort, rank: rank, result: result});
 												} catch (error) {
-													notifications.push("Error: No Results Data \n" + error);
+													notifications.push("Error: No Participant or Results Data \n" + error);
 												} 
-												// console.log(obj);
 											}
 										}
 									}
@@ -1050,23 +1131,26 @@ var mappingData =
 							notifications.push("Error: Unable to Determine Render Template \n" + error)
 						}
 						try {
-							console.log(obj);
 							calendar.viewmodel.loadingData(false);
 							calendar.viewmodel.dataOutput.push(obj);
-							console.log(calendar.viewmodel.dataOutput());
 						} catch (error) {
 							notifications.push("Error: Unable To Render Data \n" + error)
-						}
-						console.log("XHR Notification: Success - Initial Data Retrieved From API");
+						} 
+						$('.dataOut').perfectScrollbar('update');
+						// console.log("XHR Notification: Success - Data Retrieved From API");
 					}).fail(function () {
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html("DATA UNAVAILABLE");
 						$('.c2 .dateDisplay').html('<br>');
-						console.log("XHR Notification: Failed - Unable to Retrieve Data From API");
+						// console.log("XHR Notification: Failed - Unable to Retrieve Data From API");
 					}).always(function() {
 						processingXHR = false;
-						console.log("XHR Status: Resolved");
+						// console.log("XHR Status: Resolved");
 						calendar.logErrors(notifications);
+						$('.col2, .col4').not('#' + calendar.selectedHistory[1] + ', #' + calendar.temp[1]).stop().animate({opacity: .15}, 600);
+						$('.col1 svg circle, .col3 svg circle').not('.' + calendar.selectedHistory[1] + "Circle, ." + calendar.temp[1] + 'Circle').stop().animate({opacity: .15}, 600);
+						$('#' + calendar.selectedHistory[1] + ', .' + calendar.selectedHistory[1] + 'Circle').stop().animate({opacity: 1});
+						calendar.temp.splice(0, 2);
 					});
 					//Handles Showing and Hiding of dataPane Element
 					if (calendar.dataDisplaying == false) {
@@ -1089,11 +1173,11 @@ var mappingData =
 			}
 			//Removes Duplicate Notifications Then Logs Each Notification into Console
 			calendar.logErrors = function (errors) {
-				console.log(">>>>>>>> Notifications >>>>>>>>")
-				for (var e = 0; e < errors.length; e++) {
-					console.log("\n" + errors[e]);
-				}
-				console.log("\n<<<<<<<< Notifications <<<<<<<<")
+				// console.log(">>>>>>>> Notifications >>>>>>>>")
+				// for (var e = 0; e < errors.length; e++) {
+					// console.log("\n" + errors[e]);
+				// }
+				// console.log("\n<<<<<<<< Notifications <<<<<<<<")
 			}
 	};
 
@@ -1163,7 +1247,6 @@ var mappingData =
 								break;
 							default: "";
 						}
-						console.log(venue);
 						return venue
 					}
 				} catch (error) {
@@ -1177,7 +1260,6 @@ var mappingData =
 					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined) {
 						return null;
 					}
-					console.log(master.dataOutput()[0].events);
 					return master.dataOutput()[0].events;
 				} catch (error) {
 					return ''
@@ -1259,7 +1341,7 @@ var mappingData =
 				preloadImages(images);
 				//Initial AJAX Data Retrieval From API
 				if (processingXHR === true) {
-					console.log("XHR Notification: Unable to Process Request. Please Wait For Prior Request to Resolve.");
+					// console.log("XHR Notification: Unable to Process Request. Please Wait For Prior Request to Resolve.");
 					return;
 				} else {
 					asyncResource(generateURL("summary", initialParams)).done(function (response) {
@@ -1286,34 +1368,74 @@ var mappingData =
 								master.calendarDates[date] = day;
 							};
 						};
-						console.log("XHR Notification: Success - Initial Data Retrieved From API");
+						// console.log("XHR Notification: Success - Initial Data Retrieved From API");
 					}).fail(function () {
-						console.log("XHR Notification: Failed - Unable to Retrieve Initial Data From API");
+						// console.log("XHR Notification: Failed - Unable to Retrieve Initial Data From API");
 					}).always(function() {
 						//Rendering View to User, Initializing Data Pane Scrolling
 						processingXHR = false;
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
 				 		});
-						console.log("XHR Status: Resolved");
+						// console.log("XHR Status: Resolved");
 					});
 				};
 			};
 
 			//Sports Pane Hover Over Event
 			master.menuhoverOver = function (sport, color) {
-				master.calendar.filter(sport, color);
+				var sport = sport();
+				var color = color();
+				if (master.calendar.filtering == true) {
+					$('.sportArc').not('.' + sport + ', .' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
+					if (sport == master.calendar.filterHistory[0]) {
+						$('.' + sport).stop().animate({opacity: .9}, 600);
+					} else {
+						$('.' + sport).stop().animate({opacity: .5}, 600);
+					}
+					$('.col2, .col4').not('.' + master.calendar.filterHistory[0] + 'Circle, #' + master.calendar.filterHistory[0]).stop().animate({opacity: .7}, 600);
+					$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: .7}, 600);
+					$('.col2, .col4').not('#' + sport + ', #' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 600);
+					$('.col1 svg circle, .col3 svg circle').not('.' + sport + "Circle, ." + master.calendar.filterHistory[0] + "Circle").stop().animate({opacity: .15}, 600);
+				} else  if (master.calendar.selectedHistory.length != 0) {
+					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
+					$('.' + sport).stop().animate({opacity: .5}, 600);
+					$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 600);
+					$('.' + master.calendar.selectedHistory[0] + '.' + master.calendar.selectedHistory[1]).stop().animate({"opacity": 1});
+					$('.col2, .col4').stop().animate({opacity: .7}, 600);
+					$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: .7}, 600);
+					$('.col2, .col4').not('#' + sport + ', #' + master.calendar.selectedHistory[1]).stop().animate({opacity: .15}, 600);
+					$('.col1 svg circle, .col3 svg circle').not('.' + sport + "Circle, ." + master.calendar.selectedHistory[1] + "Circle").stop().animate({opacity: .15}, 600);
+				} else {
+					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", color);
+					$('.' + sport).stop().animate({opacity: .5}, 600);
+					$('.sportArc').not('.' + sport).stop().animate({opacity: .15}, 600);
+					$('.col2, .col4').stop().animate({opacity: .7}, 600);
+					$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: .7}, 600);
+					$('.col2, .col4').not('#' + sport + ', #' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 600);
+					$('.col1 svg circle, .col3 svg circle').not('.' + sport + "Circle, ." + master.calendar.filterHistory[0] + "Circle").stop().animate({opacity: .15}, 600);
+				}
 			};
 
 			//Sports Pane Hover Out Event
 			master.menuhoverOut = function (sport, color) {
 				var sport = sport();
 				var color = color();
-				if (master.calendar.filtering == false) {
-					$('.col2, .col4').stop().animate({opacity: 1}, 600);
-				} else if (master.calendar.filtering == true) {
-					$('.col2, .col4').stop().animate({opacity: 1}, 600);
+				if (master.calendar.filtering == true) {
+					$('.sportArc').not('.' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
 					$('.col2, .col4').not('#' + master.calendar.filterHistory[0]).stop().animate({opacity: .15}, 400);
+					$('.col1 svg circle, .col3 svg circle').not("." + master.calendar.filterHistory[0] + "Circle").stop().animate({opacity: .15}, 400);
+				} else if (master.calendar.selectedHistory.length != 0) {
+					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
+					$('.sportArc').stop().animate({opacity: .20});
+					$('.' + master.calendar.selectedHistory[0] + '.' + master.calendar.selectedHistory[1]).stop().animate({"opacity": 1});
+					$('.col2, .col4').not('#' + master.calendar.selectedHistory[1]).stop().animate({opacity: .15}, 600);
+					$('.col1 svg circle, .col3 svg circle').not('.' + master.calendar.selectedHistory[1] + "Circle").stop().animate({opacity: .15}, 600);
+				} else {
+					d3.select("#centerCircle").transition().ease('easeOutQuart').duration(600).attr("stroke", "#FFFFFF");
+					$('.sportArc').stop().animate({opacity: 1}, 400);
+					$('.col2, .col4').stop().animate({opacity: 1}, 400);
+					$('.col1 svg circle, .col3 svg circle').stop().animate({opacity: 1}, 400);
 				};
 			};
 	};
@@ -1322,7 +1444,7 @@ var mappingData =
  *	Initializing ViewModel
  **/
 
-		var viewmodel = new ViewModel(328, 18, {top: 20, right: 0, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#F47920', '#F7B11B', '#F9EE50', '#D0F923', '#62E80C', '#32B208', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
+		var viewmodel = new ViewModel(328, 18, {top: 20, right: 0, bottom: 20, left: 20}, 2, '#07153D', ['#0000FF', '#490E7C', '#7438A8', '#AF1BFA', '#FF0000', '#FF7800', '#FFAE00', '#FFF000', '#CCFF00', '#46A81A', '#0F7B00', '#045910', '#20D382', '#05E5D4', '#09AEDB'], 15, 18); 
 		ko.applyBindings(viewmodel, document.getElementById('interactiveWrapper'));
 		viewmodel.init();
 });

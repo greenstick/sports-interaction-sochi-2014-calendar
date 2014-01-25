@@ -99,21 +99,13 @@
 		margin: 0 0 13px 0;
 		display: none;
 	}
-/*	#disclaimer {
-		position: relative;
-		top: -126px;
-		left: 796px;
-		color: #FF9600;
-		font-size: 8px;
-		font-style: italic;
-	}*/
-/*	#logo {
+	#logo {
 		position: relative;
 		width: 100px;
 		height: 50px;
 		top: -174px;
 		left: 0px;
-	}*/
+	}
 	#dataPane .header, #sportsPane .header {
 		position: relative;
 		top: 0px;
@@ -219,7 +211,7 @@
 		-o-user-select: none;
 		user-select: none;
 		cursor: move;
-	}
+		}
 	#dataPane .dataOut .template .rowData {
 		position: relative;
 		top: 0px;
@@ -231,33 +223,29 @@
 		text-align: center;
 		margin: 8px 8px 0 8px;
 	}
-/*	#dataPane .dataOut .template .rowData:nth-child(odd) {
-		border-bottom: 1px solid #23345C;
-	}
-	#dataPane .dataOut .template .rowData:nth-child(even) {
-		border-bottom: 1px solid #192951;
-	}*/
+
 /* Schedule - Team */
 	#dataPane .dataOut .template.scheduleTeam {
 		display: block;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData {
-		height: 20px;
+		height: auto;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData .match {
 		position: relative;
 		top: 0px;
 		left: 0px;
 		width: 182px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData .time {
 		position: relative;
-		top: -2px;
+		top: -9px;
 		left: 0px;
 		width: 74px;
-		height: 20px;
+		height: 19px;
+		padding: 5px 0 0 0;
 		display: inline-block;
 		text-align: left;
 	}
@@ -266,15 +254,16 @@
 		top: 0px;
 		left: 0px;
 		width: 30px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing {
 		position: relative;
-		top: -2px;
+		top: -9px;
 		left: 0px;
 		width: 112px;
-		height: 20px;
+		height: 19px;
+		padding: 5px 0 0 0;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing .team {
@@ -282,7 +271,7 @@
 		top: 0px;
 		left: 0px;
 		width: 32px;
-		height: 20px;
+		height: 19px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.scheduleTeam .rowData .match .competing .versus {
@@ -290,26 +279,26 @@
 		top: 0px;
 		left: 0px;
 		width: 20px;
-		height: 20px;
+		height: 19px;
 		display: inline-block;
 	}
 /* Schedule - Single */
-	#dataPane .dataOut .template.scheduleSingle .time {
+	#dataPane .dataOut .template.scheduleSingle .rowData {
+		position: relative;
+		top: -12px;
+		left: 0px;
+		width: 260px;
+		height: auto;
+		padding: 0 0 0 0;
+		text-align: left;
+	}
+	#dataPane .dataOut .template.scheduleSingle .rowData .time {
 		position: relative;
 		top: 0px;
 		left: 0px;
 		width: 260px;
 		height: 14px;
 		padding: 0 0 0 8px;
-	}
-	#dataPane .dataOut .template.scheduleSingle .rowData {
-		position: relative;
-		top: -12px;
-		left: 0px;
-		width: 260px;
-		height: 24px;
-		padding: 0 0 0 0;
-		text-align: left;
 	}
 	#dataPane .dataOut .template.scheduleSingle .rowData .subRow {
 		position: relative;
@@ -322,8 +311,8 @@
 	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .competitor {
 		position: relative;
 		top: -9px;
-		left: 0px;
-		width: 228px;
+		left: 8px;
+		width: 220px;
 		height: 20px;
 		padding: 4px 0 0 0;
 		display: inline-block;
@@ -331,7 +320,7 @@
 	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .flag {
 		position: relative;
 		top: 0px;
-		left: 0px;
+		left: 4px;
 		width: 28px;
 		height: 24px;
 		display: inline-block;
@@ -341,14 +330,14 @@
 		display: block;
 	}
 	#dataPane .dataOut .template.resultTeam .rowData {
-		height: 20px;
+		height: auto;
 	}
-	#dataPane .dataOut .template.resultTeam .rowData .match, #dataPane .dataOut .template.resultSingle .rowData .result {
+	#dataPane .dataOut .template.resultTeam .rowData .match {
 		position: relative;
 		top: 0px;
 		left: 0px;
 		width: 268px;
-		height: 20px;
+		height: 28px;
 		text-align: left;
 	}
 	#dataPane .dataOut .template.resultTeam .rowData .match .win, #dataPane .dataOut .template.resultTeam .rowData .match .loss {
@@ -356,7 +345,7 @@
 		top: 0px;
 		left: 0px;
 		width: 128px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.resultTeam .rowData .match .win .flag, #dataPane .dataOut .template.resultTeam .rowData .match .loss .flag {
@@ -364,23 +353,23 @@
 		top: 0px;
 		left: 0px;
 		width: 32px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.resultTeam .rowData .match .win .team, #dataPane .dataOut .template.resultTeam .rowData .match .loss .team {
 		position: relative;
-		top: -2px;
+		top: -8px;
 		left: 0px;
 		width: 30px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.resultTeam .rowData .match .win .score, #dataPane .dataOut .template.resultTeam .rowData .match .loss .score {
 		position: relative;
-		top: -2px;
+		top: -8px;
 		left: 0px;
 		width: 20px;
-		height: 20px;
+		height: 24px;
 		display: inline-block;
 	}
 /* Result - Single */
@@ -389,22 +378,18 @@
 		top: 0px;
 		left: 0px;
 		width: 260px;
+		height: auto;
 		padding: 4px 0 0 0;
 	}
-	#dataPane .dataOut .template.resultSingle .rowData .result:nth-child(odd) {
-/*		border-bottom: 1px solid #23345C;*/
-		height: 40px;
-	}
-	#dataPane .dataOut .template.resultSingle .rowData .result:nth-child(even) {
-/*		border-bottom: 1px solid #192951;*/
-		height: 40px;
+	#dataPane .dataOut .template.resultSingle .rowData .result {
+		height: 48px;
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow {
 		position: relative;
 		top: 0px;
 		left: 0px;
 		width: 260px;
-		height: 20px;
+		height: auto;
 		display: inline-block;
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .position {
@@ -412,16 +397,18 @@
 		top: 0px;
 		left: 0px;
 		width: 32px;
-		height: 20px;
+		height: 14px;
 		display: inline-block;
+		text-align: left;
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .competitor {
 		position: relative;
 		top: 0px;
-		left: 0px;
+		left: -4px;
 		width: 204px;
-		height: 20px;
+		height: 14px;
 		display: inline-block;
+		text-align: left;
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .flag {
 		position: relative;
@@ -433,7 +420,7 @@
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .country {
 		position: relative;
-		top: -2px;
+		top: -8px;
 		left: 0px;
 		width: 30px;
 		height: 20px;
@@ -441,7 +428,7 @@
 	}
 	#dataPane .dataOut .template.resultSingle .rowData .result .subRow .result {
 		position: relative;
-		top: -2px;
+		top: -8px;
 		left: 0px;
 		width: 184px;
 		height: 20px;
@@ -527,62 +514,57 @@
 	}
 	.sportArc {
 		cursor: pointer;
-		opacity: .7;
+		opacity: 1;
 	}
 	.sportArc:hover {
 		opacity: 1 !important;
 	}
 
 /**
- *	Nano Scrollbar
+ *	crollbar
  **/
 
- /** initial setup **/
-	.nano {
-	  position : absolute;
-	  width    : 100%;
-	  height   : 100%;
-	  overflow : hidden;
+	.ps-container {
+		display: block;
+		visibility: visible;
 	}
-	.nano .content {
-	  position      : absolute;
-	  overflow      : scroll;
-	  overflow-x    : hidden;
-	  top           : 0;
-	  right         : 0;
-	  bottom        : 0;
-	  left          : 0;
-	  height: 296px;
+	.ps-container .ps-scrollbar-y-rail {
+	    position: absolute; /* please don't change 'position' */
+	    right: 0px; /* there must be 'right' for ps-scrollbar-y-rail */
+	    width: 9px;
+	    opacity: 1;
+	    background: #000000;
+	    filter: alpha(opacity = 100);
+	    display: block;
+	    visibility: visible;
+	    cursor: pointer;
 	}
-	.nano .content:focus {
-	  outline: none;
+	.ps-container .ps-scrollbar-y-rail.in-scrolling {
+	    opacity: 1;
+	    filter: alpha(opacity = 100);
+	    display: block;
+	    visibility: visible;
 	}
-	.nano .content::-webkit-scrollbar {
-	  visibility: hidden;
+	.ps-container .ps-scrollbar-y {
+	    position: absolute; /* please don't change 'position' */
+	    right: 1px; /* there must be 'right' for ps-scrollbar-y */
+	    width: 7px;
+	    background-color: #192951;
+	    display: block;
+	    visibility: visible;
 	}
-	.has-scrollbar .content::-webkit-scrollbar {
-	  visibility: visible;
+	.ps-container.ie6 .ps-scrollbar-y {
+	    font-size: 0; /* fixed scrollbar height in xp sp3 ie6 */
+	    cursor: pointer;
+	    display: block;
+	    visibility: visible;
 	}
-	.nano > .pane {
-	  background : rgba(0,0,0,.7);
-	  position   : absolute;
-	  width      : 10px;
-	  right      : 0;
-	  top        : -3px;
-	  bottom     : 0;
-	  visibility : visible;
-	  opacity    : .99; 
-	}
-	.nano > .pane > .slider {
-	  background: #FFFFFF;
-	  background: #192951;
-	  cursor	: pointer;
-	  position  : relative;
-	  margin    : 0 1px;
-	}
-	.nano:hover > .pane, .pane.active, .pane.flashed {
-	  visibility : visible;
-	  opacity    : 0.99;
+	.ps-container .ps-scrollbar-y-rail:hover .ps-scrollbar-y,
+	.ps-container .ps-scrollbar-y-rail.hover .ps-scrollbar-y {
+	    background-color: #192951;
+	    cursor: pointer;
+	    display: block;
+	    visibility: visible;
 	}
 
 /**

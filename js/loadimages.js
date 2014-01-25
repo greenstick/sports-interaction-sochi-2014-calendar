@@ -38,7 +38,7 @@ var images =
 	'img/flags/HKG.png',
 	'img/flags/HUN.png',
 	'img/flags/IND.png',
-	'img/flags/independent.png',
+	'img/flags/null.png',
 	'img/flags/IRI.png',
 	'img/flags/IRL.png',
 	'img/flags/ISL.png',
