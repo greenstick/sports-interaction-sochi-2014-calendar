@@ -759,9 +759,9 @@ var mappingData =
 					var data = $.parseJSON(arcData);
 					if (processingXHR !== true) {
 						$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": .20});
+						calendar.selectedHistory.splice(0, 2);
+						calendar.selectedHistory.push("day" + data.day, data.sport);
 					}
-					calendar.selectedHistory.splice(0, 2);
-					calendar.selectedHistory.push("day" + data.day, data.sport);
 					$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": 1});
 					var apiDate = function () {
 						var date = '';
@@ -1142,6 +1142,7 @@ var mappingData =
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html("DATA UNAVAILABLE");
 						$('.c2 .dateDisplay').html('<br>');
+						calendar.viewmodel.loadingData(false);
 						// console.log("XHR Notification: Failed - Unable to Retrieve Data From API");
 					}).always(function() {
 						processingXHR = false;

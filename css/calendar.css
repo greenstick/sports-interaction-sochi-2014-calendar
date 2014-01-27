@@ -768,23 +768,23 @@
 		}
 	}
 	.bubbling_1 {
-		-moz-animation-delay: 0s !important;
-		-webkit-animation-delay: 0s !important;
-		-ms-animation-delay: 0s !important;
-		-o-animation-delay: 0s !important;
-		animation-delay: 0s !important;
+		-moz-animation-delay: -0.21s !important;
+		-webkit-animation-delay: -0.21s !important;
+		-ms-animation-delay: -0.21s !important;
+		-o-animation-delay: -0.21s !important;
+		animation-delay: -0.21s !important;
 	}
 	.bubbling_2 {
-		-moz-animation-delay: 0.21s !important;
-		-webkit-animation-delay: 0.21s !important;
-		-ms-animation-delay: 0.21s !important;
-		-o-animation-delay: 0.21s !important;
-		animation-delay: 0.21s !important;
+		-moz-animation-delay: -0.42s !important;
+		-webkit-animation-delay: -0.42s !important;
+		-ms-animation-delay: -0.42s !important;
+		-o-animation-delay: -0.42s !important;
+		animation-delay: -0.42s !important;
 	}
 	.bubbling_3 {
-		-moz-animation-delay: 0.42s !important;
-		-webkit-animation-delay: 0.42s !important;
-		-ms-animation-delay: 0.42s !important;
-		-o-animation-delay: 0.42s !important;
-		animation-delay: 0.42s !important;
+		-moz-animation-delay: -0.63s !important;
+		-webkit-animation-delay: -0.63s !important;
+		-ms-animation-delay: -0.63s !important;
+		-o-animation-delay: -0.63s !important;
+		animation-delay: -0.63s !important;
 	}
