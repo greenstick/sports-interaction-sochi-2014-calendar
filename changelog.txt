@@ -1,0 +1,17 @@
+Sochi Olympic Calendar Interactive Change Log
+Version 0.1
+1/27/14
+
+index.html
+	
+-	New template created that informs user whether or not
+	results have been reported once an event has occured.
+
+calendar.css
+
+-	Loading animations updated so that they are more consistent
+	and stay in sync.
+
+calendar.js
+
+-	Minor bug fix to cache for user selection history
