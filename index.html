@@ -95,7 +95,7 @@
 						<div class="rowData" data-bind="foreach: eventData">
 							<!-- ko if:  typeof(match) !== "undefined" -->
 							<div data-bind="foreach: match">
-								<div class="time" data-bind="text: formatEastern(startTime)"></div>
+								<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
 								<div class="match">
 									<div class="flag flagA"><img data-bind="attr:{src: 'img/flags/' + homeShort + '.png'}" /></div>
 									<div class="competing">
@@ -111,25 +111,27 @@
 						<!-- /ko -->
 					</div>
 					<div class="template resultTeam" data-bind="if: $root.teamResult">
-						<div class="head" data-bind="text: venueData"></div>
 						<!-- ko if: typeof(eventData) !== "undefined" -->
 						<div data-bind="foreach: eventData">
+							<div class="head" data-bind="text: event"></div>
 							<!-- ko if:  typeof(match) !== "undefined" -->
 							<div class="rowData" data-bind="foreach: match">
 								<div class="match">
-									<div class="win">
-										<div class="flag flagA">
-											<img data-bind="attr:{src: 'img/flags/' + winningShort + '.png'}" />
+									<div class="matchParticipants" data-bind="foreach: participants">
+										<div class="win">
+											<div class="flag flagA">
+												<img data-bind="attr:{src: 'img/flags/' + winningShort + '.png'}" />
+											</div>
+											<div class="team teamA" data-bind="text: winningShort"></div>
+											<div class="score scoreA" data-bind="text: winningResult"></div>
 										</div>
-										<div class="team teamA" data-bind="text: winningShort"></div>
-										<div class="score scoreA" data-bind="text: winningResult"></div>
-									</div>
-									<div class="loss">
-										<div class="flag flagB">
-											<img data-bind="attr:{src: 'img/flags/' + losingShort + '.png'}" />
+										<div class="loss">
+											<div class="flag flagB">
+												<img data-bind="attr:{src: 'img/flags/' + losingShort + '.png'}" />
+											</div>
+											<div class="team teamB" data-bind="text: losingShort"></div>
+											<div class="score scoreB" data-bind="text: losingResult"></div>
 										</div>
-										<div class="team teamB" data-bind="text: losingShort"></div>
-										<div class="score scoreB" data-bind="text: losingResult"></div>
 									</div>
 								</div>
 							</div>
@@ -140,27 +142,35 @@
 					<div class="template scheduleSingle" data-bind="if: $root.singleSchedule">
 						<div class="head" data-bind="text: venueData"></div>
 						<div data-bind="foreach: eventData">
-							<div class="rowData" data-bind="">
-								<div class="time" data-bind="text: formatEastern(startTime)"></div>
+							<div class="head" data-bind="text: event"></div>
+							<div class="rowData" data-bind="foreach: heat">
+								<div class="heatName" data-bind="text: name"></div>
+								<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
 								<div class="subRow">
-									<div class="competitor" data-bind="">TBD</div>
-									<div class="flag"><img src="img/flags/null.png" /></div>
+									<!-- ko if:  typeof(participantName) !== "undefined" && typeof(countryShort) !== "undefined" -->
+									<div class="competitor" data-bind="text: participantName"></div>
+									<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
+									<!-- /ko -->
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="template resultSingle" data-bind="if: $root.singleResult">
 						<div data-bind="foreach: eventData">
-							<div class="rowData" data-bind="foreach: participant">
-								<div class="result">
-									<div class="subRow">
-										<div class="position" data-bind="text: rank"></div>
-										<div class="competitor" data-bind="text: participantName"></div>
-									</div>
-									<div class="subRow">
-										<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
-										<div class="country" data-bind="text: countryShort"></div>
-										<div class="result" data-bind="text: result"></div>
+							<div class="head" data-bind="text: event"></div>
+							<div class="rowData" data-bind="foreach: heat">
+								<div class="heatName" data-bind="text: name"></div>
+								<div data-bind="foreach: participants">
+									<div class="result">
+										<div class="subRow">
+											<div class="position" data-bind="text: rank"></div>
+											<div class="competitor" data-bind="text: participantName"></div>
+										</div>
+										<div class="subRow">
+											<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
+											<div class="country" data-bind="text: countryShort"></div>
+											<div class="result" data-bind="text: result"></div>
+										</div>
 									</div>
 								</div>
 							</div>

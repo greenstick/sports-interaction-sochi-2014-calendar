@@ -395,9 +395,9 @@ var mappingData =
 	];
 	//Update to Current Season ID as Needed
 	var initialParams = {
-			seasonID: 4
+			seasonID: 3
 		},
-		seasonID = 4,
+		seasonID = 3,
 		processingXHR = false,
 		notifications = [];
 
@@ -420,8 +420,36 @@ var mappingData =
  		return string.replace("_", " ");
  	}
 
+ 	//Format Status
+ 	function formatStatus (string) {
+ 		switch (string) {
+ 			case "did_not_start" : string =  "DNS";
+ 			break;
+ 			case "did_not_finish" : string =  "DNF";
+ 			break;
+ 			case "normal" : string = "NR";
+ 			break;
+ 			default: string = "NR";
+ 		}
+ 		return string;
+ 	}
+
+ 	//Format Gender
+ 	function formatGender (string) {
+ 		switch (string) {
+ 			case "Men" : string = "Men's";
+ 			break;
+ 			case "Women" : string = "Women's";
+ 			break;
+ 			case "Mixed" : string = string;
+ 			break;
+ 			default: string = "";
+ 		}
+ 		return string;
+ 	}
+
  	//Format ParsedDate Object to EST Hour
-	formatEastern = function (time) {
+	formatZone = function (time, offset) {
 		if (time == null) {
 			return "- - : - -";
 		} else {
@@ -430,25 +458,22 @@ var mappingData =
 			var hours = parseInt(hour.substr(0, 2));
 			var minutes = hour.substr(3, 2);
 			var m = '';
-			var eastern = hours - 4; //Offset is representative of the timezone dates are delivered in by the API
-			if (eastern < 0) {
-				return eastern = eastern + 24;
+			var zone = hours - offset;
+			if (zone < 0) {
+				return zone = zone + 24;
 			}
-			eastern = eastern.toString();
-			// if (eastern.length == 1) {
-			// 	eastern = "0" + eastern;
-			// }
-			if (parseInt(eastern) > 12) {
-				eastern = eastern - 12;
+			zone = zone.toString();
+			if (parseInt(zone) > 12) {
+				zone = zone - 12;
 				m = "pm";
 			} else {
 				m = "am";
 			}
-			if (parseInt(eastern) == 0) {
-				eastern = 12;
+			if (parseInt(zone) == 0) {
+				zone = 12;
 			}
-			eastern = eastern + ":" + minutes + " " + m;
-			return eastern;
+			zone = zone + ":" + minutes + " " + m;
+			return zone;
 		}
 	}
 
@@ -549,6 +574,8 @@ var mappingData =
 		//Create New Date (Present) and Compare Output
 		var now = new Date();
 		var formatted = new Date(test);
+		console.log("now: " + now);
+		console.log("event: " + formatted);
 		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
 			return false;
 		}
@@ -574,7 +601,7 @@ var mappingData =
 	//General AJAX Request With a Few Styling for Data Pane Loading Header
 	var asyncResource = function (url) {
 		processingXHR = true;
-		// console.log("XHR Status: Requesting...");
+		// console.debug("XHR Status: Requesting...");
 		$('#sportDisplay').html('');
 		$('.c1 .bubblingsmall').fadeIn(400);
 		$('.c2 .dateDisplay').html('<br>');
@@ -874,7 +901,7 @@ var mappingData =
 					calendar.selectedHistory.push(calendar.temp[0], calendar.temp[1]);
 					calendar.temp.splice(0, 10);
 					$('.' + calendar.temp[0] + '.' + calendar.temp[1]).stop().animate({"opacity": 1});
-					// console.log("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
+					// console.debug("XHR Status: Request Failed. Please Wait For Prior Request to Resolve.");
 					$('.c1 .bubblingsmall').fadeIn(600);
 					$('.c2 .dateDisplay').html('<br>');
 					if(calendar.dataDisplaying == false) {	
@@ -901,6 +928,7 @@ var mappingData =
 					calendar.viewmodel.teamResult(false);
 					calendar.viewmodel.singleResult(false);
 					calendar.viewmodel.noData(false);
+					calendar.viewmodel.waitingResults(false);
 					calendar.viewmodel.loadingData(true);
 					asyncResource(generateURL("summary", params)).done(function (response) {
 						$('.c1 .bubblingsmall').fadeOut(0);
@@ -910,23 +938,25 @@ var mappingData =
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
+						console.debug(sportData);
 						//Determines Which Template to Render in Data Pane
 						try {
-							if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							console.log("Time" + sportData.sports[0].event_phases[0].finished_at);
+							if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
 								calendar.viewmodel.singleSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
 								calendar.viewmodel.singleResult(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
 								calendar.viewmodel.teamSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].started_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
 								calendar.viewmodel.teamResult(true);
 							} else {
 								calendar.viewmodel.noData(true);
 							}
-							// calendar.viewmodel.teamResult(true); //Change this and comment out above conditionals for template testing
 							//Contructing Data Object
-							//Is the Selected Sport a Team Sport
+							//Team Schedule
 							if (calendar.viewmodel.teamSchedule() == true) {
+								console.log("Team Schedule");
 								var obj =  {};
 									obj.events = [];
 								try {
@@ -1018,52 +1048,54 @@ var mappingData =
 									notifications.push("Error: No Event Data Available \n" + error);
 								}
 							}
+							//Team Result
 							if (calendar.viewmodel.teamResult() == true) {
+								console.log("Team Result");
 								var obj =  {};
 									obj.events = [];
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-											var venue = null,
-												startTime = null,
+											var gender = '',
 												newMatch = false;
 												if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0) {
-													newMatch = true;
+													newMatch = true,
+													matchName = '';
 												}
-											try {
-												//Inserting Venue & Event Properties
-												venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-												startTime = sportData.sports[0].event_phases[i].started_at;
-												//Ensuring Venue is Not Duplicated
-												if (!obj.hasOwnProperty(venue)) {
-													obj.venue = venue;
-												}
-											} catch (error) {
-												obj.startTime = "- - : - -";
-												obj.venue = "Venue Data Unavailable";
-												notifications.push("Error: Venue Data Unavailable \n" + error);
-											}
-											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-												var startTime = "- - : - -";
-													homeResult = "";
-													awayResult = "";
-													homeParticipant = "Unknown";
-													awayParticipant = "Unknown";
-													homeShort = null;
-													awayShort = null;
-													winningShort = null;
-													winningParticipant = "Unknown";
-													winningResult = "";
-													losingShort = null;
-													losingParticipant = "Unknown";
-													losingResult = "";
-
 												try {
+													if (sportData.sports[0].event_phases[i].gender == null) {
+														gender = '';
+													} else {
+														gender = sportData.sports[0].event_phases[i].gender;
+													}
+													if (sportData.sports[0].event_phases[i].phases[j].name == null) {
+														matchName = "Unknown";
+													} else {
+														matchName = sportData.sports[0].event_phases[i].phases[j].name;
+													};
 													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events[i] = {startTime: startTime};
-														obj.events[i] = {match: []};
+														obj.events.push({event: formatGender(gender) + " " + matchName, match: []});
 														newMatch = false;
 													};
+												} catch (error) {
+													notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
+												};
+											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
+												var startTime = "- - : - -",
+													homeResult = "",
+													awayResult = "",
+													homeParticipant = "Unknown",
+													awayParticipant = "Unknown",
+													homeShort = null,
+													awayShort = null,
+													winningShort = null,
+													winningParticipant = "Unknown",
+													winningResult = "",
+													losingShort = null,
+													losingParticipant = "Unknown",
+													losingResult = "";
+													obj.events[i].match[k] = {participants: []};
+												try {
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
 													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
 													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
@@ -1093,7 +1125,7 @@ var mappingData =
 															winningShort = homeShort;
 															losingShort = awayShort;
 														};
-														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort, losingShort: losingShort};
+														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort, losingShort: losingShort});
 													} catch (error) {
 														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, losingShort: losingShort, homeShort: homeShort};
 														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
@@ -1111,36 +1143,45 @@ var mappingData =
 									notifications.push("Error: No Event Data Available \n" + error);
 								}
 							}
-							//Is The Selected Sport a Single Sport?
+							//Single Result
 							if (calendar.viewmodel.singleResult() == true) {
+								console.log("Single Result");
 								var obj = {};
-								obj.events = [],
-								participant = [];
+								obj.events = [];
 								//Searching Results Data Object
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
-										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-											var venue = '',
-												startTime =  "- - : - -";
+										var eventName = '',
+											gender = '';
 											try {
-												if (sportData.sports[0].event_phases[i].phases[j].venue == null) {
-													venue = "Unknown";
-													if (!obj.hasOwnProperty(venue)) {
-														obj.venue = venue;
-													}
+												if (sportData.sports[0].event_phases[i].event_name == null) {
+													eventName = sportData.sports[0].event_phases.name;
 												} else {
-													//Inserting Venue & Event Properties
-													venue = sportData.sports[0].event_phases[i].phases[j].venue.name;
-													//Ensuring Venue is Not Duplicated
-													if (!obj.hasOwnProperty(venue)) {
-														obj.venue = venue;
-													}
+													eventName = sportData.sports[0].event_phases[i].event_name;
 												}
+												if (sportData.sports[0].event_phases[i].gender == null) {
+													gender = '';
+												} else {
+													gender = sportData.sports[0].event_phases[i].gender;
+												}
+												obj.events[i] = {event: formatGender(gender) + " " + eventName, heat: []};
 											} catch (error) {
-												notifications.push("Error: Venue Data Unavailable \n" + error);
+												notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
+											};
+										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
+											var heatName = '';
+											try {
+												if (sportData.sports[0].event_phases[i].phases[j].name == null) {
+													heatName = "Unknown";
+												} else {
+													heatName = sportData.sports[0].event_phases[i].phases[j].name;
+												};
+												obj.events[i].heat[j] = {name: heatName, participants: []};
+											} catch (error) {
+												notifications.push("Error: Heat Data Unavailable \n" + error);
 											}
 											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].results.length; k++) {
-												var participantName = '',
+												var	participantName = '',
 													countryName = '',
 													countryShort = '',
 													rank = '',
@@ -1150,8 +1191,12 @@ var mappingData =
 													countryName = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name;
 													countryShort = sportData.sports[0].event_phases[i].phases[j].results[k].participant.country_name_short;
 													rank = sportData.sports[0].event_phases[i].phases[j].results[k].rank;
-													result = sportData.sports[0].event_phases[i].phases[j].results[k].result;
-													participant.push({participantName: participantName, countryName: countryName, countryShort: countryShort, rank: rank, result: result});
+													if (sportData.sports[0].event_phases[i].phases[j].results[k].result == "") {
+														result = formatStatus(sportData.sports[0].event_phases[i].phases[j].results[k].status);
+													} else {
+														result = sportData.sports[0].event_phases[i].phases[j].results[k].result;
+													}
+													obj.events[i].heat[j].participants.push({participantName: participantName, countryName: countryName, countryShort: countryShort, rank: rank, result: result});
 												} catch (error) {
 													calendar.viewmodel.singleResult() = false;
 													calendar.viewmodel.waitingResults(true);
@@ -1160,21 +1205,40 @@ var mappingData =
 											}
 										}
 									}
-									obj.events.participant = participant;
+									console.debug(obj);
 								} catch (error) {
 									notifications.push("Alert: No Results Data \n" + error);
 								}
 							}
+							//Single Schedule
 							if (calendar.viewmodel.singleSchedule() == true) {
+								console.log("Single Schedule");
 								var obj = {};
-								obj.events = [],
-								participant = [];
+								obj.events = [];
 								try {
 									//Searching Match Data Object
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										var eventName = '',
+											gender = '';
+											try {
+												if (sportData.sports[0].event_phases[i].event_name == null) {
+													eventName = sportData.sports[0].event_phases.name;
+												} else {
+													eventName = sportData.sports[0].event_phases[i].event_name;
+												}
+												if (sportData.sports[0].event_phases[i].gender == null) {
+													gender = '';
+												} else {
+													gender = sportData.sports[0].event_phases[i].gender;
+												}
+												obj.events.push({event: formatGender(gender) + " " + eventName, heat: []});
+											} catch (error) {
+												notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
+											};
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
 											var venue = null,
-												startTime = null;
+												heatName = '',
+												startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
 											try {
 												//Inserting Venue & Event Properties
 												try {
@@ -1182,43 +1246,41 @@ var mappingData =
 												} catch (error) {
 													notifications.push("Alert: No Venue Data \n" + error);
 												}
-												startTime = sportData.sports[0].event_phases[i].phases[j].started_at;
 												//Ensuring Venue is Not Duplicated
 												if (!obj.hasOwnProperty(venue)) {
 													obj.venue = venue;
 												}
-												obj.events[j] = {startTime: startTime};
 											} catch (error) {
 												notifications.push("Error: Venue Data Unavailable \n" + error);
 											}
-											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-												var homeResult = null,
-													awayResult = null,
-													homeParticipant = null,
-													awayParticipant = null,
-													winningParticipant = null,
-													losingParticipant = null;
-												try {
-													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-													homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant;
-													awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant;
-													winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant;
-													if (winningParticipant == awayParticipant) {
-														var holder = awayParticipant,
-														losingParticipant = homeParticipant,
-														winningParticipant = holder;
-													} else {
-														winningParticipant = homeParticipant;
-														losingParticipant = awayParticipant;
-													};
-													obj.events[j] = {winningParticipant: winningParticipant};
-													obj.events[j] = {losingParticipant: losingParticipant};
-													obj.events[j] = {homeResult: homeResult};
-													obj.events[j] = {awayResult: awayResult};
-												} catch (error) {
-													notifications.push("Error: No Match Data \n" + error);
-												} 
+											try {
+												if (sportData.sports[0].event_phases[i].phases[j].name == null) {
+													heatName = "Unknown";
+												} else {
+													heatName = sportData.sports[0].event_phases[i].phases[j].name;
+												};
+												obj.events[i].heat.push({name: heatName, startTime: startTime, participants: []});
+											} catch (error) {
+												notifications.push("Error: Heat Data Unavailable \n" + error);
+											}
+											try {
+												for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].phase_participants.length; k++) {
+													var	participantName = '',
+														countryName = '',
+														countryShort = '';
+													try {
+														participantName = sportData.sports[0].event_phases[i].phases[j].phase_participants[k].participant.name;
+														countryName = sportData.sports[0].event_phases[i].phases[j].phase_participants[k].participant.country_name;
+														countryShort = sportData.sports[0].event_phases[i].phases[j].phase_participants[k].participant.country_name_short;
+														obj.events[i].heat[j].participants.push({participantName: participantName, countryName: countryName, countryShort: countryShort});
+													} catch (error) {
+														calendar.viewmodel.singleSchedule() = false;
+														calendar.viewmodel.noData(true);
+														notifications.push("Error: No Participant Data \n" + error);
+													} 
+												}
+											} catch (error) {
+												notifications.push("Error: Phase Participant Data Unavailable \n" + error);
 											}
 										}
 									}
@@ -1237,16 +1299,16 @@ var mappingData =
 							notifications.push("Error: Unable To Render Data \n" + error)
 						} 
 						$('.dataOut').perfectScrollbar('update');
-						// console.log("XHR Notification: Success - Data Retrieved From API");
+						// console.debug("XHR Notification: Success - Data Retrieved From API");
 					}).fail(function () {
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html("DATA UNAVAILABLE");
 						$('.c2 .dateDisplay').html('<br>');
 						calendar.viewmodel.loadingData(false);
-						// console.log("XHR Notification: Failed - Unable to Retrieve Data From API");
+						// console.debug("XHR Notification: Failed - Unable to Retrieve Data From API");
 					}).always(function() {
 						processingXHR = false;
-						// console.log("XHR Status: Resolved");
+						// console.debug("XHR Status: Resolved");
 						calendar.logErrors(notifications);
 						$('.col2, .col4').not('#' + calendar.selectedHistory[1] + ', #' + calendar.temp[1]).stop().animate({opacity: .15}, 600);
 						$('.col1 svg circle, .col3 svg circle').not('.' + calendar.selectedHistory[1] + "Circle, ." + calendar.temp[1] + 'Circle').stop().animate({opacity: .15}, 600);
@@ -1274,11 +1336,11 @@ var mappingData =
 			}
 			//Removes Duplicate Notifications Then Logs Each Notification into Console
 			calendar.logErrors = function (errors) {
-				// console.log(">>>>>>>> Notifications >>>>>>>>")
+				// console.debug(">>>>>>>> Notifications >>>>>>>>")
 				// for (var e = 0; e < errors.length; e++) {
-					// console.log("\n" + errors[e]);
+				// 	console.debug("\n" + errors[e]);
 				// }
-				// console.log("\n<<<<<<<< Notifications <<<<<<<<")
+				// console.debug("\n<<<<<<<< Notifications <<<<<<<<")
 			}
 	};
 
@@ -1362,6 +1424,7 @@ var mappingData =
 					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined) {
 						return null;
 					}
+					console.log(master.dataOutput()[0].events);
 					return master.dataOutput()[0].events;
 				} catch (error) {
 					return ''
@@ -1443,7 +1506,7 @@ var mappingData =
 				preloadImages(images);
 				//Initial AJAX Data Retrieval From API
 				if (processingXHR === true) {
-					// console.log("XHR Notification: Unable to Process Request. Please Wait For Prior Request to Resolve.");
+					// console.debug("XHR Notification: Unable to Process Request. Please Wait For Prior Request to Resolve.");
 					return;
 				} else {
 					asyncResource(generateURL("summary", initialParams)).done(function (response) {
@@ -1470,16 +1533,16 @@ var mappingData =
 								master.calendarDates[date] = day;
 							};
 						};
-						// console.log("XHR Notification: Success - Initial Data Retrieved From API");
+						// console.debug("XHR Notification: Success - Initial Data Retrieved From API");
 					}).fail(function () {
-						// console.log("XHR Notification: Failed - Unable to Retrieve Initial Data From API");
+						// console.debug("XHR Notification: Failed - Unable to Retrieve Initial Data From API");
 					}).always(function() {
 						//Rendering View to User, Initializing Data Pane Scrolling
 						processingXHR = false;
 						$("#loading").fadeOut(1000, function () {
 				 			$("#wrapper").fadeIn(1000);
 				 		});
-						// console.log("XHR Status: Resolved");
+						// console.debug("XHR Status: Resolved");
 					});
 				};
 			};
