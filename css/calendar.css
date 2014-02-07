@@ -228,6 +228,18 @@
 	#dataPane .dataOut .template.scheduleTeam {
 		display: block;
 	}
+	#dataPane .dataOut .template.scheduleTeam .event {
+		position: relative;
+		text-align: left;
+		top: 0px;
+		left: 0px;
+		width: 252px;
+		height: 14px;
+		font-size: 14px;
+		font-weight: bold;
+		color: #FF9600;
+		margin: 0 8px 8px 0;
+	}
 	#dataPane .dataOut .template.scheduleTeam .rowData {
 		height: auto;
 	}
@@ -310,6 +322,9 @@
 		left: 0px;
 		width: 260px;
 		height: 14px;
+		font-size: 12px;
+		font-weight: bold;
+		color: #FF9600;
 		padding: 0 0 0 8px;
 	}
 	#dataPane .dataOut .template.scheduleSingle .rowData .subRow {
@@ -317,10 +332,19 @@
 		top: 0px;
 		left: 0px;
 		width: 260px;
-		height: 24px;
+		height: auto;
 		display: inline-block;
 	}
-	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .competitor {
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .participant {
+		position: relative;
+		top: 0px;
+		left: 0px;
+		height: 24px;
+		width: 260px;
+		padding: 2px 0 0 0;
+		display: block;
+	}
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .participant .competitor {
 		position: relative;
 		top: -9px;
 		left: 8px;
@@ -329,7 +353,7 @@
 		padding: 4px 0 0 0;
 		display: inline-block;
 	}
-	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .flag {
+	#dataPane .dataOut .template.scheduleSingle .rowData .subRow .participant .flag {
 		position: relative;
 		top: 0px;
 		left: 4px;
