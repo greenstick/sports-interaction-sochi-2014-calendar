@@ -588,7 +588,7 @@ var mappingData =
 	var generateURL = function (location, params) {
  		var url = null;
  		var urlString = '';
- 		var baseURL = "//www.sportsinteraction.com/service/infostrada/" + location + ".cfm?";
+ 		var baseURL = "//wwwtest.sportsinteraction.com/service/infostrada/" + location + ".cfm?";
 	 		$.each(params, function (key, value) {
 	 			return urlString = urlString + "&" + key + "=" + value;
 	 		});
