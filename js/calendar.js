@@ -395,9 +395,9 @@ var mappingData =
 	];
 	//Update to Current Season ID as Needed
 	var initialParams = {
-			seasonID: 3
+			seasonID: 1
 		},
-		seasonID = 3,
+		seasonID = 1,
 		processingXHR = false,
 		notifications = [];
 
@@ -572,12 +572,16 @@ var mappingData =
 		    }
 		}
 		//Create New Date (Present) and Compare Output
-		var now = new Date();
-		var formatted = new Date(test);
+		var now = null;
+		var formatted = new Date(test.started);
+		test.updated != null ? now = new Date(test.updated) : now = new Date();
+		console.log(now + " now/updated_at");
+		console.log(formatted + " started/formatted");
 		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
 			return false;
+		} else {
+			return true;
 		}
-		return true;
 	}
 
 /**
@@ -928,6 +932,8 @@ var mappingData =
 					calendar.viewmodel.noData(false);
 					calendar.viewmodel.waitingResults(false);
 					calendar.viewmodel.loadingData(true);
+					calendar.viewmodel.displayTeamResults = false;
+					calendar.viewmodel.displaySingleResults = false;
 					asyncResource(generateURL("summary", params)).done(function (response) {
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
@@ -938,13 +944,45 @@ var mappingData =
 						var sportData = response;
 						//Determines Which Template to Render in Data Pane
 						try {
-							if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							try {
+								for (var i = 0; i < sportData.sports[0].event_phases[0].phases.length; i++) {
+									try {
+										for (var j = 0; j < sportData.sports[0].event_phases[0].phases[i].matches.length; j++) {
+												if ((sportData.sports[0].event_phases[0].phases[i].matches[j].home_result != null || sportData.sports[0].event_phases[0].phases[i].results[0] != null) && (data.sport != "Ice_Hockey" || data.sport != "Curling")) {
+													calendar.viewmodel.displayTeamResults = true;
+													break;
+												}
+										}
+									} catch (error) {
+										notifications.push("Notification: Team Match Has No Results Data \n" + error);
+									}
+								}
+							} catch (error) {
+								notifications.push("Notification: Team Phase Has No Match Data \n" + error);
+							}
+							try {
+								for (var i = 0; i < sportData.sports[0].event_phases[0].phases.length; i++) {
+									if (sportData.sports[0].event_phases[0].phases[i].results && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+										calendar.viewmodel.displaySingleResults = true;
+										break;
+									}
+								}
+							} catch (error) {
+								notifications.push("Notification: Single Phase Has No Results Data \n" + error);
+							}
+							console.log(calendar.viewmodel.displayTeamResults + " team")
+							console.log(calendar.viewmodel.displaySingleResults + " single")
+							if (calendar.viewmodel.displaySingleResults == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
 								calendar.viewmodel.singleSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+							} else if (calendar.viewmodel.displaySingleResults == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
 								calendar.viewmodel.singleResult(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == false && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							} else if (calendar.viewmodel.displayTeamResults === false && (data.sport == "Ice_Hockey")) {
 								calendar.viewmodel.teamSchedule(true);
-							} else if (pastPresent(sportData.sports[0].event_phases[0].finished_at) == true && (data.sport == "Ice_Hockey" || data.sport == "Curling")) {
+							} else if (calendar.viewmodel.displayTeamResults === true && (data.sport == "Ice_Hockey")) {
+								calendar.viewmodel.teamResult(true);
+							} else if (calendar.viewmodel.displayTeamResults === false && (data.sport == "Curling")) {
+								calendar.viewmodel.teamSchedule(true);
+							} else if (calendar.viewmodel.displayTeamResults === true && (data.sport == "Curling")) {
 								calendar.viewmodel.teamResult(true);
 							} else {
 								calendar.viewmodel.noData(true);
@@ -1147,14 +1185,14 @@ var mappingData =
 													}
 												// Who Won?
 												} catch (error) {
-													calendar.viewmodel.teamResult(false);
-													calendar.viewmodel.waitingResults(true);
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
 										}
 									}
 								} catch (error) {
+									calendar.viewmodel.teamResult(false);
+									calendar.viewmodel.waitingResults(true);
 									notifications.push("Error: No Event Data Available \n" + error);
 								}
 							}
