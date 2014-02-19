@@ -575,8 +575,6 @@ var mappingData =
 		var now = null;
 		var formatted = new Date(test.started);
 		test.updated != null ? now = new Date(test.updated) : now = new Date();
-		console.log(now + " now/updated_at");
-		console.log(formatted + " started/formatted");
 		if (dates.compare(now, formatted) == -1 || dates.compare(now, formatted) == 0) {
 			return false;
 		} else {
@@ -652,6 +650,7 @@ var mappingData =
 			calendar.viewmodel = parentViewmodel,
 			calendar.filterHistory = [],
 			calendar.selectedHistory = [],
+			calendar.arcHistory = [],
 			calendar.temp = [],
 			//Control Flow Variables
 			calendar.filtering = false,
@@ -880,6 +879,12 @@ var mappingData =
 					$('#centerDismiss .dateDisplay').hide().removeClass('selectable');
 				}
 				if (processingXHR !== true) {
+					try {
+						calendar.date = new ParsedDate(calendar.arcHistory[0]);
+						$('#centerDismiss .dateDisplay').html(((calendar.date.monthName).substr(0, 3)) + " " + calendar.date.day);
+					} catch (error) {
+						notifications.push("Error: Hover Data Unavailable - Initial API Request Failed \n" + error);
+					}
 					$('.' + calendar.selectedHistory[0] + '.' + calendar.selectedHistory[1]).stop().animate({"opacity": 1});
 				}
 			};
@@ -922,6 +927,8 @@ var mappingData =
 					if (calendar.filtering == true) {
 						$('.' + calendar.selectedHistory[1]).stop().animate({opacity: .9});
 					}
+					calendar.arcHistory.splice(0, 10);
+					calendar.arcHistory.push(selectedDate);
 					//User Requested Data
 					var params = {seasonID: seasonID, sportID: selectedSport, date: selectedDate};
 					//Setting Template Rendering Observables to False
@@ -934,7 +941,9 @@ var mappingData =
 					calendar.viewmodel.loadingData(true);
 					calendar.viewmodel.displayTeamResults = false;
 					calendar.viewmodel.displaySingleResults = false;
+					//XHR
 					asyncResource(generateURL("summary", params)).done(function (response) {
+						//Fadeout loading css / update scrollbar / display sport & date
 						$('.c1 .bubblingsmall').fadeOut(0);
 						$('#sportDisplay').html(convertMDash(format(data.sport)).toUpperCase());
 						$('.c2 .dateDisplay').html((calendar.date.monthName.substr(0, 3)) + " " + calendar.date.day);
@@ -942,19 +951,22 @@ var mappingData =
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
+						console.log(sportData);
 						//Determines Which Template to Render in Data Pane
 						try {
 							try {
-								for (var i = 0; i < sportData.sports[0].event_phases[0].phases.length; i++) {
-									try {
-										for (var j = 0; j < sportData.sports[0].event_phases[0].phases[i].matches.length; j++) {
-												if ((sportData.sports[0].event_phases[0].phases[i].matches[j].home_result != null || sportData.sports[0].event_phases[0].phases[i].results[0] != null) && (data.sport != "Ice_Hockey" || data.sport != "Curling")) {
+								for (var h = 0; h < sportData.sports[0].event_phases.length; h++) {
+									for (var i = 0; i < sportData.sports[0].event_phases[h].phases.length; i++) {
+										try {
+											for (var j = 0; j < sportData.sports[0].event_phases[h].phases[i].matches.length; j++) {
+												if ((sportData.sports[0].event_phases[h].phases[i].matches[j].home_result != undefined) && (data.sport != "Ice_Hockey" || data.sport != "Curling")) {
 													calendar.viewmodel.displayTeamResults = true;
 													break;
 												}
+											}
+										} catch (error) {
+											notifications.push("Notification: Team Match Has No Results Data \n" + error);
 										}
-									} catch (error) {
-										notifications.push("Notification: Team Match Has No Results Data \n" + error);
 									}
 								}
 							} catch (error) {
@@ -962,16 +974,20 @@ var mappingData =
 							}
 							try {
 								for (var i = 0; i < sportData.sports[0].event_phases[0].phases.length; i++) {
-									if (sportData.sports[0].event_phases[0].phases[i].results && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
-										calendar.viewmodel.displaySingleResults = true;
-										break;
+									try {
+										for (var j = 0; j < sportData.sports[0].event_phases[0].phases[i].results.length; j++) {
+											if ((sportData.sports[0].event_phases[0].phases[i].results[j].rank != null) && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
+												calendar.viewmodel.displaySingleResults = true;
+												break;
+											}
+										}
+									} catch (error) {
+										notifications.push("Notification: Single Phase Has No Results Data \n" + error);
 									}
 								}
 							} catch (error) {
 								notifications.push("Notification: Single Phase Has No Results Data \n" + error);
 							}
-							console.log(calendar.viewmodel.displayTeamResults + " team")
-							console.log(calendar.viewmodel.displaySingleResults + " single")
 							if (calendar.viewmodel.displaySingleResults == false && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
 								calendar.viewmodel.singleSchedule(true);
 							} else if (calendar.viewmodel.displaySingleResults == true && (data.sport != "Ice_Hockey" && data.sport != "Curling")) {
@@ -999,7 +1015,7 @@ var mappingData =
 												gender = '',
 												startTime = null,
 												newMatch = false;
-												if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0) {
+												if (sportData.sports[0].event_phases[i].phases[j].matches) {
 													newMatch = true;
 													matchName = '';
 												}
@@ -1012,7 +1028,7 @@ var mappingData =
 														obj.venue = venue;
 													}
 												} catch (error) {
-													obj.startTime = "- - : - -";
+													obj.startTime = "";
 													obj.venue = "Venue Data Unavailable";
 													notifications.push("Error: Venue Data Unavailable \n" + error);
 												}
@@ -1028,71 +1044,30 @@ var mappingData =
 														matchName = sportData.sports[0].event_phases[i].phases[j].name;
 													};
 													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events.push({event: formatGender(gender) + " " + matchName, match: []});
+														obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
 														newMatch = false;
 													};
 												} catch (error) {
 													notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
 												};
 											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-												var startTime = "- - : - -",
-													homeResult = "",
-													awayResult = "",
-													homeParticipant = "Unknown",
-													awayParticipant = "Unknown",
+												var startTime = "",
 													homeShort = null,
-													awayShort = null,
-													winningShort = null,
-													winningParticipant = "Unknown",
-													winningResult = "",
-													losingShort = null,
-													losingParticipant = "Unknown",
-													losingResult = "";
+													awayShort = null;
 													obj.events[i].match[k] = {participants: []};
-
 												try {
-													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events[i] = {startTime: startTime};
-														obj.events[i] = {match: []};
-														newMatch = false;
-													};
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
-													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-													homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name;
-													awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name;
 													homeShort = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name_short;
 													awayShort = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name_short;
 													try {
-														//Ensure this same logic is applied to away/home short
-														winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name;
-														winningShort = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name_short;
-														if (winningParticipant == awayParticipant) {
-															var holder = awayParticipant,
-															losingParticipant = homeParticipant,
-															winningParticipant = holder;
-															var score = awayResult,
-															losingResult = homeResult,
-															winningResult = score;
-															var shortN = awayShort,
-															losingShort = homeShort,
-															winningShort = shortN;
-														} else {
-															winningParticipant = homeParticipant;
-															losingParticipant = awayParticipant;
-															winningResult = homeResult;
-															losingResult = awayResult;
-															winningShort = homeShort;
-															losingShort = awayShort;
-														};
-														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort, losingShort: losingShort};
+														obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 													} catch (error) {
-														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, losingShort: losingShort, homeShort: homeShort};
+														obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
 													}
 												// Who Won?
 												} catch (error) {
-													obj.events[i].match[k] = {startTime: startTime, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort};
+													obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
@@ -1126,8 +1101,8 @@ var mappingData =
 													} else {
 														matchName = sportData.sports[0].event_phases[i].phases[j].name;
 													};
-													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events.push({event: formatGender(gender) + " " + matchName, match: []});
+													if (sportData.sports[0].event_phases[i].phases[j].matches && newMatch === true) {
+														obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: []};
 														newMatch = false;
 													};
 												} catch (error) {
@@ -1148,6 +1123,10 @@ var mappingData =
 													losingParticipant = "Unknown",
 													losingResult = "";
 													obj.events[i].match[k] = {participants: []};
+													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
+														obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
+														newMatch = false;
+													};
 												try {
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
 													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
@@ -1178,13 +1157,14 @@ var mappingData =
 															winningShort = homeShort;
 															losingShort = awayShort;
 														};
-														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, homeShort: homeShort, losingShort: losingShort});
+														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 													} catch (error) {
-														obj.events[i].match[k] = {startTime: startTime, winningResult: winningResult, losingResult: losingResult, homeResult: homeResult, awayResult: awayResult, homeParticipant: homeParticipant, awayParticipant: awayParticipant, winningParticipant: winningParticipant, losingParticipant: losingParticipant, awayShort: awayShort, winningShort: winningShort, losingShort: losingShort, homeShort: homeShort};
+														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
 													}
 												// Who Won?
 												} catch (error) {
+													obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
@@ -1216,7 +1196,7 @@ var mappingData =
 												} else {
 													gender = sportData.sports[0].event_phases[i].gender;
 												}
-												obj.events[i] = {event: formatGender(gender) + " " + eventName, heat: []};
+												obj.events[i] = {ev: formatGender(gender) + " " + eventName, heat: []};
 											} catch (error) {
 												notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
 											};
@@ -1281,7 +1261,7 @@ var mappingData =
 												} else {
 													gender = sportData.sports[0].event_phases[i].gender;
 												}
-												obj.events.push({event: formatGender(gender) + " " + eventName, heat: []});
+												obj.events.push({ev: formatGender(gender) + " " + eventName, heat: []});
 											} catch (error) {
 												notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
 											};
@@ -1338,6 +1318,7 @@ var mappingData =
 									notifications.push("Alert: No Match Data \n" + error)
 								}
 							}
+							console.log(obj);
 						} catch (error) {
 							calendar.viewmodel.noData(true);
 							notifications.push("Error: Unable to Determine Render Template \n" + error)
@@ -1471,7 +1452,7 @@ var mappingData =
 			//Output Event Object
 			master.eventData = ko.computed(function () {
 				try {
-					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined) {
+					if (master.dataOutput()[0] == null || master.dataOutput()[0].events == undefined || master.dataOutput()[0].events == '[object XMLHttpRequestProgressEvent]') {
 						return null;
 					}
 					return master.dataOutput()[0].events;

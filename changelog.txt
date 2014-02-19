@@ -1,5 +1,28 @@
 Sochi Olympic Calendar Interactive Change Log
 
+Version 1.6
+2/18/14
+
+calendar.js
+
+-	Lost of minor updates to account for missing data
+-	Update to template rendering decision system
+
+index.html
+
+-	Update to data bindings
+
+Version 1.5
+2/14/14
+
+calendar.js
+
+-	Update to the team result/schedule data validation/evaluation
+
+index.html
+
+-	Inserted conditionals for every view model data property—-no matter whether any 	property exists or not, the calendar will continue to render whatever data it is 	given
+
 Version 1.4
 2/13/14
 
