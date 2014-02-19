@@ -93,31 +93,35 @@
 						<div class="head" data-bind="text: venueData"></div>
 						<!-- ko if: typeof(eventData) !== "undefined" -->
 						<div class="rowData" data-bind="foreach: eventData">
-							<!-- ko if:  typeof(ev) !== "undefined" -->
-							<div class="event" data-bind="text: ev"></div>
-							<!-- /ko -->
-							<!-- ko if:  typeof(match) !== "undefined" -->
-							<div data-bind="foreach: match">
-								<!-- ko if:  typeof(startTime) !== "undefined" -->
-								<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
+							<!-- ko if: typeof(phase) !== "undefined" -->
+							<div data-bind="foreach: phase">
+								<!-- ko if:  typeof(ev) !== "undefined" -->
+								<div class="event" data-bind="text: ev"></div>
 								<!-- /ko -->
-								<div class="match">
-									<!-- ko if:  typeof(homeShort) !== "undefined" -->
-									<div class="flag flagA"><img data-bind="attr:{src: 'img/flags/' + homeShort + '.png'}" /></div>
+								<!-- ko if:  typeof(match) !== "undefined" -->
+								<div data-bind="foreach: match">
+									<!-- ko if:  typeof(startTime) !== "undefined" -->
+									<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
 									<!-- /ko -->
-									<div class="competing">
+									<div class="match">
 										<!-- ko if:  typeof(homeShort) !== "undefined" -->
-										<div class="team teamA" data-bind="text: homeShort"></div>
+										<div class="flag flagA"><img data-bind="attr:{src: 'img/flags/' + homeShort + '.png'}" /></div>
 										<!-- /ko -->
-										<div class="versus">vs</div>
+										<div class="competing">
+											<!-- ko if:  typeof(homeShort) !== "undefined" -->
+											<div class="team teamA" data-bind="text: homeShort"></div>
+											<!-- /ko -->
+											<div class="versus">vs</div>
+											<!-- ko if:  typeof(awayShort) !== "undefined" -->
+											<div class="team teamB" data-bind="text: awayShort"></div>
+											<!-- /ko -->
+										</div>
 										<!-- ko if:  typeof(awayShort) !== "undefined" -->
-										<div class="team teamB" data-bind="text: awayShort"></div>
+										<div class="flag flagB"><img data-bind="attr:{src: 'img/flags/' + awayShort + '.png'}" /></div>
 										<!-- /ko -->
 									</div>
-									<!-- ko if:  typeof(awayShort) !== "undefined" -->
-									<div class="flag flagB"><img data-bind="attr:{src: 'img/flags/' + awayShort + '.png'}" /></div>
-									<!-- /ko -->
 								</div>
+								<!-- /ko -->
 							</div>
 							<!-- /ko -->
 						</div>
@@ -126,43 +130,47 @@
 					<div class="template resultTeam" data-bind="if: $root.teamResult">
 						<!-- ko if: typeof(eventData) !== "undefined" -->
 						<div data-bind="foreach: eventData">
-							<!-- ko if:  typeof(ev) !== "undefined" -->
-							<div class="head" data-bind="text: ev"></div>
-							<!-- /ko -->
-							<!-- ko if:  typeof(match) !== "undefined" -->
-							<div class="rowData" data-bind="foreach: match">
-								<div class="match">
-									<!-- ko if:  typeof(participants) !== "undefined" -->
-									<div class="matchParticipants" data-bind="foreach: participants">
-										<div class="win">
-											<div class="flag flagA">
+							<!-- ko if: typeof(phase) !== "undefined" -->
+							<div data-bind="foreach: phase">
+								<!-- ko if:  typeof(ev) !== "undefined" -->
+								<div class="head" data-bind="text: ev"></div>
+								<!-- /ko -->
+								<!-- ko if:  typeof(match) !== "undefined" -->
+								<div class="rowData" data-bind="foreach: match">
+									<div class="match">
+										<!-- ko if:  typeof(participants) !== "undefined" -->
+										<div class="matchParticipants" data-bind="foreach: participants">
+											<div class="win">
+												<div class="flag flagA">
+													<!-- ko if:  typeof(winningShort) !== "undefined" -->
+													<img data-bind="attr:{src: 'img/flags/' + winningShort + '.png'}" />
+													<!-- /ko -->
+												</div>
 												<!-- ko if:  typeof(winningShort) !== "undefined" -->
-												<img data-bind="attr:{src: 'img/flags/' + winningShort + '.png'}" />
+												<div class="team teamA" data-bind="text: winningShort"></div>
+												<!-- /ko -->
+												<!-- ko if:  typeof(winningResult) !== "undefined" -->
+												<div class="score scoreA" data-bind="text: winningResult"></div>
 												<!-- /ko -->
 											</div>
-											<!-- ko if:  typeof(winningShort) !== "undefined" -->
-											<div class="team teamA" data-bind="text: winningShort"></div>
-											<!-- /ko -->
-											<!-- ko if:  typeof(winningResult) !== "undefined" -->
-											<div class="score scoreA" data-bind="text: winningResult"></div>
-											<!-- /ko -->
-										</div>
-										<div class="loss">
-											<div class="flag flagB">
-												<!-- ko if:  typeof(winningShort) !== "undefined" -->
-												<img data-bind="attr:{src: 'img/flags/' + losingShort + '.png'}" />
+											<div class="loss">
+												<div class="flag flagB">
+													<!-- ko if:  typeof(winningShort) !== "undefined" -->
+													<img data-bind="attr:{src: 'img/flags/' + losingShort + '.png'}" />
+													<!-- /ko -->
+												</div>
+												<!-- ko if:  typeof(losingShort) !== "undefined" -->
+												<div class="team teamB" data-bind="text: losingShort"></div>
+												<!-- /ko -->
+												<!-- ko if:  typeof(losingResult) !== "undefined" -->
+												<div class="score scoreB" data-bind="text: losingResult"></div>
 												<!-- /ko -->
 											</div>
-											<!-- ko if:  typeof(losingShort) !== "undefined" -->
-											<div class="team teamB" data-bind="text: losingShort"></div>
-											<!-- /ko -->
-											<!-- ko if:  typeof(losingResult) !== "undefined" -->
-											<div class="score scoreB" data-bind="text: losingResult"></div>
-											<!-- /ko -->
 										</div>
+										<!-- /ko -->
 									</div>
-									<!-- /ko -->
 								</div>
+								<!-- /ko -->
 							</div>
 							<!-- /ko -->
 						</div>

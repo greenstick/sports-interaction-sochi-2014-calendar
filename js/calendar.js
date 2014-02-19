@@ -951,6 +951,7 @@ var mappingData =
 						//Constructing New Data Object
 						calendar.viewmodel.dataOutput.removeAll();
 						var sportData = response;
+						console.log(sportData);
 						//Determines Which Template to Render in Data Pane
 						try {
 							try {
@@ -1009,6 +1010,7 @@ var mappingData =
 									obj.events = [];
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										obj.events[i] = {phase: []};
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
 											var venue = null,
 												gender = '',
@@ -1043,7 +1045,7 @@ var mappingData =
 														matchName = sportData.sports[0].event_phases[i].phases[j].name;
 													};
 													if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0 && newMatch === true) {
-														obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
+														obj.events[i].phase[j] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
 														newMatch = false;
 													};
 												} catch (error) {
@@ -1053,20 +1055,20 @@ var mappingData =
 												var startTime = "",
 													homeShort = null,
 													awayShort = null;
-													obj.events[i].match[k] = {participants: []};
+													obj.events[i].phase[j].match[k] = {participants: []};
 												try {
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
 													homeShort = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name_short;
 													awayShort = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name_short;
 													try {
-														obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
+														obj.events[i].phase[j].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 													} catch (error) {
-														obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
+														obj.events[i].phase[j].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
 													}
 												// Who Won?
 												} catch (error) {
-													obj.events[i].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
+													obj.events[i].phase[j].match[k] = {startTime: startTime, awayShort: awayShort, homeShort: homeShort};
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
@@ -1076,12 +1078,13 @@ var mappingData =
 									notifications.push("Error: No Event Data Available \n" + error);
 								}
 							}
-							//Team Results Ice Hockey
-							if (calendar.viewmodel.teamResult() == true && data.sport == "Ice_Hockey") {
+							//Team Results
+							if (calendar.viewmodel.teamResult() == true) {
 								var obj =  {};
 									obj.events = [];
 								try {
 									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
+										obj.events[i] = {phase: []};
 										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
 											var gender = '',
 												newMatch = '';
@@ -1104,7 +1107,7 @@ var mappingData =
 													notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
 												};
 												if (newMatch === true) {
-													obj.events[j] = {ev: formatGender(gender) + " " + matchName, match: []};
+													obj.events[i].phase[j] = {ev: formatGender(gender) + " " + matchName, match: []};
 													newMatch = false;
 												};
 											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
@@ -1121,11 +1124,7 @@ var mappingData =
 													losingShort = null,
 													losingParticipant = "Unknown",
 													losingResult = "";
-													if (newMatch === true) {
-														obj.events[j] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
-														newMatch = false;
-													};
-													obj.events[j].match[k] = {participants: []};
+													obj.events[i].phase[j].match[k] = {participants: []};
 												try {
 													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
 													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
@@ -1156,113 +1155,14 @@ var mappingData =
 															winningShort = homeShort;
 															losingShort = awayShort;
 														};
-														obj.events[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
+														obj.events[i].phase[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 													} catch (error) {
-														obj.events[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
+														obj.events[i].phase[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
 													}
 												// Who Won?
 												} catch (error) {
-													obj.events[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
-													notifications.push("Error: No Match Data \n" + error);
-												} 
-											}
-										}
-									}
-								} catch (error) {
-									calendar.viewmodel.teamResult(false);
-									calendar.viewmodel.waitingResults(true);
-									notifications.push("Error: No Event Data Available \n" + error);
-								}
-							}
-							//Team Results Curling
-							if (calendar.viewmodel.teamResult() == true && data.sport == "Curling") {
-								var obj =  {};
-									obj.events = [];
-								try {
-									for (var i = 0; i < sportData.sports[0].event_phases.length; i++) {
-										for (var j = 0; j < sportData.sports[0].event_phases[i].phases.length; j++) {
-											var gender = '',
-												newMatch = '';
-												newMatch = false;
-												if (sportData.sports[0].event_phases[i].phases[j].matches.length > 0) {
-													newMatch = true
-												}
-												try {
-													if (sportData.sports[0].event_phases[i].gender == null) {
-														gender = '';
-													} else {
-														gender = sportData.sports[0].event_phases[i].gender;
-													}
-													if (sportData.sports[0].event_phases[i].phases[j].name == null) {
-														matchName = "Unknown";
-													} else {
-														matchName = sportData.sports[0].event_phases[i].phases[j].name;
-													};
-												} catch (error) {
-													notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
-												};
-												if (newMatch === true) {
-													obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: []};
-													newMatch = false;
-												};
-											for (var k = 0; k < sportData.sports[0].event_phases[i].phases[j].matches.length; k++) {
-												var startTime = "- - : - -",
-													homeResult = "",
-													awayResult = "",
-													homeParticipant = "Unknown",
-													awayParticipant = "Unknown",
-													homeShort = null,
-													awayShort = null,
-													winningShort = null,
-													winningParticipant = "Unknown",
-													winningResult = "",
-													losingShort = null,
-													losingParticipant = "Unknown",
-													losingResult = "";
-													if (newMatch === true) {
-														obj.events[i] = {ev: formatGender(gender) + " " + matchName, match: [], startTime: startTime};
-														newMatch = false;
-													};
-													obj.events[i].match[k] = {participants: []};
-												try {
-													startTime = sportData.sports[0].event_phases[i].phases[j].matches[k].started_at;
-													homeResult = sportData.sports[0].event_phases[i].phases[j].matches[k].home_result;
-													awayResult = sportData.sports[0].event_phases[i].phases[j].matches[k].away_result;
-													homeParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name;
-													awayParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name;
-													homeShort = sportData.sports[0].event_phases[i].phases[j].matches[k].home_participant.name_short;
-													awayShort = sportData.sports[0].event_phases[i].phases[j].matches[k].away_participant.name_short;
-													try {
-														//Ensure this same logic is applied to away/home short
-														winningParticipant = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name;
-														winningShort = sportData.sports[0].event_phases[i].phases[j].matches[k].winning_participant.name_short;
-														if (winningParticipant == awayParticipant) {
-															var holder = awayParticipant,
-															losingParticipant = homeParticipant,
-															winningParticipant = holder;
-															var score = awayResult,
-															losingResult = homeResult,
-															winningResult = score;
-															var shortN = awayShort,
-															losingShort = homeShort,
-															winningShort = shortN;
-														} else {
-															winningParticipant = homeParticipant;
-															losingParticipant = awayParticipant;
-															winningResult = homeResult;
-															losingResult = awayResult;
-															winningShort = homeShort;
-															losingShort = awayShort;
-														};
-														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
-													} catch (error) {
-														obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
-														notifications.push("Error: Unable to Determine Winning Participant \n" + error);
-													}
-												// Who Won?
-												} catch (error) {
-													obj.events[i].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
+													obj.events[i].phase[j].match[k].participants.push({startTime: startTime, winningResult: winningResult, losingResult: losingResult, winningShort: winningShort, losingShort: losingShort});
 													notifications.push("Error: No Match Data \n" + error);
 												} 
 											}
@@ -1359,7 +1259,7 @@ var mappingData =
 												} else {
 													gender = sportData.sports[0].event_phases[i].gender;
 												}
-												obj.events.push({ev: formatGender(gender) + " " + eventName, heat: []});
+												obj.events[i] = {ev: formatGender(gender) + " " + eventName, heat: []};
 											} catch (error) {
 												notification.push("Error: Phase And/Or Gender Data Unavailable \n" + error);
 											};
@@ -1416,6 +1316,7 @@ var mappingData =
 									notifications.push("Alert: No Match Data \n" + error)
 								}
 							}
+							console.log(obj);
 						} catch (error) {
 							calendar.viewmodel.noData(true);
 							notifications.push("Error: Unable to Determine Render Template \n" + error)

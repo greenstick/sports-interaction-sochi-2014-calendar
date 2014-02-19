@@ -1,5 +1,17 @@
 Sochi Olympic Calendar Interactive Change Log
 
+
+Version 1.7
+2/19/14
+
+calendar.js
+
+-	Update to team results rendering
+
+index.html
+
+-	Update to team results template
+
 Version 1.6
 2/18/14
 
