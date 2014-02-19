@@ -208,6 +208,7 @@
 							<!-- /ko -->
 							<!-- ko if: typeof(heat) !== "undefined" -->
 							<div class="rowData" data-bind="foreach: heat">
+								<!-- ko if: participants.length > 0 -->
 								<!-- ko if: typeof(name) !== "undefined" -->
 								<div class="heatName" data-bind="text: name"></div>
 								<!-- /ko -->
@@ -233,6 +234,7 @@
 										</div>
 									</div>
 								</div>
+								<!-- /ko -->
 								<!-- /ko -->
 							</div>
 							<!-- /ko -->
