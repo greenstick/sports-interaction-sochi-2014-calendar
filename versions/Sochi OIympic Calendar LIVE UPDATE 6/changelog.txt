@@ -1,0 +1,98 @@
+Sochi Olympic Calendar Interactive Change Log
+
+Version 1.6
+2/18/14
+
+calendar.js
+
+-	Lost of minor updates to account for missing data
+-	Update to template rendering decision system
+
+index.html
+
+-	Update to data bindings
+
+Version 1.5
+2/14/14
+
+calendar.js
+
+-	Update to the team result/schedule data validation/evaluation
+
+index.html
+
+-	Inserted conditionals for every view model data property—-no matter whether any 	property exists or not, the calendar will continue to render whatever data it is 	given
+
+Version 1.4
+2/13/14
+
+calendar.js
+
+-	Update to template rendering system; it now searches for the results object rather 	than comparing timestamps
+
+Version 1.3
+2/11/14
+
+calendar.js
+
+-	Update to schedule/result single/team rendering system
+
+Version 1.2
+2/07/14
+
+index.html
+
+-	Updates to template rendering for singleSchedule and teamSchedule
+
+calendar.css
+
+-	Updates to styles for template rendering of teamSchedule
+
+calendar.js
+
+-	Updates to teamSchedule to render out gender and event data
+-	Updates to singleSchedule to render out participants correctly
+
+Version 1.1
+2/06/14
+
+index.html
+
+-	Updates to templates to accommodate additional heat data
+
+calendar.css
+
+-	Updates to template styles
+
+calendar.js
+
+-	SingleSchedule data object updated - may need some tweaks once data is delivered
+-	TeamResult data object updated - heat data added
+-	SingleResult data object updated - heat data added
+-	DNS, DNF, and NR rendered in place of absent time/score data in results objects
+-	Time stamp used to decide template rendering changed from started_at to 		finished_at. Would be good to know if a more accurate timestamp is available. 
+
+Version 0.2
+1/29/14
+
+index.html
+
+-	Minor tweak to make single results data rendering more consistent
+
+
+Version 0.1
+1/27/14
+
+index.html
+	
+-	New template created that informs user whether or not
+	results have been reported once an event has occured.
+
+calendar.css
+
+-	Loading animations updated so that they are more consistent
+	and stay in sync.
+
+calendar.js
+
+-	Minor bug fix to cache for user selection history

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta id="interactiveViewport" name="viewport" content="width=device-width" />
+	<link href="css/calendar.css" type="text/css" rel="stylesheet" />
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css' />
+</head>
+<body>
+	<div id="interactiveWrapper">
+		<div id="calendarCenter">
+			<svg width="72px" height="72px">
+				<circle id="centerCircle" cx="36" cy="36" r="30" stroke="#FFFFFF" stroke-width="2" fill="transparent" />
+			</svg>
+			<div id="centerFlame">
+				<img src="img/center_flame.svg" width="42px" height="42px" />
+			</div>
+		</div>
+		<div id="calendar" data-bind="with: menuRows"></div>
+		<div id="centerDismiss">
+			<div class="dateDisplay" data-bind="click: calendar.reset"><span class="text"></span></div>
+		</div>
+		<div id="sportsPane">
+			<div class="header">
+				<div class="htop">
+					<div class="hbottom"></div>
+				</div>
+				<div class="hshadow"></div>
+				<div class="headtype">
+					<div class="c1">
+						<span>SPORTS</span>
+					</div>
+					<div class="c2">
+						<span data-bind="click: function () {$root.calendar.reset()}">VIEW ALL</span>
+					</div>
+				</div>
+			</div>
+			<div class="row" data-bind="foreach: menuRows">
+				<!-- ko if: ($index() %2 == 0)-->
+				<div class="listSport">
+					<div class="col1">
+						<svg height="30" width="21">
+							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color, 'class': sport() + 'Circle'}" />
+						</svg>
+					</div>
+					<div class="col2" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport()).replace('_', ' '), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
+				</div>
+				<!-- /ko -->
+				<!-- ko if: ($index() %2 == 1) -->
+				<div class="listSport">
+					<div class="col3">
+						<svg height="30" width="21">
+							<circle cx="10" cy="9" r="6" data-bind="attr: {'fill': color, 'class': sport() + 'Circle'}" />
+						</svg>
+					</div>
+					<div class="col4" data-bind="attr: {'id': sport}"><span data-bind="text: format(sport().replace('_', ' ')), click: function () {$root.calendar.filter(sport, color)}, event: {mouseover: function () {$root.menuhoverOver(sport, color)}, mouseout: function () {$root.menuhoverOut(sport, color)}}"></span></div>
+				</div>
+				<!-- /ko -->
+			</div>
+		</div>
+		<div id="dataPane">
+			<div class="header">
+				<div class="htop">
+					<div class="hbottom"></div>
+				</div>
+				<div class="hshadow"></div>
+				<div class="headtype">
+					<div class="c1">
+						<span id="sportDisplay"></span>
+						<div class="bubblingsmall">
+							<span class="bubbling_1">
+							</span>
+							<span class="bubbling_2">
+							</span>
+							<span class="bubbling_3">
+							</span>
+						</div>
+					</div>
+					<div class="c2">
+						<span class="dateDisplay"></span>
+					</div>
+				</div>
+				<div id="dataExit">
+					<img src="img/exit.svg" width="28px" height="28px" />
+				</div>
+			</div>
+			<div class="dataOut nano">
+				<div class="content">
+					<div class="template loadingData" data-bind="if: $root.loadingData">
+						<div class="head">Loading...</div>
+					</div>
+					<div class="template scheduleTeam" data-bind="if: $root.teamSchedule">
+						<div class="head" data-bind="text: venueData"></div>
+						<!-- ko if: typeof(eventData) !== "undefined" -->
+						<div class="rowData" data-bind="foreach: eventData">
+							<div class="event" data-bind="text: event"></div>
+							<!-- ko if:  typeof(match) !== "undefined" -->
+							<div data-bind="foreach: match">
+								<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
+								<div class="match">
+									<div class="flag flagA"><img data-bind="attr:{src: 'img/flags/' + homeShort + '.png'}" /></div>
+									<div class="competing">
+										<div class="team teamA" data-bind="text: homeShort"></div>
+										<div class="versus">vs</div>
+										<div class="team teamB" data-bind="text: awayShort"></div>
+									</div>
+									<div class="flag flagB"><img data-bind="attr:{src: 'img/flags/' + awayShort + '.png'}" /></div>
+								</div>
+							</div>
+							<!-- /ko -->
+						</div>
+						<!-- /ko -->
+					</div>
+					<div class="template resultTeam" data-bind="if: $root.teamResult">
+						<!-- ko if: typeof(eventData) !== "undefined" -->
+						<div data-bind="foreach: eventData">
+							<div class="head" data-bind="text: event"></div>
+							<!-- ko if:  typeof(match) !== "undefined" -->
+							<div class="rowData" data-bind="foreach: match">
+								<div class="match">
+									<div class="matchParticipants" data-bind="foreach: participants">
+										<div class="win">
+											<div class="flag flagA">
+												<img data-bind="attr:{src: 'img/flags/' + winningShort + '.png'}" />
+											</div>
+											<div class="team teamA" data-bind="text: winningShort"></div>
+											<div class="score scoreA" data-bind="text: winningResult"></div>
+										</div>
+										<div class="loss">
+											<div class="flag flagB">
+												<img data-bind="attr:{src: 'img/flags/' + losingShort + '.png'}" />
+											</div>
+											<div class="team teamB" data-bind="text: losingShort"></div>
+											<div class="score scoreB" data-bind="text: losingResult"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- /ko -->
+						</div>
+						<!-- /ko -->
+					</div>
+					<div class="template scheduleSingle" data-bind="if: $root.singleSchedule">
+						<div class="head" data-bind="text: venueData"></div>
+						<div data-bind="foreach: eventData">
+							<div class="head" data-bind="text: event"></div>
+							<div class="rowData" data-bind="foreach: heat">
+								<div class="heatName" data-bind="text: name"></div>
+								<div class="time" data-bind="text: formatZone(startTime, 4)"></div>
+								<!-- ko if:  typeof(participants) !== "undefined" -->
+								<div class="subRow" data-bind="foreach: participants">
+									<!-- ko if:  typeof(participantName) !== "undefined" && typeof(countryShort) !== "undefined" -->
+									<div class="participant">
+										<div class="competitor" data-bind="text: participantName"></div>
+										<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
+									</div>
+									<!-- /ko -->
+								</div>
+								<!-- /ko -->
+							</div>
+						</div>
+					</div>
+					<div class="template resultSingle" data-bind="if: $root.singleResult">
+						<div data-bind="foreach: eventData">
+							<div class="head" data-bind="text: event"></div>
+							<div class="rowData" data-bind="foreach: heat">
+								<div class="heatName" data-bind="text: name"></div>
+								<div data-bind="foreach: participants">
+									<div class="result">
+										<div class="subRow">
+											<div class="position" data-bind="text: rank"></div>
+											<div class="competitor" data-bind="text: participantName"></div>
+										</div>
+										<div class="subRow">
+											<div class="flag"><img data-bind="attr:{src: 'img/flags/' + countryShort + '.png'}" /></div>
+											<div class="country" data-bind="text: countryShort"></div>
+											<div class="result" data-bind="text: result"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="template noData" data-bind="if: $root.noData">
+						<div class="head">No Schedule or Results<br>Data Available</div> 
+					</div>
+					<div class="template waitingResults" data-bind="if: $root.waitingResults">
+						<div class="head">Results Not Yet Reported</div> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="loading">
+		<div class="dialogue">
+			<div class="loadingText">
+				Loading
+			</div>
+			<div class="bubbling">
+				<span class="bubbling_1">
+				</span>
+				<span class="bubbling_2">
+				</span>
+				<span class="bubbling_3">
+				</span>
+			</div>
+		</div>
+	</div>
+	<script src="js/lib/JQ-1.10.2.min.js"></script>
+	<script src="js/lib/JQ-touch.js"></script>
+	<script src="js/lib/D3.min.js"></script>
+	<script src="js/lib/KO-3.0.0.js"></script>
+	<script src="js/lib/KO-mapping.js"></script>
+	<script src="js/lib/iOS-OCZ-bugfix.js"></script>
+	<script src="js/lib/JQ-perfectscrollbar.js"></script>
+	<script src="js/lib/JQ-mousewheel.js"></script>
+	<script src="js/lib/date.js"></script>
+	<script src="js/calendar.js"></script>
+	<script src="js/loadimages.js"></script>
+	<script>
+		//Formatting Specifically Identified Data to Fit with Design
+	 	function format (input) {
+	 		(input == "Cross-Country Skiing" || input == "CROSS-COUNTRY SKIING" || input == "Cross-Country_Skiing" || input == "CROSS-COUNTRY_SKIING") ? input = "Cross-Country" : input = input;
+	 		(input == "Freestyle_Skiing" || input == "FREESTYLE_SKIING" || input == "Freestyle Skiing" || input == "FREESTYLE SKIING") ? input = "Freestyle" : input = input;
+	 		(input == "Snowboard" || input == "SNOWBOARD") ? input = "SNOWBOARDING" : input = input;
+	 		return input;
+	 	}
+	 	$('.dataOut').perfectScrollbar({minScollbarLength: 60});
+	</script>
+</body>
+</html>
